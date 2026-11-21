@@ -208,6 +208,9 @@ figure { margin: 0; min-width: 0; display: grid; gap: 8px; }
 .labels { pointer-events: none; }
 .slice span { position: absolute; top: 8px; left: 6px; font-family: var(--mono); font-size: 11px; color: rgba(231,233,240,.75); white-space: nowrap; }
 figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
+.ship-key { margin: 0; display: flex; gap: 10px; align-items: center; font-size: 13px; color: var(--muted); max-width: 75ch; }
+.ship-key svg { width: 28px; height: 28px; flex: none; }
+.ship-key b { color: var(--fg); font-weight: 600; }
 .glerr { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; text-align: center; color: var(--muted); }
 
 .stage-intro { display: grid; gap: 6px; max-width: 75ch; }
@@ -522,7 +525,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     <figure>
       <div class="cap"><span class="eyebrow">What you see</span><span class="readout" id="camReadout"></span></div>
       <div class="view" id="glWrap"><canvas id="gl" aria-label="Ray-traced view of a black hole with an accretion disk"></canvas><div class="slice"><span>side-view slice</span></div><canvas id="labels" class="labels" aria-hidden="true"></canvas></div>
-      <figcaption>Every pixel is one light ray traced backwards from your eye until it hits the disk, falls into the hole, or escapes to the stars. The Endurance is drawn far larger than its real size so you can see it; its light bends around the hole like everything else.</figcaption>
+      <figcaption>Every pixel is one light ray traced backwards from your eye until it hits the disk, falls into the hole, or escapes to the stars.</figcaption>
+      <p class="ship-key"><svg viewBox="-14 -14 28 28" aria-hidden="true"><use href="#sym-endurance" x="-14" y="-14" width="28" height="28"/></svg><span><b>Endurance</b>, the ring in the disk. It is drawn far larger than its real size so you can see it; its light bends around the hole like everything else, so it rides over the top when it passes behind.</span></p>
     </figure>
     <figure>
       <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout">units: event-horizon radius</span></div>
@@ -1006,6 +1010,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   const FS = `
 precision highp float;
 uniform vec2 uRes; uniform float uInc; uniform float uK; uniform float uTime; uniform float uMode; uniform float uDop;
+uniform vec3 uShip; uniform vec3 uShipN;
 const float RIN=${RIN.toFixed(1)}; const float ROUT=${ROUT.toFixed(1)}; const float DIST=${DIST.toFixed(1)}; const float TH=${TH};
 float h2;
 float hash(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
@@ -1059,6 +1064,19 @@ vec3 shade(vec3 hit, vec3 dir, int n, bool fromAbove){
     c=tint*(.35+1.3*l);
   }
   return c; }
+// The Endurance: a ring (torus) far larger than real scale. Rays that reach it are bent on the way like any other light.
+const float SHIP_R=.5; const float SHIP_T=.12;
+float shipSDF(vec3 q){ vec3 l=q-uShip; float h=dot(l,uShipN); return length(vec2(length(l-uShipN*h)-SHIP_R,h))-SHIP_T; }
+vec3 shadeShip(vec3 q){
+  vec2 e=vec2(.01,0.);
+  vec3 nrm=normalize(vec3(shipSDF(q+e.xyy)-shipSDF(q-e.xyy),shipSDF(q+e.yxy)-shipSDF(q-e.yxy),shipSDF(q+e.yyx)-shipSDF(q-e.yyx)));
+  vec3 l=q-uShip; vec3 e1=normalize(cross(uShipN,vec3(0.,0.,1.)+vec3(.01))); vec3 e2=cross(uShipN,e1);
+  float ang=atan(dot(l,e2),dot(l,e1));
+  float modules=.72+.28*step(0.,sin(ang*12.+uTime*.8));
+  float sky=max(dot(nrm,normalize(vec3(.3,1.,.2))),0.);           // soft top light
+  float disk=max(dot(nrm,normalize(-uShip+vec3(0.,-.5,0.))),0.);   // warm glow from the disk around the hole
+  return vec3(.86,.89,.96)*(.18+.55*sky)*modules+vec3(1.,.62,.3)*.55*disk;
+}
 void main(){
   vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
   float ci=cos(uInc), si=sin(uInc);
@@ -1070,6 +1088,15 @@ void main(){
   for(int i=0;i<560;i++){
     float r=length(p); float dt=clamp(.032*r,.008,2.);
     vec3 pn=p+v*dt+.5*a*dt*dt; vec3 an=accel(pn); vec3 vn=v+.5*(a+an)*dt;
+    // does this step of the ray pass through the ship?
+    vec3 sd=pn-p; float sl=length(sd); vec3 sdir=sd/sl; float tq=clamp(dot(uShip-p,sdir),0.,sl);
+    if(length(p+sdir*tq-uShip)<SHIP_R+SHIP_T+.05){
+      for(int j=0;j<10;j++){
+        float tt=clamp(tq+(float(j)/9.*2.-1.)*(SHIP_R+SHIP_T),0.,sl); vec3 qj=p+sdir*tt;
+        if(shipSDF(qj)<0.){ col=shadeShip(qj); ended=true; break; }
+      }
+      if(ended) break;
+    }
     if(p.y*pn.y<0.){
       n++; float t=p.y/(p.y-pn.y); vec3 hit=mix(p,pn,t); float rh=length(hit.xz);
       if(rh>RIN && rh<ROUT){ col=shade(hit,normalize(mix(v,vn,t)),n,p.y>0.); ended=true; break; }
@@ -1096,7 +1123,7 @@ void main(){
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    ['uRes', 'uInc', 'uK', 'uTime', 'uMode', 'uDop'].forEach(n => uni[n] = gl.getUniformLocation(prog, n));
+    ['uRes', 'uInc', 'uK', 'uTime', 'uMode', 'uDop', 'uShip', 'uShipN'].forEach(n => uni[n] = gl.getUniformLocation(prog, n));
     return true;
   }
   const glOK = initGL();
@@ -1450,89 +1477,17 @@ void main(){
   // Anchors come from the same rays as the side view: a ray launched at screen height s
   // lands on the picture's centre line at that height, so each class of ray marks a feature.
   const labelsCv = $('labels'), lctx = labelsCv.getContext('2d');
-  // The Endurance, parked in orbit inside the disk. Its image is ray-traced like the rest of the picture:
-  // light from it travels in the plane through your eye, the hole's centre and the ship, so a table of
-  // "where does a ray launched at angle a cross the ship's orbit radius" (built once per gravity setting)
-  // tells us where you see it. Behind the hole its light bends over the top, just like the far side of the disk.
-  const ENDURANCE_R = 10;   // orbit radius in horizon radii, out in the disk
-  let shipTable = null, shipKey = '';
-  function buildShipTable(k) {
-    const N = 360, R = ENDURANCE_R, aMax = Math.asin(Math.min(1, (R + 1) / DIST)) * 1.02;
-    const alphas = new Float64Array(N), pin = new Float64Array(N).fill(NaN), pout = new Float64Array(N).fill(NaN);
-    for (let i = 0; i < N; i++) {
-      const al = aMax * Math.pow((i + 1) / N, 1.3);
-      alphas[i] = al;
-      let px = DIST, py = 0, vx = -Math.cos(al), vy = Math.sin(al);
-      const h2 = (px * vy - py * vx) ** 2;
-      const acc = (x, y) => { const r2 = x * x + y * y; const f = -1.5 * k * h2 / (r2 * r2 * Math.sqrt(r2)); return [f * x, f * y]; };
-      let [ax, ay] = acc(px, py), phi = 0, r = DIST;
-      for (let n = 0; n < 8000; n++) {
-        const dt = Math.min(Math.max(0.02 * r, 0.004), 1.0);
-        const nx = px + vx * dt + 0.5 * ax * dt * dt, ny = py + vy * dt + 0.5 * ay * dt * dt;
-        const [bx, by] = acc(nx, ny);
-        vx += 0.5 * (ax + bx) * dt; vy += 0.5 * (ay + by) * dt;
-        const rn = Math.hypot(nx, ny);
-        let dphi = Math.atan2(ny, nx) - Math.atan2(py, px);
-        if (dphi > Math.PI) dphi -= 2 * Math.PI; if (dphi < -Math.PI) dphi += 2 * Math.PI;
-        const phiN = phi + dphi, t = (R - r) / (rn - r);
-        if (r > R && rn <= R) pin[i] = phi + dphi * t;
-        if (r < R && rn >= R) { pout[i] = phi + dphi * t; break; }
-        px = nx; py = ny; ax = bx; ay = by; phi = phiN; r = rn;
-        if (rn < 1 || rn > DIST + 5) break;
-      }
-    }
-    return { alphas, pin, pout, N };
-  }
-  // angle at your eye (from the centre of the hole) at which you see a point at polar angle theta from your direction
-  function shipImageAngle(theta) {
-    const T = shipTable; let best = null;
-    for (const arr of [T.pin, T.pout]) {
-      for (let i = 1; i < T.N; i++) {
-        const a = arr[i - 1], c = arr[i];
-        if (!isFinite(a) || !isFinite(c) || (a - theta) * (c - theta) > 0 || a === c) continue;
-        const al = T.alphas[i - 1] + (T.alphas[i] - T.alphas[i - 1]) * (theta - a) / (c - a);
-        if (best === null || al < best) best = al;
-      }
-    }
-    return best;
-  }
-  function drawEndurance(W, H) {
-    const key = state.k.toFixed(3);
-    if (key !== shipKey) { shipTable = buildShipTable(state.k); shipKey = key; }
-    const inc = state.inc * Math.PI / 180, ci = Math.cos(inc), si = Math.sin(inc);
-    const ang = -0.6 + 4.0 * Math.pow(ENDURANCE_R, -1.5) * state.time;  // same direction and speed as the disk's gas
-    const P = [ENDURANCE_R * Math.cos(ang), 0, ENDURANCE_R * Math.sin(ang)];
-    // split the ship's position into "towards you" and "across your view"
-    const along = P[0] * ci + P[1] * si;                                   // component along the direction to your eye
-    const perp = [P[0] - along * ci, P[1] - along * si, P[2]];
-    const perpLen = Math.hypot(perp[0], perp[1], perp[2]) || 1e-9;
-    const theta = Math.atan2(perpLen, along);                              // 0 = straight towards you, pi = directly behind
-    const al = shipImageAngle(theta);
-    if (al === null) return;
-    const sx = -perp[2] / perpLen, sy = (-perp[0] * si + perp[1] * ci) / perpLen;   // direction on screen (right, up)
-    const off = Math.tan(al) / (2 * TH) * H;
-    const x = W / 2 + sx * off, y = H / 2 - sy * off;
-    const dpr = W / labelsCv.clientWidth, R = 7 * dpr;
-    lctx.save(); lctx.translate(x, y); lctx.scale(1, Math.max(0.35, si * 0.9 + 0.1));
-    lctx.strokeStyle = '#e7e9f0'; lctx.lineWidth = 1.4 * dpr;
-    lctx.beginPath(); lctx.arc(0, 0, R, 0, Math.PI * 2); lctx.stroke();
-    lctx.fillStyle = '#e7e9f0';
-    for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6 + state.time * 0.8; lctx.fillRect(Math.cos(a) * R - 1.6 * dpr, Math.sin(a) * R - 1.6 * dpr, 3.2 * dpr, 3.2 * dpr); }
-    lctx.fillStyle = '#5fd4c4'; lctx.beginPath(); lctx.arc(0, 0, 1.8 * dpr, 0, Math.PI * 2); lctx.fill();
-    lctx.restore();
-    if (state.labelsOn) {
-      lctx.save();
-      lctx.font = `500 ${11 * dpr}px "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif`;
-      lctx.textAlign = 'center'; lctx.textBaseline = 'top';
-      lctx.shadowColor = 'rgba(0,0,0,0.95)'; lctx.shadowBlur = 4 * dpr; lctx.fillStyle = 'rgba(231,233,240,0.9)';
-      lctx.fillText('Endurance', x, y + R + 6 * dpr);
-      lctx.restore();
-    }
+  // The Endurance orbits in the disk with the gas; the ray tracer draws it, so its image bends like everything else.
+  const ENDURANCE_R = 10;   // orbit radius in horizon radii
+  function shipPose() {
+    const ang = -0.6 + 4.0 * Math.pow(ENDURANCE_R, -1.5) * state.time;   // same direction and speed as the disk's gas
+    const inc = state.inc * Math.PI / 180;
+    const n = [Math.cos(inc), Math.sin(inc) + 0.6, 0.35], nl = Math.hypot(...n);   // ring tilted to face you
+    return { p: [ENDURANCE_R * Math.cos(ang), 0.35, ENDURANCE_R * Math.sin(ang)], n: n.map(c => c / nl) };
   }
   function drawLabels() {
     const W = labelsCv.width, H = labelsCv.height;
     lctx.setTransform(1, 0, 0, 1, 0, 0); lctx.clearRect(0, 0, W, H);
-    if (W) drawEndurance(W, H);
     if (!state.labelsOn || !W || !slice.length) return;
     const dpr = W / labelsCv.clientWidth, short = labelsCv.clientWidth < 560;
     const stat = cls => {
@@ -1951,6 +1906,8 @@ void main(){
       gl.uniform1f(uni.uTime, state.time);
       gl.uniform1f(uni.uMode, state.mode ? 1 : 0);
       gl.uniform1f(uni.uDop, state.dop ? 1 : 0);
+      const sh = shipPose();
+      gl.uniform3f(uni.uShip, sh.p[0], sh.p[1], sh.p[2]); gl.uniform3f(uni.uShipN, sh.n[0], sh.n[1], sh.n[2]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
     drawLabels();
