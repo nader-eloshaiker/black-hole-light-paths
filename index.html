@@ -1111,9 +1111,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     ['glWrap', 'side', 'tmap', 'ledger'].forEach(id => viewWatch.observe(document.getElementById(id)));
     viewWatch.observe(document.querySelector('.survive-live'));
   }
-  // while the page is being scrolled, the heavy ray tracer redraws less often
-  let lastScroll = -1e9, frameNo = 0;
-  window.addEventListener('scroll', () => { lastScroll = performance.now(); }, { passive: true });
   function togglePlay() {
     state.playing = !state.playing;
     syncPlayBtn(); syncDiagrams();
@@ -2081,10 +2078,8 @@ void main(){
       syncReadouts();
     }
     rebuildRays();
-    frameNo++;
-    const scrolling = now - lastScroll < 160;
     const glVisible = isOn($('glWrap'));
-    if (glOK && glVisible && (!scrolling || frameNo % 3 === 0)) {
+    if (glOK && glVisible) {
       const c = $('gl');
       gl.viewport(0, 0, c.width, c.height);
       gl.uniform2f(uni.uRes, c.width, c.height);
@@ -2100,8 +2095,8 @@ void main(){
     if (glVisible) drawLabels();
     updateClocks(clockDt, isOn($('ledger')));            // clocks keep counting even when not drawn
     if (isOn(document.querySelector('.survive-live'))) updateSurvival();
-    if (isOn(side) && (!scrolling || frameNo % 2 === 0)) drawSide();
-    if (isOn(tmap) && (!scrolling || frameNo % 2 === 0)) drawTimeMap();
+    if (isOn(side)) drawSide();
+    if (isOn(tmap)) drawTimeMap();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
