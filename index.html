@@ -286,6 +286,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .scale-row select { font: 14px var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: var(--sq-ctl); corner-shape: squircle; padding: 8px 10px; max-width: 100%; min-height: 40px; }
 .scale-info { margin: 0; flex: 1 1 360px; min-width: 0; font-size: 13px; color: var(--muted); }
 .scale-info b { color: var(--scale); font-weight: 500; }
+.scale-info .au-note { display: block; margin-top: 6px; }
 @media (max-width: 599px) { .side-view { aspect-ratio: 1 / 1; } }
 
 .lower { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 40px; }
@@ -1475,7 +1476,6 @@ void main(){
           const tw = ctx.measureText(txt).width;
           ctx.strokeStyle = 'rgba(95,212,196,0.6)'; ctx.lineWidth = 0.8 * dpr;
           ctx.beginPath(); ctx.moveTo(X(lxr) - tw - 10 * dpr, Y(ly)); ctx.lineTo(X(ax), Y(ay)); ctx.stroke();
-          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(ax), Y(ay), 2.5 * dpr, 0, Math.PI * 2); ctx.fill();
           tag(txt, X(lxr), Y(ly), 'right');
         } else if (it.type === 'ball') {
           const bx = -VIEW_HALF_W + 2.5, by = -halfHs + 2.6, rr = Math.max(1.5 * dpr, it.r * sc);
@@ -1630,8 +1630,10 @@ void main(){
     const info = $('scaleInfo');
     if (!sc) { info.textContent = 'Give the black hole a real size to compare it with familiar things on the time map.'; $('tmapUnits').textContent = 'units: event-horizon radius'; }
     else {
-      info.innerHTML = `<b>${sc.name}</b>, ${sc.mass}. Event horizon radius ${fmtLen(sc.rs)}; light crosses it in ${fmtSpan(sc.rs / C)}. ${sc.fact}`;
-      $('tmapUnits').textContent = `1 grid square = ${fmtLen(2 * sc.rs)}`;
+      const usesAU = 3 * sc.rs >= AU;   // the grid or scale bar is measured in AU
+      info.innerHTML = `<b>${sc.name}</b>, ${sc.mass}. Event horizon radius ${fmtLen(sc.rs)}; light crosses it in ${fmtSpan(sc.rs / C)}. ${sc.fact}`
+        + (usesAU ? ' <span class="au-note"><b>AU</b> (astronomical unit) is the distance from Earth to the Sun: about 150 million km, which sunlight takes 8 minutes 20 seconds to cross.</span>' : '');
+      $('tmapUnits').textContent = `1 grid square = ${fmtLen(2 * sc.rs)}` + (usesAU ? ' (1 AU = Earth to Sun)' : '');
     }
     syncProbe();
     for (const c of clocks) c.lastText = '';
