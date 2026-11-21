@@ -458,7 +458,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 @keyframes dgGlow { from { opacity: .65; } to { opacity: 1; } }
 .dg .xray.a-xray { stroke-dasharray: 7 5; animation: dgXray .6s linear infinite; }
 @keyframes dgXray { to { stroke-dashoffset: -24; } }
-.anim-paused .dg * { animation-play-state: paused !important; }
+.anim-paused .dg *, .dg.offscreen * { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) { .dg * { animation: none !important; } }
 .why { list-style: none; counter-reset: why; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
 .why li { counter-increment: why; position: relative; padding-left: 30px; font-size: 13.5px; line-height: 1.45; color: #c9cdd8; }
@@ -1007,12 +1007,34 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
       if (!state.playing) togglePlay();
     }
   }
+  // Only animate what can be seen: anything scrolled out of view pauses, which keeps scrolling smooth on tablets.
+  const onScreen = new WeakMap();
+  const isOn = el => !!el && onScreen.get(el) !== false;
   const diagrams = () => document.querySelectorAll('svg.dg');
-  function syncDiagrams() {
-    const still = !state.playing || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    document.body.classList.toggle('anim-paused', !state.playing);
-    diagrams().forEach(svg => { if (svg.pauseAnimations) (still ? svg.pauseAnimations() : svg.unpauseAnimations()); });
+  function syncDiagram(svg) {
+    const visible = isOn(svg);
+    const still = !state.playing || !visible || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    svg.classList.toggle('offscreen', !visible);
+    if (svg.pauseAnimations) (still ? svg.pauseAnimations() : svg.unpauseAnimations());
   }
+  function syncDiagrams() {
+    document.body.classList.toggle('anim-paused', !state.playing);
+    diagrams().forEach(syncDiagram);
+  }
+  const viewWatch = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+    for (const en of entries) {
+      onScreen.set(en.target, en.isIntersecting);
+      if (en.target.matches('svg.dg')) syncDiagram(en.target);
+    }
+  }, { rootMargin: '120px 0px' }) : null;
+  if (viewWatch) {
+    diagrams().forEach(svg => viewWatch.observe(svg));
+    ['glWrap', 'side', 'tmap', 'ledger'].forEach(id => viewWatch.observe(document.getElementById(id)));
+    viewWatch.observe(document.querySelector('.survive-live'));
+  }
+  // while the page is being scrolled, the heavy ray tracer redraws less often
+  let lastScroll = -1e9, frameNo = 0;
+  window.addEventListener('scroll', () => { lastScroll = performance.now(); }, { passive: true });
   function togglePlay() {
     state.playing = !state.playing;
     syncPlayBtn(); syncDiagrams();
@@ -1762,10 +1784,11 @@ void main(){
   const ROMILLY = 23 * U.y + 4 * U.mo + 8 * U.d;
   let scene = null; // Miller's planet scene: { phase: 'run' | 'end', cap: 0..2 }
   let lastVisualSec = -1;
-  function updateClocks(dt) {
+  function updateClocks(dt, show = true) {
     const S = LAPSE[lapseI].s;
     if (clocksRunning) for (const c of clocks) c.e += dt * c.def.rate() * S;
     if (scene && scene.phase === 'run' && clocks[0].e >= ROMILLY) endScene();
+    if (!show) return;                                   // off screen: keep time, skip drawing
     // under reduced motion, redraw the moving parts once a second
     const sec = Math.floor(performance.now() / 1000);
     if (reduceMotion && clocksRunning && sec === lastVisualSec) return;
@@ -1955,7 +1978,8 @@ void main(){
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     for (const c of [$('gl'), side, labelsCv, tmap]) {
       // the ray tracer costs per pixel: keep its backing store under ~1.6 million pixels
-      const k = c.id === 'gl' ? Math.min(dpr, Math.sqrt(1.6e6 / Math.max(1, c.clientWidth * c.clientHeight))) : dpr;
+      const budget = window.matchMedia('(pointer: coarse)').matches && (window.devicePixelRatio || 1) >= 2 ? 1.0e6 : 1.6e6;
+      const k = c.id === 'gl' ? Math.min(dpr, Math.sqrt(budget / Math.max(1, c.clientWidth * c.clientHeight))) : dpr;
       const w = Math.round(c.clientWidth * k), h = Math.round(c.clientHeight * k);
       if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
     }
@@ -1978,7 +2002,10 @@ void main(){
       syncReadouts();
     }
     rebuildRays();
-    if (glOK) {
+    frameNo++;
+    const scrolling = now - lastScroll < 160;
+    const glVisible = isOn($('glWrap'));
+    if (glOK && glVisible && (!scrolling || frameNo % 3 === 0)) {
       const c = $('gl');
       gl.viewport(0, 0, c.width, c.height);
       gl.uniform2f(uni.uRes, c.width, c.height);
@@ -1991,11 +2018,11 @@ void main(){
       gl.uniform3f(uni.uShip, sh.p[0], sh.p[1], sh.p[2]); gl.uniform3f(uni.uShipN, sh.n[0], sh.n[1], sh.n[2]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
-    drawLabels();
-    updateClocks(clockDt);
-    updateSurvival();
-    drawSide();
-    drawTimeMap();
+    if (glVisible) drawLabels();
+    updateClocks(clockDt, isOn($('ledger')));            // clocks keep counting even when not drawn
+    if (isOn(document.querySelector('.survive-live'))) updateSurvival();
+    if (isOn(side) && (!scrolling || frameNo % 2 === 0)) drawSide();
+    if (isOn(tmap) && (!scrolling || frameNo % 2 === 0)) drawTimeMap();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
