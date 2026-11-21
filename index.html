@@ -185,36 +185,68 @@ figure { margin: 0; min-width: 0; display: grid; gap: 8px; }
 .view canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .slice { position: absolute; top: 0; bottom: 0; left: 50%; border-left: 1px dashed rgba(231,233,240,.22); pointer-events: none; }
 .labels { pointer-events: none; }
-.slice span { position: absolute; top: 8px; left: 6px; font-family: var(--mono); font-size: 10px; color: rgba(231,233,240,.5); white-space: nowrap; }
+.slice span { position: absolute; top: 8px; left: 6px; font-family: var(--mono); font-size: 11px; color: rgba(231,233,240,.75); white-space: nowrap; }
 figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 .glerr { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; text-align: center; color: var(--muted); }
 
-.controls {
-  display: grid; grid-template-columns: 1fr 1fr auto; gap: 18px 28px; align-items: end;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px;
+.stage-intro { display: grid; gap: 6px; max-width: 75ch; }
+.stage-intro h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; text-wrap: balance; }
+.stage-intro p { margin: 0; color: var(--muted); }
+.jump { justify-self: start; font-size: 14px; color: var(--accent); text-underline-offset: 3px; }
+
+/* ---- controls: a compact dock that stays at the bottom of the screen while the diagrams are in view ---- */
+.dock {
+  position: sticky; bottom: 0; z-index: 15;
+  display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px 28px; align-items: end;
+  background: rgba(13,16,23,0.96); border: 1px solid var(--line); border-radius: 8px;
+  padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 24px rgba(0,0,0,0.45);
 }
-@media (max-width: 880px) { .controls { grid-template-columns: 1fr; } }
+@media (min-width: 1600px) { .dock { position: static; box-shadow: none; } }
+@media (max-width: 880px) { .dock { grid-template-columns: 1fr 1fr; } .dock .btns { grid-column: 1 / -1; } }
+@media (max-width: 599px) {
+  .dock { grid-template-columns: 1fr; gap: 4px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); }
+  .dock .hint { display: none; }
+  .dock .ctl { gap: 0; }
+  .dock .ctl label { font-size: 13px; }
+  .dock .btns { flex-wrap: nowrap; gap: 6px; }
+  .dock .btns button { flex: 1 1 0; min-height: 36px; padding: 6px 10px; font-size: 13px; }
+}
 .ctl { display: grid; gap: 6px; min-width: 0; }
 .ctl label { display: flex; justify-content: space-between; gap: 10px; font-weight: 500; font-size: 14px; }
 .ctl label output { font-family: var(--mono); font-size: 13px; color: var(--accent); font-variant-numeric: tabular-nums; }
 .ctl .hint { font-size: 12px; color: var(--muted); }
-input[type=range] { width: 100%; accent-color: var(--accent); }
+input[type=range] { width: 100%; accent-color: var(--accent); min-height: 24px; }
 .btns { display: flex; flex-wrap: wrap; gap: 8px; }
 button {
-  font: 500 13px var(--body); color: var(--fg); background: transparent;
-  border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer;
+  font: 500 14px var(--body); color: var(--fg); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer; min-height: 40px;
 }
 button:hover { border-color: var(--muted); }
-button[aria-pressed="true"] { background: var(--accent); color: #1a1006; border-color: var(--accent); }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.scale-row { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding-top: 4px; border-top: 1px solid var(--line); padding-block-start: 14px; }
+/* on/off buttons: neutral, the pressed state is a lighter fill, not the accent */
+.tbtn[aria-pressed="true"] { background: rgba(231,233,240,0.1); border-color: var(--fg); }
+button.primary { background: var(--accent); color: #1a1006; border-color: var(--accent); font-weight: 600; }
+button.primary:hover { filter: brightness(1.08); }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.options { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 0 18px; }
+.options summary { cursor: pointer; padding: 14px 0; font-weight: 500; font-size: 14px; }
+.opt-groups { display: flex; flex-wrap: wrap; gap: 8px 40px; padding-bottom: 14px; }
+.options fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 2px; min-width: 0; }
+.options legend { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 0 0 4px; }
+.options label { display: flex; gap: 10px; align-items: center; min-height: 36px; font-size: 14px; cursor: pointer; }
+.options input { accent-color: var(--accent); width: 18px; height: 18px; flex: none; }
+@media (max-width: 599px) { .options label { min-height: 44px; } }
+
+.mini-key { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--fg); }
+.mini-key li { display: inline-flex; align-items: center; gap: 6px; }
+.mini-key i { display: block; width: 16px; height: 3px; border-radius: 2px; }
+.scale-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding-top: 4px; }
 .scale-row label { font-weight: 500; font-size: 14px; }
-.scale-row select { font: 14px var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; max-width: 100%; }
+.scale-row select { font: 14px var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; max-width: 100%; min-height: 40px; }
 .scale-info { margin: 0; flex: 1 1 360px; min-width: 0; font-size: 13px; color: var(--muted); }
 .scale-info b { color: var(--scale); font-weight: 500; }
-.toggles { display: flex; flex-wrap: wrap; gap: 8px 22px; grid-column: 1 / -1; font-size: 14px; }
-.toggles label { display: inline-flex; gap: 8px; align-items: center; cursor: pointer; }
-.toggles input { accent-color: var(--accent); width: 16px; height: 16px; }
+@media (max-width: 599px) { .side-view { aspect-ratio: 1 / 1; } }
 
 .lower { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 40px; }
 @media (max-width: 880px) { .lower { grid-template-columns: 1fr; } }
@@ -225,35 +257,83 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .legend b { font-weight: 600; }
 .try { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 14px; max-width: 62ch; }
 .try li::marker { color: var(--accent); font-family: var(--mono); }
-.time { display: grid; gap: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
-.time-intro { display: grid; gap: 8px; max-width: 75ch; }
+
+/* ---- time section ---- */
+.time { display: grid; gap: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px; scroll-margin-top: 16px; }
+.time-intro { display: grid; gap: 6px; max-width: 75ch; }
 .time h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; text-wrap: balance; }
 .time-intro p { margin: 0; color: var(--muted); }
-.dials { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
-@media (max-width: 980px) { .dials { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 560px) { .dials { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.dial { display: grid; justify-items: center; align-content: start; gap: 6px; text-align: center; padding: 14px 10px; border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
-/* every text row has a fixed height, so cards keep their size while the numbers change */
-.dial > div { width: 100%; overflow: hidden; }
-.dial.probe { border-color: var(--time); }
-.dial svg { width: 84px; height: 84px; }
-.dial .name { font-weight: 600; font-size: 13px; line-height: 1.3; height: 2.6em; display: grid; align-items: center; }
-.dial .where { font-family: var(--mono); font-size: 11px; line-height: 1.35; height: 2.7em; color: var(--muted); }
-.dial .rate { font-family: var(--mono); font-size: 18px; line-height: 1.3; height: 1.3em; color: var(--time); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.dial .elapsed { font-family: var(--mono); font-size: 13px; line-height: 1.4; height: 2.8em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.dial .elapsed span { display: block; }
-.dial .hour { font-size: 12px; color: var(--muted); line-height: 1.35; height: 2.7em; }
-@media (max-width: 560px) { .dial .hour, .dial .behind { height: 4.05em; } }
-.time-ctl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px 24px; align-items: end; max-width: 760px; }
-@media (max-width: 560px) { .time-ctl { grid-template-columns: 1fr; } }
-.lapse { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
-.lapse-label { font-size: 14px; font-weight: 500; }
-.lapse-btns { display: flex; flex-wrap: wrap; gap: 6px; }
-.lapse-btns button { padding: 6px 12px; }
-.lapse-btns button[aria-checked="true"] { background: var(--time); color: #140d26; border-color: var(--time); }
-.tick-note { margin: 0; font-size: 13px; color: var(--muted); }
-.dial .behind { font-size: 12px; color: var(--fg); line-height: 1.35; height: 2.7em; font-variant-numeric: tabular-nums; }
-.miller-note { margin: 0; padding: 12px 14px; border: 1px solid var(--time); border-radius: 8px; font-size: 14px; max-width: 90ch; }
+.time-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.lapse-ctl { display: grid; gap: 4px; max-width: 560px; }
+.lapse-ctl label { font-weight: 500; font-size: 14px; }
+.lapse-ctl output { color: var(--time); font-family: var(--mono); font-weight: 600; }
+.lapse-ctl input { accent-color: var(--time); }
+.lapse-ticks { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 0 2px; }
+
+/* the ledger: one fixed-height row per clock, all on one shared log timeline */
+.ledger { display: grid; border-top: 1px solid var(--line); }
+.lrow, .lhead { display: grid; grid-template-columns: 48px minmax(150px, 230px) 84px minmax(0, 1fr) 150px; gap: 0 16px; align-items: center; }
+.lrow { height: 76px; border-bottom: 1px solid var(--line); }
+.lrow.you { background: rgba(231,233,240,0.03); }
+.lrow.probe { box-shadow: inset 3px 0 0 var(--time); padding-left: 6px; }
+.lhead { height: 30px; }
+.lhead .ticks { position: relative; height: 100%; }
+.lhead .ticks span { position: absolute; bottom: 6px; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.lrow svg { width: 44px; height: 44px; }
+.lname { display: grid; gap: 1px; min-width: 0; line-height: 1.3; }
+.lname b { font-size: 14px; font-weight: 600; }
+.lname span { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lname .lhour { color: var(--fg); }
+.lrate { font-family: var(--mono); font-size: 20px; font-weight: 600; color: var(--time); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ltrack { position: relative; height: 22px; }
+.ltrack::before { content: ""; position: absolute; left: 0; right: 0; top: 10px; height: 2px; background: var(--line); border-radius: 1px; }
+.ltrack .tk { position: absolute; top: 6px; width: 1px; height: 10px; background: #2a3242; }
+.ltrack .fill { position: absolute; left: 0; top: 9px; height: 4px; border-radius: 2px; background: #ffb25e; width: 0; }
+.lrow.probe .fill, .lrow.probe .dot { background: var(--time); }
+.ltrack .dot { position: absolute; top: 6px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: #ffd9a8; left: 0; }
+.ltrack .you-line { position: absolute; top: -8px; bottom: -8px; width: 0; border-left: 1px dashed rgba(231,233,240,0.45); }
+.ltrack .gap { position: absolute; top: 18px; height: 8px; border: 1px solid var(--time); border-top: 0; }
+.ltrack .gap span { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; color: var(--time); white-space: nowrap; }
+.ltime { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ltime .main { display: block; font-family: var(--mono); font-size: 17px; font-weight: 600; height: 1.35em; }
+.ltime .exact { display: block; font-family: var(--mono); font-size: 11px; color: var(--muted); height: 1.4em; }
+.ledger-cap { margin: 0; font-size: 13px; color: var(--muted); max-width: 90ch; }
+.ledger-cap span { color: var(--fg); }
+@media (max-width: 760px) {
+  .lhead { display: none; }
+  .lrow { height: auto; min-height: 96px; grid-template-columns: 40px minmax(0, 1fr) auto; grid-template-areas: "dial name rate" "dial name time" "track track track" "exact exact exact"; gap: 2px 12px; padding: 10px 0; }
+  .ltime { display: contents; }
+  .ltime .main { grid-area: time; text-align: right; }
+  .ltime .exact { grid-area: exact; text-align: right; }
+  .lrow.probe .ltime .exact { margin-top: 20px; }
+  .lrow.probe { padding-left: 8px; }
+  .lrow svg { grid-area: dial; width: 40px; height: 40px; }
+  .lname { grid-area: name; } .lrate { grid-area: rate; text-align: right; font-size: 17px; } .ltime { grid-area: time; }
+  .ltrack { grid-area: track; margin-top: 6px; }
+  .ltime .exact { height: auto; }
+  .lname span { white-space: normal; }
+}
+.probe-ctl { max-width: 560px; }
+.maths summary { cursor: pointer; font-size: 14px; font-weight: 500; }
+.maths p { margin: 8px 0 0; font-size: 13px; color: var(--muted); max-width: 90ch; }
+
+/* ---- Miller's planet story ---- */
+.story { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--time); border-radius: 8px; background: rgba(180,156,255,0.05); }
+.story-head { display: grid; gap: 4px; min-height: 64px; }
+.story h3 { font-family: var(--display); font-weight: 500; font-size: 18px; margin: 0; }
+.story-cap { margin: 0; font-size: 16px; min-height: 1.5em; }
+.story-cap.fade { animation: capIn 200ms ease-out; }
+@keyframes capIn { from { opacity: 0; } to { opacity: 1; } }
+.srow { display: grid; grid-template-columns: minmax(150px, 260px) minmax(0, 1fr) 190px; gap: 12px; align-items: center; }
+.sname { font-size: 14px; font-weight: 500; } .sname small { color: var(--muted); font-weight: 400; }
+.strack { position: relative; height: 14px; background: var(--line); border-radius: 7px; overflow: hidden; }
+.sfill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #ffb25e; border-radius: 7px; }
+.sfill.planet { background: var(--time); min-width: 1px; }
+.stime { text-align: right; font-family: var(--mono); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.snote { margin: 0; font-size: 12px; color: var(--muted); }
+@media (max-width: 760px) { .srow { grid-template-columns: 1fr auto; } .strack { grid-column: 1 / -1; grid-row: 2; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
 .film { display: grid; gap: 16px; }
 .film h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; }
 .film-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 28px; }
@@ -262,8 +342,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .film p { margin: 0; font-size: 14px; color: #c9cdd8; }
 .film .refs { font-size: 12px; color: var(--muted); max-width: 110ch; }
 .film a { color: var(--accent); }
-.formula { margin: 0; font-size: 12px; color: var(--muted); max-width: 90ch; }
-#side.probe-on { touch-action: none; cursor: crosshair; }
+/* scrolling over the side view must still scroll the page; only a drag on the probe moves it */
+#side.probe-on { touch-action: pan-y; }
+@media (prefers-reduced-motion: reduce) { .ledger .hand { display: none; } .story-cap.fade { animation: none; } }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 .site-foot { border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
 .site-foot p { margin: 0; }
@@ -275,10 +356,16 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 <noscript><p style="padding:16px;color:#e7e9f0">This interactive simulation needs JavaScript and WebGL. Please enable JavaScript to see the black hole.</p></noscript>
 <main class="wrap">
   <header>
-    <span class="kicker">Gravitational lensing and time dilation, ray-traced live</span>
-    <h1>Why you can see the back of the disk</h1>
-    <p>The main picture is computed by tracing light rays through the curved space around a non-spinning black hole. The side view cuts the scene in half along the dashed line and shows the actual paths those rays take. Drag the controls and watch both change together.</p>
+    <span class="kicker">Interactive · ray-traced live</span>
+    <h1>Inside Interstellar&#8217;s black hole</h1>
+    <p>See why Gargantua looks the way it does. Then watch an hour on Miller&#8217;s planet cost seven years.</p>
+    <a class="jump" href="#millers-planet">Jump to Miller&#8217;s planet ↓</a>
   </header>
+
+  <div class="stage-intro">
+    <h2>Why you can see the back of the disk</h2>
+    <p>The main picture traces light rays through the curved space around a non-spinning black hole. The side view cuts the scene along the dashed line and shows the paths those rays take.</p>
+  </div>
 
   <section class="stage">
     <figure>
@@ -288,79 +375,110 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
     </figure>
     <figure>
       <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout" id="sideUnits">units: event-horizon radius</span></div>
-      <div class="view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
-      <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line.</figcaption>
+      <div class="view side-view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
+      <ul class="mini-key" aria-label="Key to the light paths">
+        <li><i style="background:var(--direct)"></i>Direct</li>
+        <li><i style="background:var(--over)"></i>Over the top</li>
+        <li><i style="background:var(--under)"></i>Underneath</li>
+        <li><i style="background:var(--ring)"></i>Wrapped around</li>
+        <li><i style="background:var(--fall)"></i>Falls in</li>
+        <li><i style="background:var(--time)"></i>Time rings</li>
+      </ul>
+      <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line. Drag the purple probe clock to see how fast time runs there.</figcaption>
+      <div class="scale-row">
+        <label for="scale">Real-world size</label>
+        <select id="scale">
+          <option value="">Off: measure in horizon radii</option>
+          <option value="earth">Earth squeezed into a black hole</option>
+          <option value="stellar">A black hole of 10 Suns</option>
+          <option value="sgra">Sagittarius A*, centre of our galaxy</option>
+          <option value="gargantua">Gargantua from Interstellar</option>
+          <option value="m87">M87*, the first one photographed</option>
+        </select>
+        <p class="scale-info" id="scaleInfo">Give the black hole a real size to compare it with familiar things in the side view.</p>
+      </div>
     </figure>
   </section>
 
-  <section class="controls" aria-label="Controls">
+  <section class="dock" aria-label="Main controls">
     <div class="ctl">
-      <label for="inc">Your viewing angle above the disk <output id="incOut">8°</output></label>
+      <label for="inc">Viewing angle above the disk <output id="incOut">8°</output></label>
       <input type="range" id="inc" min="0" max="90" step="0.5" value="8">
-      <span class="hint">0° is exactly edge-on, in the plane of the disk; 90° is looking straight down.</span>
+      <span class="hint">0° is edge-on; 90° is looking straight down.</span>
     </div>
     <div class="ctl">
       <label for="k">Strength of gravity <output id="kOut">100%</output></label>
       <input type="range" id="k" min="0" max="100" step="1" value="100">
-      <span class="hint">Bends light and slows time. 0% switches gravity off; 100% is real physics.</span>
+      <span class="hint">Bends light and slows time. 0% switches it off.</span>
     </div>
     <div class="btns">
-      <button id="sweep" aria-pressed="false">Sweep the angle</button>
-      <button id="play" aria-pressed="true">Pause</button>
-    </div>
-    <div class="toggles">
-      <label><input type="checkbox" id="labelsOn" checked> Label the parts of the black hole</label>
-      <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
-      <label><input type="checkbox" id="dop"> Doppler brightening (approaching side glows brighter)</label>
-      <label><input type="checkbox" id="timeOn" checked> Show how time slows down (side view)</label>
-    </div>
-    <div class="scale-row">
-      <label for="scale">Real-world size</label>
-      <select id="scale">
-        <option value="">Off: measure in horizon radii</option>
-        <option value="earth">Earth squeezed into a black hole</option>
-        <option value="stellar">A black hole of 10 Suns</option>
-        <option value="sgra">Sagittarius A*, centre of our galaxy</option>
-        <option value="gargantua">Gargantua from Interstellar</option>
-        <option value="m87">M87*, the first one photographed</option>
-      </select>
-      <p class="scale-info" id="scaleInfo">Give the black hole a real size to compare it with familiar things in the side view.</p>
+      <button id="sweep" class="tbtn" type="button" aria-pressed="false">↔ Sweep the angle</button>
+      <button id="play" class="tbtn" type="button" aria-pressed="false">⏸ Pause animation</button>
     </div>
   </section>
 
-  <section class="time" aria-labelledby="timeHead">
+  <details class="options">
+    <summary>More options</summary>
+    <div class="opt-groups">
+      <fieldset>
+        <legend>Show on the pictures</legend>
+        <label><input type="checkbox" id="labelsOn" checked> Labels for the parts of the black hole</label>
+        <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
+        <label><input type="checkbox" id="timeOn" checked> Time rings and probe clock (side view)</label>
+      </fieldset>
+      <fieldset>
+        <legend>Physics</legend>
+        <label><input type="checkbox" id="dop"> Doppler brightening: the side coming towards you glows brighter</label>
+      </fieldset>
+    </div>
+  </details>
+
+  <section class="time" id="millers-planet" aria-labelledby="timeHead">
     <div class="time-intro">
       <h2 id="timeHead">Time runs slower near the black hole</h2>
-      <p>Gravity does not only bend light; it slows time. A clock close to the hole ticks slower than your clock far away. Anyone sitting next to it would feel nothing odd, since their seconds feel normal to them, but compared with you their clock keeps falling behind. Disk material is also orbiting very fast, which slows its clocks a little more.</p>
-      <p>Seconds are too small to show the gap building up, so use the time-lapse to speed up every clock and watch minutes, days and years pile up. Drag the probe in the side view, or use the slider, to move it closer to the hole.</p>
+      <p>Gravity slows time. The closer a clock is to the hole, the slower it ticks compared with yours.</p>
     </div>
-    <div class="lapse" role="radiogroup" aria-label="Time-lapse speed">
-      <span class="lapse-label">Time-lapse: 1 second on screen =</span>
-      <div class="lapse-btns" id="lapseBtns">
-        <button type="button" role="radio" data-i="0" aria-checked="true">1 second</button>
-        <button type="button" role="radio" data-i="1" aria-checked="false">1 minute</button>
-        <button type="button" role="radio" data-i="2" aria-checked="false">1 hour</button>
-        <button type="button" role="radio" data-i="3" aria-checked="false">1 day</button>
-        <button type="button" role="radio" data-i="4" aria-checked="false">1 week</button>
-        <button type="button" role="radio" data-i="5" aria-checked="false">1 month</button>
-        <button type="button" role="radio" data-i="6" aria-checked="false">1 year</button>
-      </div>
+    <div class="time-actions">
+      <button id="miller" class="primary" type="button">▶ Play the Miller&#8217;s planet scene</button>
+      <button id="clockPause" class="tbtn" type="button" aria-pressed="false">⏸ Pause clocks</button>
+      <button id="resetClocks" type="button">Reset the clocks</button>
     </div>
-    <p class="tick-note" id="tickNote">On every dial, each tick mark is 1 second of that clock's own time.</p>
-    <div class="dials" id="dials"></div>
-    <div class="time-ctl">
-      <div class="ctl">
-        <label for="probeR">Probe height above the event horizon <output id="probeOut">2.68 r<sub>s</sub></output></label>
-        <input type="range" id="probeR" min="-10" max="1.18" step="0.01" value="0.43">
-        <span class="hint">Measured in event-horizon radii (r<sub>s</sub>). The slider is logarithmic, so the left end reaches to within a ten-billionth of the horizon.</span>
+
+    <div class="story" id="story" hidden>
+      <div class="story-head">
+        <h3>Miller&#8217;s planet</h3>
+        <p class="story-cap" id="storyCap"></p>
       </div>
+      <div class="srow"><span class="sname">On the Endurance <small>(Romilly)</small></span><div class="strack"><span class="sfill" id="sFillShip"></span></div><span class="stime" id="sTimeShip"></span></div>
+      <div class="srow"><span class="sname">On Miller&#8217;s planet <small>(Cooper, Brand, Doyle)</small></span><div class="strack"><span class="sfill planet" id="sFillPlanet"></span></div><span class="stime" id="sTimePlanet"></span></div>
+      <p class="snote">Both bars use the same scale, from 0 to 23 years, 4 months and 8 days. The planet&#8217;s bar is too small to see at this scale.</p>
       <div class="btns">
-        <button id="miller" type="button">Miller&#8217;s planet (Interstellar)</button>
-        <button id="resetClocks" type="button">Reset the clocks</button>
+        <button id="storySkip" type="button">Skip to the end</button>
+        <button id="storyReplay" type="button" hidden>Replay</button>
+        <button id="storyBack" type="button">Back to all clocks</button>
       </div>
     </div>
-    <p class="miller-note" id="millerNote" hidden></p>
-    <p class="formula">A clock hovering at distance r runs at √(1 − r<sub>s</sub>/r) of your rate. A clock orbiting with the disk runs at √(1 − 3r<sub>s</sub>/2r), because its speed adds to the slowdown. Months are 1/12 of a year (30.44 days). The time-lapse speeds up the clocks only; the disk and photons keep moving at a watchable pace. In the side view, photons also move more slowly near the hole when timed by your clock (the Shapiro delay).</p>
+
+    <div class="lapse-ctl">
+      <label for="lapse">Time-lapse: 1 screen second = <output id="lapseOut">1 second</output></label>
+      <input type="range" id="lapse" min="0" max="6" step="1" value="0">
+      <div class="lapse-ticks" aria-hidden="true"><span>sec</span><span>min</span><span>hour</span><span>day</span><span>week</span><span>month</span><span>year</span></div>
+    </div>
+
+    <div class="ledger" id="ledger" role="table" aria-label="Clocks compared with yours"></div>
+    <p class="ledger-cap">Each step to the right on the timeline is 10&#215; more time. The gap between two clocks never changes: that gap is the slowdown. <span id="pauseHint"></span></p>
+
+    <div class="ctl probe-ctl">
+      <label for="probeR">Probe height above the event horizon <output id="probeOut">2.68 r<sub>s</sub></output></label>
+      <input type="range" id="probeR" min="-10" max="1.18" step="0.01" value="0.43">
+      <span class="hint">Or drag the probe in the side view. The slider is logarithmic: the left end is a ten-billionth of a horizon radius away.</span>
+    </div>
+
+    <details class="maths">
+      <summary>The maths behind the clocks</summary>
+      <p>A clock hovering at distance r runs at √(1 − r<sub>s</sub>/r) of your rate, where r<sub>s</sub> is the event horizon&#8217;s radius. A clock orbiting with the disk runs at √(1 − 3r<sub>s</sub>/2r), because its speed adds to the slowdown. Months are 1/12 of a year (30.44 days). The time-lapse speeds up the clocks only; the disk and photons keep moving at a watchable pace. In the side view, photons also move more slowly near the hole when timed by your clock (the Shapiro delay).</p>
+    </details>
+    <div class="sr-only" id="timeLive" aria-live="polite"></div>
   </section>
 
   <section class="film" aria-labelledby="filmHead">
@@ -372,7 +490,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
       </article>
       <article>
         <h3>Why an hour on Miller&#8217;s planet costs seven years</h3>
-        <p>Miller&#8217;s planet orbits so close to Gargantua that one hour there equals seven years on Earth, a slowdown of about 61,000 times. The landing party spends a little over three hours on the surface; back on the Endurance, Romilly waits 23 years, 4 months and 8 days. Press <b>Miller&#8217;s planet</b> above to recreate it: at one year per second, your clock races through 23 years while the probe&#8217;s clock creeps through about three hours.</p>
+        <p>Miller&#8217;s planet orbits so close to Gargantua that one hour there equals seven years on Earth, a slowdown of about 61,000 times. The landing party spends a little over three hours on the surface; back on the Endurance, Romilly waits 23 years, 4 months and 8 days. Press <b>Play the Miller&#8217;s planet scene</b> above to watch it: your clock races through 23 years while the planet&#8217;s creeps through about three hours.</p>
       </article>
       <article>
         <h3>Could that really happen?</h3>
@@ -403,7 +521,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
         <li>Turn on <b>Colour the picture by light path</b> to match each region of the picture to its path in the side view.</li>
         <li>Turn on <b>Doppler brightening</b>. The disk orbits at about half the speed of light near its inner edge, so the side coming towards you is much brighter.</li>
         <li>Drag the <b>probe clock</b> in the side view towards the hole. At the photon sphere it runs at 58% of your speed; at the event horizon it stops completely, as seen from where you are.</li>
-        <li>Press <b>Miller&#8217;s planet (Interstellar)</b> and watch 23 years pass on your clock while the probe ages about three hours.</li>
+        <li>Press <b>Play the Miller&#8217;s planet scene</b> and watch 23 years pass on your clock while the planet ages about three hours.</li>
       </ol>
     </div>
   </section>
@@ -431,8 +549,11 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
     timeOn: true, labelsOn: true, scale: '', probe: { x: 2.6, y: 2.6 }
   };
   const COL_TIME = '#b49cff';
-  playBtn.setAttribute('aria-pressed', String(state.playing));
-  playBtn.textContent = state.playing ? 'Pause' : 'Play';
+  function syncPlayBtn() {
+    playBtn.setAttribute('aria-pressed', String(!state.playing));
+    playBtn.textContent = state.playing ? '⏸ Pause animation' : '▶ Play animation';
+  }
+  syncPlayBtn();
 
   function syncReadouts() {
     $('incOut').textContent = (+state.inc).toFixed(0) + '°';
@@ -448,6 +569,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   function toggleSweep() {
     state.sweeping = !state.sweeping;
     sweepBtn.setAttribute('aria-pressed', String(state.sweeping));
+    sweepBtn.textContent = state.sweeping ? '■ Stop sweep' : '↔ Sweep the angle';
     if (state.sweeping) {
       // start the sweep phase from the current angle so it doesn't jump
       const x = state.inc / 90;
@@ -457,8 +579,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   }
   function togglePlay() {
     state.playing = !state.playing;
-    playBtn.setAttribute('aria-pressed', String(state.playing));
-    playBtn.textContent = state.playing ? 'Pause' : 'Play';
+    syncPlayBtn();
   }
   sweepBtn.addEventListener('click', toggleSweep);
   playBtn.addEventListener('click', togglePlay);
@@ -670,7 +791,7 @@ void main(){
       glow.addColorStop(0, 'rgba(180,156,255,0.20)'); glow.addColorStop(1, 'rgba(180,156,255,0)');
       ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
       const rings = [[0.9, 112], [0.75, 128], [0.5, 146], [0.25, null]];
-      ctx.font = `500 ${10 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
+      ctx.font = `500 ${11 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       for (const [f, angDeg] of rings) {
         const rr = state.k / (1 - f * f);
@@ -736,7 +857,7 @@ void main(){
 
     // labels
     const font = (sz, w = 400) => `${w} ${sz * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
-    ctx.font = font(11); ctx.fillStyle = 'rgba(231,233,240,0.62)'; ctx.textBaseline = 'top';
+    ctx.font = font(11); ctx.fillStyle = 'rgba(231,233,240,0.78)'; ctx.textBaseline = 'top';
     ctx.textAlign = 'center';
     ctx.fillText('near side of disk', X((RIN + ROUT) / 2), Y(0) + th + 4 * dpr);
     ctx.fillText('far side of disk', X(-(RIN + ROUT) / 2), Y(0) + th + 4 * dpr);
@@ -812,14 +933,18 @@ void main(){
       const rate = probeRate();
       ctx.fillStyle = 'rgba(5,6,10,0.9)'; ctx.strokeStyle = COL_TIME; ctx.lineWidth = 1.6 * dpr;
       ctx.beginPath(); ctx.arc(px, py, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      const ang = (clocks.length ? clocks[clocks.length - 1].e : 0) / 10 * Math.PI * 2;
+      // dashed halo says "you can grab this"
+      ctx.save(); ctx.setLineDash([3 * dpr, 3 * dpr]); ctx.lineWidth = 1.5 * dpr; ctx.strokeStyle = 'rgba(180,156,255,0.8)';
+      ctx.beginPath(); ctx.arc(px, py, R + 6 * dpr, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      ctx.strokeStyle = COL_TIME; ctx.lineWidth = 1.6 * dpr;
+      const ang = (clocks.length ? clocks[clocks.length - 1].e / LAPSE[lapseI].s : 0) / 12 * Math.PI * 2;
       ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + Math.sin(ang) * R * 0.75, py - Math.cos(ang) * R * 0.75); ctx.stroke();
       ctx.font = `500 ${11 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
       ctx.textBaseline = 'middle';
-      const txt = rate <= 0 ? 'inside horizon' : `probe: ${(rate * 100).toFixed(rate < 0.1 ? 1 : 0)}% speed`;
+      const txt = (rate <= 0 ? 'inside horizon' : `probe: ${fmtPct(rate)} speed`) + '  ⇆ drag';
       const leftSide = px > W * 0.62;
       ctx.textAlign = leftSide ? 'right' : 'left';
-      const tx = leftSide ? px - R - 6 * dpr : px + R + 6 * dpr;
+      const tx = leftSide ? px - R - 12 * dpr : px + R + 12 * dpr;
       const tw = ctx.measureText(txt).width + 8 * dpr;
       ctx.fillStyle = 'rgba(5,6,10,0.85)'; ctx.fillRect(leftSide ? tx - tw + 4 * dpr : tx - 4 * dpr, py - 8 * dpr, tw, 16 * dpr);
       ctx.fillStyle = COL_TIME; ctx.fillText(txt, tx, py);
@@ -959,31 +1084,53 @@ void main(){
   const probeRate = () => hoverRate(probeDist());
 
   const clockDefs = [
-    { name: 'You', where: 'far away', rate: () => 1, you: true },
+    { name: 'You', where: 'far away: the reference', rate: () => 1, you: true },
     { name: 'Outer edge of disk', where: 'orbiting at 12 rₛ', rate: () => orbitRate(12) },
     { name: 'Inner edge of disk', where: 'orbiting at 3 rₛ', rate: () => orbitRate(3) },
     { name: 'Photon sphere', where: 'hovering at 1.5 rₛ', rate: () => hoverRate(1.5) },
     { name: 'Your probe', where: '', rate: probeRate, probe: true }
   ];
+  const U = { y: 31557600, mo: 2629800, w: 604800, d: 86400, h: 3600, m: 60 };
   // time-lapse: seconds of your clock per second on screen
   const LAPSE = [
     { s: 1, unit: 'second' }, { s: 60, unit: 'minute' }, { s: 3600, unit: 'hour' }, { s: 86400, unit: 'day' },
     { s: 604800, unit: 'week' }, { s: 2629800, unit: 'month' }, { s: 31557600, unit: 'year' }
   ];
   let lapseI = 0;
-  const lapseBtns = [...document.querySelectorAll('#lapseBtns button')];
+  const lapseEl = $('lapse');
   function setLapse(i) {
-    lapseI = i;
-    lapseBtns.forEach(b => b.setAttribute('aria-checked', String(+b.dataset.i === i)));
-    $('tickNote').textContent = `On every dial, each tick mark is 1 ${LAPSE[i].unit} of that clock's own time.`;
+    lapseI = i; lapseEl.value = i;
+    $('lapseOut').textContent = `1 ${LAPSE[i].unit}`;
+    lapseEl.setAttribute('aria-valuetext', `1 screen second equals 1 ${LAPSE[i].unit}`);
   }
-  lapseBtns.forEach(b => b.addEventListener('click', () => setLapse(+b.dataset.i)));
+  lapseEl.addEventListener('input', () => setLapse(+lapseEl.value));
 
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let clocksRunning = !reduceMotion;
+  const clockPauseBtn = $('clockPause');
+  function setClocksRunning(v) {
+    clocksRunning = v;
+    clockPauseBtn.textContent = v ? '⏸ Pause clocks' : '▶ Run clocks';
+    clockPauseBtn.setAttribute('aria-pressed', String(!v));
+  }
+  clockPauseBtn.addEventListener('click', () => { if (scene && scene.phase === 'end') return; setClocksRunning(!clocksRunning); });
+  setClocksRunning(clocksRunning);
+
+  // shared log timeline from 1 second to 100 years
+  const TMAX = 100 * U.y, LMAX = Math.log10(TMAX);
+  const pos = e => Math.min(1, Math.max(0, Math.log10(Math.max(1, e)) / LMAX));
+  const MILESTONES = [['1 min', U.m], ['1 hour', U.h], ['1 day', U.d], ['1 month', U.mo], ['1 year', U.y], ['10 years', 10 * U.y], ['100 years', TMAX]];
+
+  const ledger = $('ledger');
+  const head = document.createElement('div'); head.className = 'lhead'; head.setAttribute('aria-hidden', 'true');
+  head.innerHTML = `<span></span><span></span><span></span><div class="ticks">${MILESTONES.map(([l, v]) => `<span style="left:${(pos(v) * 100).toFixed(2)}%">${l}</span>`).join('')}</div><span></span>`;
+  ledger.appendChild(head);
+  const tickMarks = MILESTONES.map(([, v]) => `<span class="tk" style="left:${(pos(v) * 100).toFixed(2)}%"></span>`).join('');
   const clocks = [];
-  const dialsEl = $('dials');
   for (const d of clockDefs) {
     const el = document.createElement('div');
-    el.className = 'dial' + (d.probe ? ' probe' : '');
+    el.className = 'lrow' + (d.you ? ' you' : '') + (d.probe ? ' probe' : '');
+    el.setAttribute('role', 'row');
     let ticks = '';
     for (let i = 0; i < 12; i++) {
       const a = i * Math.PI / 6, r1 = i % 3 === 0 ? 30 : 33;
@@ -993,28 +1140,28 @@ void main(){
       <svg viewBox="0 0 84 84" aria-hidden="true">
         <circle cx="42" cy="42" r="40" fill="#06070b" stroke="${d.probe ? COL_TIME : '#1d2330'}" stroke-width="2"/>
         ${ticks}
-        <line class="hand" x1="42" y1="42" x2="42" y2="10" stroke="${d.probe ? COL_TIME : '#ffb25e'}" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="42" cy="42" r="3" fill="#e7e9f0"/>
+        <line class="hand" x1="42" y1="42" x2="42" y2="10" stroke="${d.probe ? COL_TIME : '#ffb25e'}" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="42" cy="42" r="3.5" fill="#e7e9f0"/>
       </svg>
-      <div class="name">${d.name}</div>
-      <div class="where"></div>
-      <div class="rate"></div>
-      <div class="elapsed"><span class="cal"></span><span class="hms"></span></div>
-      <div class="behind"></div>
-      <div class="hour"></div>`;
-    dialsEl.appendChild(el);
-    clocks.push({ def: d, el, hand: el.querySelector('.hand'), whereEl: el.querySelector('.where'), rateEl: el.querySelector('.rate'),
-      calEl: el.querySelector('.cal'), hmsEl: el.querySelector('.hms'), behindEl: el.querySelector('.behind'), hourEl: el.querySelector('.hour'), e: 0, lastText: '' });
+      <div class="lname" role="cell"><b>${d.name}</b><span class="lwhere"></span><span class="lhour"></span></div>
+      <div class="lrate" role="cell"></div>
+      <div class="ltrack" aria-hidden="true">${tickMarks}${d.you ? '' : '<span class="you-line"></span>'}<span class="fill"></span><span class="dot"></span>${d.probe ? '<span class="gap"><span></span></span>' : ''}</div>
+      <div class="ltime" role="cell"><span class="main"></span><span class="exact"></span></div>`;
+    ledger.appendChild(el);
+    clocks.push({ def: d, el, e: 0, hand: el.querySelector('.hand'), whereEl: el.querySelector('.lwhere'), hourEl: el.querySelector('.lhour'),
+      rateEl: el.querySelector('.lrate'), fill: el.querySelector('.fill'), dot: el.querySelector('.dot'), youLine: el.querySelector('.you-line'),
+      gap: el.querySelector('.gap'), gapLabel: el.querySelector('.gap span'), mainEl: el.querySelector('.ltime .main'), exactEl: el.querySelector('.ltime .exact'),
+      lastText: '', lastMain: '', lastExact: '' });
   }
-  const U = { y: 31557600, mo: 2629800, d: 86400, h: 3600, m: 60 };
-  // calendar-style readout, e.g. "23 y 4 mo 8 d · 03:12:05"
-  // odometer-style readout: "23 y 4 mo 8 d" over "03:12:05"
+
+  // full odometer, shown only when paused or slow: "4 y 0 mo 27 d · 19:05:33"
   function fmtClock(sec) {
     let r = Math.max(0, sec); const y = Math.floor(r / U.y); r -= y * U.y; const mo = Math.floor(r / U.mo); r -= mo * U.mo;
     const d = Math.floor(r / U.d); r -= d * U.d; const h = Math.floor(r / U.h); r -= h * U.h; const m = Math.floor(r / U.m); r -= m * U.m;
-    return { cal: `${y} y ${mo} mo ${d} d`, hms: `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(Math.floor(r)).padStart(2, '0')}` };
+    const hms = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(Math.floor(r)).padStart(2, '0')}`;
+    return `${y} y ${mo} mo ${d} d · ${hms}`;
   }
-  // the two largest units in words, e.g. "7 years 0 months" -> "7 years"
+  // the two largest units in words, e.g. "1 hour 25 minutes"
   function fmtWords(sec) {
     if (sec < 1) return `${sec.toFixed(2)} seconds`;
     const units = [['year', U.y], ['month', U.mo], ['day', U.d], ['hour', U.h], ['minute', U.m], ['second', 1]];
@@ -1022,98 +1169,176 @@ void main(){
     const part = (n, q) => `${q} ${n}${q === 1 ? '' : 's'}`;
     const v1 = units[i][1], next = units[i + 1];
     if (!next) return part(units[i][0], Math.round(sec));
-    // round to the nearest of the smaller unit, carrying over (so 6 y 11.99 mo reads "7 years")
     let q1 = Math.floor(sec / v1 + 1e-9), q2 = Math.round((sec - q1 * v1) / next[1]);
     if (q2 * next[1] >= v1 - next[1] / 2) { q1++; q2 = 0; }
     return q2 ? `${part(units[i][0], q1)} ${part(next[0], q2)}` : part(units[i][0], q1);
   }
+  // Quantised readout: rounded down to a step at least as large as what the clock gains per screen second,
+  // so the last figure changes about once a second and the unit only changes at milestones.
+  const STEPS = [1, 10, U.m, 10 * U.m, U.h, 6 * U.h, U.d, U.w, U.mo, U.y, 10 * U.y];
+  const QUNITS = [['year', 'years', U.y], ['month', 'months', U.mo], ['day', 'days', U.d], ['h', 'h', U.h], ['min', 'min', U.m], ['s', 's', 1]];
+  function fmtQuant(sec, gain) {
+    const step = STEPS.find(st => st >= gain) || 10 * U.y;
+    const minI = QUNITS.findIndex(([, , size]) => size <= step);
+    let v = Math.max(0, sec);
+    const parts = [];
+    for (let i = 0; i <= minI && parts.length < 2; i++) {
+      const [one, many, size] = QUNITS[i];
+      let q = Math.floor(v / size + 1e-9); v -= q * size;
+      // the smallest unit shown moves in whole steps (e.g. 10 min), so it changes about once a second
+      if (i === minI && step > size) q = Math.floor(q / (step / size)) * (step / size);
+      if (q) parts.push(`${q} ${q === 1 ? one : many}`); else if (parts.length) break;
+    }
+    return parts.length ? parts.join(' ') : `0 ${QUNITS[minI][1]}`;
+  }
   const fmtPct = r => r <= 0 ? 'stopped' : r >= 0.1 ? `${(r * 100).toFixed(0)}%` : r >= 0.001 ? `${(r * 100).toFixed(2)}%` : `${(r * 100).toPrecision(2)}%`;
+  const fmtRatio = q => q < 10 ? q.toFixed(2) : q < 1000 ? String(Math.round(q)) : Math.round(+q.toPrecision(2)).toLocaleString('en');
   const SUP = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
   const fmtSci = x => { const [m, e] = x.toExponential(1).split('e'); return `${m}×10${String(+e).split('').map(c => SUP[c]).join('')}`; };
   const fmtHeight = h => h >= 0.1 ? h.toFixed(2) : h >= 0.001 ? h.toFixed(4) : fmtSci(h);
 
-  let miller = null; // { done: bool } while the Miller's planet scene is running
   const ROMILLY = 23 * U.y + 4 * U.mo + 8 * U.d;
+  let scene = null; // Miller's planet scene: { phase: 'run' | 'end', cap: 0..2 }
+  let lastVisualSec = -1;
   function updateClocks(dt) {
-    const S = LAPSE[lapseI].s, nowMs = performance.now();
-    for (const c of clocks) if (state.playing) c.e += dt * c.def.rate() * S;
-    const you = clocks[0].e;
+    const S = LAPSE[lapseI].s;
+    if (clocksRunning) for (const c of clocks) c.e += dt * c.def.rate() * S;
+    if (scene && scene.phase === 'run' && clocks[0].e >= ROMILLY) endScene();
+    // under reduced motion, redraw the moving parts once a second
+    const sec = Math.floor(performance.now() / 1000);
+    if (reduceMotion && clocksRunning && sec === lastVisualSec) return;
+    lastVisualSec = sec;
+    const you = clocks[0].e, youPos = pos(you), showExact = !clocksRunning || lapseI <= 1;
+    const SCc = SCALES[state.scale], pd = probeDist();
     for (const c of clocks) {
       const rate = c.def.rate();
-      c.hand.setAttribute('transform', `rotate(${((c.e / (12 * S)) * 360) % 360} 42 42)`);
-      const pd = probeDist();
-      const SCc = SCALES[state.scale];
+      if (!reduceMotion) c.hand.setAttribute('transform', `rotate(${((c.e / (12 * S)) * 360) % 360} 42 42)`);
+      // static text: only rewritten when the rate or probe position changes
       const where = c.def.probe ? (pd <= state.k ? 'inside the event horizon' : SCc ? `${fmtLen((pd - 1) * SCc.rs)} above the horizon` : `${fmtHeight(pd - 1)} rₛ above the horizon`) : c.def.where;
+      const hourTxt = c.def.you ? 'Every clock is compared with this one.' : rate > 0 ? `1 hour there = ${fmtWords(3600 / rate)} for you` : 'Its signals never reach you.';
       const rateTxt = fmtPct(rate);
-      const hourTxt = c.def.you ? 'Your clock: the reference.'
-        : rate > 0 ? `1 hour there = ${fmtWords(3600 / rate)} for you` : 'Its signals never reach you.';
-      const txt = where + rateTxt + hourTxt;
-      if (txt !== c.lastText) { c.whereEl.textContent = where; c.rateEl.textContent = rateTxt; c.hourEl.textContent = hourTxt; c.lastText = txt; }
-      const t = fmtClock(c.e); c.calEl.textContent = t.cal; c.hmsEl.textContent = t.hms;
-      // one fixed unit (the time-lapse unit) so only the digits change, refreshed 4 times a second
-      if (!c.def.you && (nowMs - (c.tB || 0) > 250 || c.lapseB !== lapseI)) {
-        const v = (you - c.e) / S, unit = LAPSE[lapseI].unit;
-        c.behindEl.textContent = v < 0.005 ? 'In step with you' : `Behind you by ${v.toFixed(v >= 100 ? 1 : 2)} ${unit}s`;
-        c.tB = nowMs; c.lapseB = lapseI;
+      const txt = where + hourTxt + rateTxt;
+      if (txt !== c.lastText) {
+        c.whereEl.textContent = where; c.hourEl.textContent = hourTxt; c.rateEl.textContent = rateTxt; c.lastText = txt;
+        if (c.gap) c.gapLabel.textContent = rate > 0 && rate < 0.99 ? `${fmtRatio(1 / rate)}× slower` : '';
       }
+      // moving parts: positions only
+      const p = pos(c.e);
+      c.fill.style.width = `${(p * 100).toFixed(3)}%`; c.dot.style.left = `${(p * 100).toFixed(3)}%`;
+      if (c.youLine) c.youLine.style.left = `${(youPos * 100).toFixed(3)}%`;
+      if (c.gap) {
+        const show = rate > 0 && rate < 0.99 && you > 1 && youPos - p > 0.04;
+        c.gap.hidden = !show;
+        if (show) { c.gap.style.left = `${(p * 100).toFixed(3)}%`; c.gap.style.width = `${((youPos - p) * 100).toFixed(3)}%`; }
+      }
+      const main = fmtQuant(c.e, Math.max(1e-9, rate * S));
+      if (main !== c.lastMain) { c.mainEl.textContent = main; c.lastMain = main; }
+      const exact = showExact ? fmtClock(c.e) : '';
+      if (exact !== c.lastExact) { c.exactEl.textContent = exact; c.lastExact = exact; }
     }
-    if (miller && !miller.done && you >= ROMILLY) {
-      miller.done = true;
-      $('millerNote').textContent = `Your clock has passed 23 years, 4 months and 8 days: Romilly's wait on the Endurance. In the same time the probe's clock has moved on by only ${fmtWords(clocks[clocks.length - 1].e)}.`;
-    }
+    $('pauseHint').textContent = showExact ? '' : 'Pause the clocks to see exact times.';
+    if (scene) updateStory();
   }
   function resetClocks() { for (const c of clocks) c.e = 0; }
-  $('resetClocks').addEventListener('click', () => { resetClocks(); if (miller) miller.done = false; });
+  $('resetClocks').addEventListener('click', () => { if (scene) closeScene(); resetClocks(); setClocksRunning(true); });
 
+  /* ---------------- Miller's planet scene ---------------- */
+  // 1 hour there = 7 years here: a rate of 1/61,362. A hovering clock runs at sqrt(1 - rs/r),
+  // so the probe sits at r = rs / (1 - f^2), about 2.7e-10 rs (78 m for Gargantua) above the horizon.
+  const CAPS = ['The landing party leaves the Endurance.', '1 hour on the planet. 7 years on the ship.'];
+  function setCap(i, text) {
+    const el = $('storyCap');
+    el.textContent = text; el.classList.remove('fade'); void el.offsetWidth; el.classList.add('fade');
+    $('timeLive').textContent = text;
+    if (scene) scene.cap = i;
+  }
+  function startScene() {
+    const f = 1 / (7 * 365.25 * 24);
+    kEl.value = 100; state.k = 1; syncReadouts();
+    setProbeDist(1 / (1 - f * f));
+    if (!state.timeOn) { timeOnEl.checked = true; timeOnEl.dispatchEvent(new Event('change')); }
+    setScale('gargantua'); syncProbe();
+    setLapse(6); resetClocks(); setClocksRunning(true);
+    scene = { phase: 'run', cap: 0 };
+    $('story').hidden = false; $('storyReplay').hidden = true; $('storySkip').hidden = false;
+    setCap(0, CAPS[0]);
+    updateStory();
+  }
+  function endScene() {
+    const k = ROMILLY / Math.max(1, clocks[0].e);
+    for (const c of clocks) c.e *= k;                     // land exactly on Romilly's 23 y 4 mo 8 d
+    setClocksRunning(false);
+    scene.phase = 'end';
+    $('storyReplay').hidden = false; $('storySkip').hidden = true;
+    setCap(2, `Back on board. Romilly has waited 23 years, 4 months and 8 days. The crew has aged about ${fmtWords(clocks[clocks.length - 1].e)}.`);
+    updateStory();
+  }
+  function closeScene() { scene = null; $('story').hidden = true; }
+  function updateStory() {
+    const ship = clocks[0].e, planet = clocks[clocks.length - 1].e;
+    $('sFillShip').style.width = `${Math.min(100, ship / ROMILLY * 100).toFixed(2)}%`;
+    $('sFillPlanet').style.width = `${Math.min(100, planet / ROMILLY * 100).toFixed(4)}%`;
+    const ts = fmtQuant(ship, scene.phase === 'end' ? 1 : U.y), tp = fmtQuant(planet, scene.phase === 'end' ? U.m : 10 * U.m);
+    if ($('sTimeShip').textContent !== ts) $('sTimeShip').textContent = ts;
+    if ($('sTimePlanet').textContent !== tp) $('sTimePlanet').textContent = tp;
+    if (scene.phase === 'run' && scene.cap === 0 && planet >= 3600) setCap(1, CAPS[1]);
+  }
+  $('miller').addEventListener('click', () => { startScene(); $('story').scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }); });
+  $('storyReplay').addEventListener('click', startScene);
+  $('storyBack').addEventListener('click', () => { closeScene(); setClocksRunning(true); });
+  $('storySkip').addEventListener('click', () => { for (const c of clocks) c.e = c.def.rate() * ROMILLY; scene.phase = 'run'; endScene(); });
+
+  /* ---------------- probe: slider and drag ---------------- */
   const probeEl = $('probeR');
+  let ariaT = 0;
   function syncProbe() {
     const d = probeDist(), h = d - 1;
     const SCp = SCALES[state.scale];
     $('probeOut').innerHTML = h <= 0 ? 'inside the horizon' : `${fmtHeight(h)} r<sub>s</sub>` + (SCp ? ` (${fmtLen(h * SCp.rs)})` : '');
     probeEl.value = Math.min(1.18, Math.max(-10, Math.log10(Math.max(1e-10, h)))).toFixed(2);
+    clearTimeout(ariaT);
+    ariaT = setTimeout(() => side.setAttribute('aria-label',
+      `Side view of the light paths around the black hole. Probe at ${fmtHeight(Math.max(0, h))} horizon radii above the horizon; its clock runs at ${fmtPct(probeRate())} of your speed.`), 300);
   }
   function setProbeDist(d) {
     const a = Math.atan2(state.probe.y, state.probe.x);
     state.probe = { x: d * Math.cos(a), y: d * Math.sin(a) };
   }
-  probeEl.addEventListener('input', () => { setProbeDist(1 + Math.pow(10, +probeEl.value)); miller = null; $('millerNote').hidden = true; syncProbe(); });
+  probeEl.addEventListener('input', () => { setProbeDist(1 + Math.pow(10, +probeEl.value)); if (scene) closeScene(); syncProbe(); });
 
-  // Miller's planet: 1 hour there = 7 years for you, a rate of 1/61,362.
-  // A hovering clock runs at sqrt(1 - rs/r), so it needs r = rs / (1 - f^2): about 2.7e-10 rs above the horizon.
-  $('miller').addEventListener('click', () => {
-    const f = 1 / (7 * 365.25 * 24);
-    kEl.value = 100; state.k = 1; syncReadouts();
-    setProbeDist(1 / (1 - f * f)); syncProbe();
-    if (!state.timeOn) { timeOnEl.checked = true; timeOnEl.dispatchEvent(new Event('change')); }
-    setLapse(6); resetClocks(); setScale('gargantua');
-    if (!state.playing) togglePlay();
-    miller = { done: false };
-    const note = $('millerNote');
-    note.textContent = "Miller's planet: the probe now hovers about 78 metres above Gargantua's event horizon (2.7×10⁻¹⁰ horizon radii), where 1 hour = 7 years for you. With time-lapse at 1 year per second, watch your clock pass 23 years while the probe's clock barely reaches 3 hours.";
-    note.hidden = false;
-  });
   const timeOnEl = $('timeOn');
   timeOnEl.addEventListener('change', () => { state.timeOn = timeOnEl.checked; side.classList.toggle('probe-on', state.timeOn); });
   side.classList.toggle('probe-on', state.timeOn);
+  // Drag starts only on the probe itself (44px target), so swiping over the diagram still scrolls the page.
   let dragging = false;
+  function sidePoint(ev) {
+    const rect = side.getBoundingClientRect(), sc = rect.width / (2 * VIEW_HALF_W);
+    return { rect, sc, x: (ev.clientX - rect.left - rect.width / 2) / sc, y: -(ev.clientY - rect.top - rect.height / 2) / sc };
+  }
+  function nearProbe(ev) {
+    const { sc, x, y } = sidePoint(ev);
+    return Math.hypot(x - state.probe.x, y - state.probe.y) * sc <= 22;
+  }
   function probeFromEvent(ev) {
-    const rect = side.getBoundingClientRect();
-    const sc = rect.width / (2 * VIEW_HALF_W);
-    let x = (ev.clientX - rect.left - rect.width / 2) / sc, y = -(ev.clientY - rect.top - rect.height / 2) / sc;
+    const { rect, sc } = sidePoint(ev); let { x, y } = sidePoint(ev);
     const halfH = rect.height / 2 / sc;
     x = Math.max(-VIEW_HALF_W + 0.5, Math.min(VIEW_HALF_W - 0.5, x)); y = Math.max(-halfH + 0.5, Math.min(halfH - 0.5, y));
     if (Math.hypot(x, y) < 0.3) { x = 0.3; y = 0; }
     state.probe = { x, y }; syncProbe();
-    if (miller) { miller = null; $('millerNote').hidden = true; }
+    if (scene) closeScene();
   }
   side.addEventListener('pointerdown', ev => {
-    if (!state.timeOn) return;
-    dragging = true; side.setPointerCapture(ev.pointerId); probeFromEvent(ev); ev.preventDefault();
+    if (!state.timeOn || !nearProbe(ev)) return;
+    dragging = true; side.setPointerCapture(ev.pointerId); side.style.cursor = 'grabbing'; ev.preventDefault();
   });
-  side.addEventListener('pointermove', ev => { if (dragging) probeFromEvent(ev); });
-  const endDrag = () => { dragging = false; };
+  side.addEventListener('pointermove', ev => {
+    if (dragging) probeFromEvent(ev);
+    else side.style.cursor = state.timeOn && nearProbe(ev) ? 'grab' : '';
+  });
+  const endDrag = () => { dragging = false; side.style.cursor = ''; };
   side.addEventListener('pointerup', endDrag); side.addEventListener('pointercancel', endDrag);
   syncProbe();
+  setLapse(0);
 
   /* ---------------- sizing + loop ---------------- */
   function resize() {
