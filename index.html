@@ -129,6 +129,14 @@
         "@type": "Answer",
         "text": "No. Spaghettification comes from the difference in gravity between your head and feet, and it is gentle near a very large black hole. At the horizon of Gargantua (100 million solar masses) the stretch on a person is about 0.0000002 g, while at a 10-solar-mass black hole it is about 20 million g. The real dangers are the speed needed to reach such a deep orbit, radiation from an active accretion disk, and, if you tried to hover instead of orbit, a rocket thrust of around a billion g."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "Would Earth be pulled in if the Sun became a black hole?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. A black hole's gravity far away is exactly the same as any object of the same mass. If the Sun were squeezed into a black hole about 6 km across, Earth would keep the same orbit and the same year, only colder and darker. A black hole's gravity only becomes extreme very close to it, inside the space where the Sun's surface used to be."
+      }
     }
   ]
 }
@@ -388,6 +396,22 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .dg .xray { fill: none; stroke: #ff7a7a; stroke-width: 1.6; stroke-linejoin: round; }
 .dg .path-t { fill: none; stroke: var(--scale); stroke-width: 1.6; stroke-dasharray: 5 4; }
 .dg .mass { fill: var(--fg); }
+.gravity-fig { margin: 0; display: grid; gap: 12px; }
+.gravity-fig h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0; }
+.gf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .gf-grid { grid-template-columns: 1fr; } }
+.gravity-fig figcaption { max-width: 95ch; font-size: 14px; color: #c9cdd8; }
+.gf-grid .dg { margin: 0; }
+.dg .earth { fill: #4cc0ff; }
+.dg .lead { stroke: var(--muted); stroke-width: 1; }
+.dg .zone { fill: rgba(95,212,196,0.07); stroke: rgba(95,212,196,0.35); stroke-dasharray: 3 3; }
+.dg .axis { stroke: var(--muted); stroke-width: 1; }
+.dg .ticks line { stroke: var(--muted); }
+.dg .line-bh { stroke: var(--fg); stroke-width: 2; }
+.dg .line-sun { stroke: #ffb25e; stroke-width: 4; stroke-opacity: .8; stroke-linecap: round; }
+.dg .line-sun.dashed { stroke-width: 2.5; stroke-dasharray: 5 4; }
+.dg .pt-bh { fill: var(--fg); } .dg .pt-sun { fill: #ffb25e; }
+.dg .orange { fill: #ffb25e; }
 /* ---- Miller's planet story ---- */
 .story { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--time); border-radius: 8px; background: rgba(180,156,255,0.05); }
 .story-head { display: grid; gap: 4px; min-height: 64px; }
@@ -693,6 +717,69 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <p>An orbit that deep moves at a large fraction of the speed of light. To land, you have to match that speed, and no rocket could supply it. The practical way is a gravitational slingshot past another massive object, an idea Thorne explores in <i>The Science of Interstellar</i>.</p>
       </article>
     </div>
+
+    <figure class="gravity-fig" aria-labelledby="gfHead">
+      <h3 id="gfHead">Not a cosmic vacuum cleaner</h3>
+      <div class="gf-grid">
+        <svg class="dg" viewBox="0 0 440 270" role="img" aria-labelledby="gf1t gf1d">
+          <title id="gf1t">The Sun and a black hole of the same mass</title>
+          <desc id="gf1d">On the left, the Sun with Earth's orbit around it. On the right, the Sun squeezed into a black hole about 6 kilometres across, with exactly the same Earth orbit. Same mass means the same pull far away.</desc>
+          <defs><radialGradient id="sunG"><stop offset="0" stop-color="#fff1d6"/><stop offset=".55" stop-color="#ffb25e"/><stop offset="1" stop-color="#e0742a"/></radialGradient></defs>
+          <text x="110" y="22" text-anchor="middle" class="hd">The Sun</text>
+          <circle cx="110" cy="128" r="88" class="orbit"/>
+          <circle cx="110" cy="128" r="30" fill="url(#sunG)"/>
+          <circle cx="172" cy="66" r="5" class="earth"/>
+          <text x="180" y="58" class="small">Earth</text>
+          <line x1="220" y1="40" x2="220" y2="220" class="sep"/>
+          <text x="330" y="22" text-anchor="middle" class="hd">The Sun as a black hole</text>
+          <circle cx="330" cy="128" r="88" class="orbit"/>
+          <circle cx="330" cy="128" r="2.5" class="hole"/>
+          <circle cx="392" cy="66" r="5" class="earth"/>
+          <text x="400" y="58" class="small">Earth</text>
+          <line x1="342" y1="146" x2="334" y2="133" class="lead"/>
+          <text x="344" y="158" class="small">6 km across</text>
+          <text x="220" y="240" text-anchor="middle">Same mass, same pull far away: Earth keeps the</text>
+          <text x="220" y="256" text-anchor="middle">same orbit and the same year (just colder and darker).</text>
+        </svg>
+        <svg class="dg" viewBox="0 0 440 270" role="img" aria-labelledby="gf2t gf2d">
+          <title id="gf2t">Pull of gravity against distance, for the Sun and a Sun-mass black hole</title>
+          <desc id="gf2d">A graph with logarithmic scales. The Sun and the black hole have exactly the same pull from Earth's orbit, 0.0006 g, all the way in to the Sun's surface, 28 g. Inside the Sun the pull weakens, but the black hole's pull keeps climbing to about 1.5 trillion g at its 3 kilometre edge. Only that inner region is different.</desc>
+          <rect x="79" y="20" width="215" height="210" class="zone"/>
+          <text x="186" y="208" text-anchor="middle" class="teal small">Only this close is a black hole&#8217;s</text>
+          <text x="186" y="221" text-anchor="middle" class="teal small">gravity stronger than the Sun&#8217;s was</text>
+          <line x1="60" y1="230" x2="420" y2="230" class="axis"/>
+          <line x1="60" y1="20" x2="60" y2="230" class="axis"/>
+          <g class="ticks">
+            <line x1="60" y1="230" x2="60" y2="234"/><line x1="180" y1="230" x2="180" y2="234"/><line x1="300" y1="230" x2="300" y2="234"/><line x1="420" y1="230" x2="420" y2="234"/>
+            <line x1="56" y1="180.6" x2="60" y2="180.6"/><line x1="56" y1="106.5" x2="60" y2="106.5"/><line x1="56" y1="32.4" x2="60" y2="32.4"/>
+          </g>
+          <text x="60" y="246" text-anchor="middle" class="small mut">1 km</text>
+          <text x="180" y="246" text-anchor="middle" class="small mut">1,000 km</text>
+          <text x="300" y="246" text-anchor="middle" class="small mut">1 million km</text>
+          <text x="420" y="246" text-anchor="end" class="small mut">1 billion km</text>
+          <text x="240" y="264" text-anchor="middle" class="small mut">distance from the centre &#8594;</text>
+          <text x="52" y="184" text-anchor="end" class="small mut">1 g</text>
+          <text x="52" y="110" text-anchor="end" class="small mut">1 million g</text>
+          <text x="52" y="36" text-anchor="end" class="small mut">1 trillion g</text>
+          <text x="6" y="12" class="small mut">pull of gravity &#8593;</text>
+          <line x1="78.8" y1="30" x2="402.6" y2="230" class="line-bh"/>
+          <line x1="293.7" y1="162.7" x2="402.6" y2="230" class="line-sun"/>
+          <line x1="213.7" y1="187.4" x2="293.7" y2="162.7" class="line-sun dashed"/>
+          <circle cx="78.8" cy="30" r="4.5" class="pt-bh"/>
+          <text x="90" y="34">Black hole&#8217;s edge (3 km): 1.5 trillion g</text>
+          <circle cx="293.7" cy="162.7" r="4.5" class="pt-sun"/>
+          <text x="300" y="146" class="orange">Sun&#8217;s surface: 28 g</text>
+          <text x="226" y="176" text-anchor="end" class="small mut">inside the Sun</text>
+          <circle cx="387" cy="220.3" r="4.5" class="earth"/>
+          <line x1="389" y1="214" x2="404" y2="186" class="lead"/>
+          <text x="428" y="166" text-anchor="end">Earth&#8217;s orbit: 0.0006 g,</text>
+          <text x="428" y="180" text-anchor="end">the same for both</text>
+          <line x1="300" y1="62" x2="320" y2="62" class="line-sun"/><text x="326" y="66" class="small">the Sun</text>
+          <line x1="300" y1="80" x2="320" y2="80" class="line-bh"/><text x="326" y="84" class="small">Sun-mass black hole</text>
+        </svg>
+      </div>
+      <figcaption>From far away, a black hole&#8217;s gravity is exactly the same as any star of the same mass. What makes a black hole different is how close you can get: squeezed into a few kilometres, nothing gets in the way, so its pull keeps climbing where the Sun&#8217;s would have stopped at its surface. (Pull here is Newton&#8217;s formula; right at the edge, relativity makes it even stronger.)</figcaption>
+    </figure>
 
     <div class="survive-live">
       <div class="sl-head">
