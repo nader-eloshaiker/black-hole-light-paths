@@ -534,7 +534,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
       <div class="cap"><span class="eyebrow">What you see</span><span class="readout" id="camReadout"></span></div>
       <div class="view" id="glWrap"><canvas id="gl" aria-label="Ray-traced view of a black hole with an accretion disk"></canvas><div class="slice"><span>side-view slice</span></div><canvas id="labels" class="labels" aria-hidden="true"></canvas></div>
       <figcaption>Every pixel is one light ray traced backwards from your eye until it hits the disk, falls into the hole, or escapes to the stars.</figcaption>
-      <p class="ship-key"><svg viewBox="-14 -14 28 28" aria-hidden="true"><use href="#sym-endurance" x="-14" y="-14" width="28" height="28"/></svg><span><b>Endurance</b>, the ring in the disk. It is drawn far larger than its real size so you can see it; its light bends around the hole like everything else, so it rides over the top when it passes behind.</span></p>
+      <p class="ship-key"><svg viewBox="-14 -14 28 28" aria-hidden="true"><use href="#sym-endurance" x="-14" y="-14" width="28" height="28"/></svg><span><b>Endurance</b>, the ring orbiting just outside the disk. It is drawn far larger than its real size so you can see it. Its light bends around the hole like everything else, so when it passes behind you see it twice: over the top, and as a thinner, fainter image under the bottom.</span></p>
     </figure>
     <figure>
       <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout">units: event-horizon radius</span></div>
@@ -574,7 +574,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <legend>Show on the pictures</legend>
         <label><input type="checkbox" id="labelsOn" checked> Labels for the parts of the black hole</label>
         <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
-        <label><input type="checkbox" id="shipOn" checked> The Endurance (ship in the disk)</label>
+        <label><input type="checkbox" id="shipOn" checked> The Endurance (ship orbiting the disk)</label>
       </fieldset>
       <fieldset>
         <legend>Physics</legend>
@@ -1653,8 +1653,9 @@ void main(){
   // Anchors come from the same rays as the side view: a ray launched at screen height s
   // lands on the picture's centre line at that height, so each class of ray marks a feature.
   const labelsCv = $('labels'), lctx = labelsCv.getContext('2d');
-  // The Endurance orbits in the disk with the gas; the ray tracer draws it, so its image bends like everything else.
-  const ENDURANCE_R = 10;   // orbit radius in horizon radii
+  // The Endurance orbits just outside the disk's edge, so light from it can pass under the hole unblocked
+  // and it shows both images: over the top and under the bottom. The ray tracer draws it like everything else.
+  const ENDURANCE_R = 14;   // orbit radius in horizon radii
   function shipPose() {
     const ang = -0.6 + 4.0 * Math.pow(ENDURANCE_R, -1.5) * state.time;   // same direction and speed as the disk's gas
     const inc = state.inc * Math.PI / 180;
