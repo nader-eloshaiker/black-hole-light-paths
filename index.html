@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NQSS86PMWB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NQSS86PMWB');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Black Hole Light Paths: Interactive Gravitational Lensing Simulator</title>
 <meta name="description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light over and under the black hole, from any angle.">
@@ -239,6 +247,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   </section>
   <footer class="site-foot">
     <p>Built with WebGL. Light paths follow the Schwarzschild solution of general relativity; disk colours are artistic.</p>
+    <p>This site uses Google Analytics to count visits. No personal information is collected by the simulation itself.</p>
     <p><a href="https://github.com/nader-eloshaiker/black-hole-light-paths">Source code on GitHub</a> · <a href="https://github.com/nader-eloshaiker/black-hole-light-paths/blob/main/LICENSE">MIT licence</a> · <a href="https://github.com/nader-eloshaiker/black-hole-light-paths/issues">Report a problem</a></p>
   </footer>
 </main>

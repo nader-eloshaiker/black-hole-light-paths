@@ -60,3 +60,7 @@ Bug reports, physics corrections and ideas are welcome. See [CONTRIBUTING.md](CO
 ## License
 
 [MIT](LICENSE) © 2026 Nader Eloshaiker
+
+## Privacy
+
+The live site uses Google Analytics (GA4) to count visits. The simulation itself collects no personal data, and running it locally sends nothing anywhere except the font request to Google Fonts and the Analytics tag.
