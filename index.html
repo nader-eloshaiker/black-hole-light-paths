@@ -12,7 +12,7 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Black Hole Light Paths: Interactive Gravitational Lensing Simulator</title>
-<meta name="description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light over and under the black hole, from any angle.">
+<meta name="description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light around the black hole and slowing time near it.">
 <meta name="author" content="Nader Eloshaiker">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://nader-eloshaiker.github.io/black-hole-light-paths/">
@@ -24,7 +24,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Black Hole Light Paths">
 <meta property="og:title" content="Why you can see the back of a black hole's disk">
-<meta property="og:description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light over and under the black hole, from any angle.">
+<meta property="og:description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light around the black hole and slowing time near it.">
 <meta property="og:url" content="https://nader-eloshaiker.github.io/black-hole-light-paths/">
 <meta property="og:image" content="https://nader-eloshaiker.github.io/black-hole-light-paths/assets/social-preview.png">
 <meta property="og:image:width" content="1200">
@@ -33,7 +33,7 @@
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Why you can see the back of a black hole's disk">
-<meta name="twitter:description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light over and under the black hole, from any angle.">
+<meta name="twitter:description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light around the black hole and slowing time near it.">
 <meta name="twitter:image" content="https://nader-eloshaiker.github.io/black-hole-light-paths/assets/social-preview.png">
 <meta name="twitter:image:alt" content="Ray-traced black hole with its accretion disk bent over and under the shadow.">
 
@@ -103,6 +103,7 @@
   --under: #f25ad9;
   --ring: #9dff72;
   --fall: #6b7386;
+  --time: #b49cff;
   --display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
   --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -174,6 +175,25 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .legend b { font-weight: 600; }
 .try { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 14px; max-width: 62ch; }
 .try li::marker { color: var(--accent); font-family: var(--mono); }
+.time { display: grid; gap: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+.time-intro { display: grid; gap: 8px; max-width: 75ch; }
+.time h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; text-wrap: balance; }
+.time-intro p { margin: 0; color: var(--muted); }
+.dials { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 980px) { .dials { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .dials { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.dial { display: grid; justify-items: center; align-content: start; gap: 6px; text-align: center; padding: 14px 10px; border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.dial.probe { border-color: var(--time); }
+.dial svg { width: 84px; height: 84px; }
+.dial .name { font-weight: 600; font-size: 13px; line-height: 1.3; }
+.dial .where { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.dial .rate { font-family: var(--mono); font-size: 18px; color: var(--time); font-variant-numeric: tabular-nums; }
+.dial .elapsed { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.dial .hour { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.time-ctl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px 24px; align-items: end; max-width: 760px; }
+@media (max-width: 560px) { .time-ctl { grid-template-columns: 1fr; } }
+.formula { margin: 0; font-size: 12px; color: var(--muted); max-width: 90ch; }
+#side.probe-on { touch-action: none; cursor: crosshair; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 .site-foot { border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
 .site-foot p { margin: 0; }
@@ -210,9 +230,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
       <span class="hint">0° is exactly edge-on, in the plane of the disk; 90° is looking straight down.</span>
     </div>
     <div class="ctl">
-      <label for="k">How strongly gravity bends light <output id="kOut">100%</output></label>
+      <label for="k">Strength of gravity <output id="kOut">100%</output></label>
       <input type="range" id="k" min="0" max="100" step="1" value="100">
-      <span class="hint">0% is light travelling in straight lines; 100% is real physics.</span>
+      <span class="hint">Bends light and slows time. 0% switches gravity off; 100% is real physics.</span>
     </div>
     <div class="btns">
       <button id="sweep" aria-pressed="false">Sweep the angle</button>
@@ -221,7 +241,26 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
     <div class="toggles">
       <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
       <label><input type="checkbox" id="dop"> Doppler brightening (approaching side glows brighter)</label>
+      <label><input type="checkbox" id="timeOn" checked> Show how time slows down (side view)</label>
     </div>
+  </section>
+
+  <section class="time" aria-labelledby="timeHead">
+    <div class="time-intro">
+      <h2 id="timeHead">Time runs slower near the black hole</h2>
+      <p>Gravity does not only bend light; it slows time. A clock close to the hole ticks slower than your clock far away. Anyone sitting next to it would feel nothing odd, since their seconds feel normal to them, but compared with you their clock keeps falling behind. Disk material is also orbiting very fast, which slows its clocks a little more.</p>
+      <p>Drag the clock in the side view, or use the slider below, to move a probe around the black hole and watch its clock fall behind yours.</p>
+    </div>
+    <div class="dials" id="dials"></div>
+    <div class="time-ctl">
+      <div class="ctl">
+        <label for="probeR">Probe distance from the centre <output id="probeOut">3.7 r<sub>s</sub></output></label>
+        <input type="range" id="probeR" min="1" max="16" step="0.01" value="3.68">
+        <span class="hint">Measured in event-horizon radii (r<sub>s</sub>). At 1 the probe reaches the event horizon.</span>
+      </div>
+      <button id="resetClocks" type="button">Reset the clocks</button>
+    </div>
+    <p class="formula">A clock hovering at distance r runs at √(1 − r<sub>s</sub>/r) of your rate. A clock orbiting with the disk runs at √(1 − 3r<sub>s</sub>/2r), because its speed adds to the slowdown. In the side view, photons also move more slowly near the hole when timed by your clock (the Shapiro delay).</p>
   </section>
 
   <section class="lower">
@@ -233,6 +272,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
         <li><i style="background:var(--under)"></i><span><b>Bent underneath.</b> Far side of the disk, bottom surface. This is the thinner arch below.</span></li>
         <li><i style="background:var(--ring)"></i><span><b>Wrapped around.</b> Light that circled the hole before escaping: the thin photon ring.</span></li>
         <li><i style="background:var(--fall)"></i><span><b>Falls in.</b> Look in these directions and nothing comes back. That is the black shadow.</span></li>
+        <li><i style="background:var(--time)"></i><span><b>Time rings.</b> How fast a clock hovering there ticks, compared with yours far away.</span></li>
       </ul>
     </div>
     <div>
@@ -242,6 +282,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
         <li>Press <b>Sweep the angle</b>. Near edge-on you get the familiar arch shape; looking down from above it becomes a ring. Every angle shows the far side wrapped around, so there is no special front.</li>
         <li>Turn on <b>Colour the picture by light path</b> to match each region of the picture to its path on the right.</li>
         <li>Turn on <b>Doppler brightening</b>. The disk orbits at about half the speed of light near its inner edge, so the side coming towards you is much brighter.</li>
+        <li>Drag the <b>probe clock</b> in the side view towards the hole. At the photon sphere it runs at 58% of your speed; at the event horizon it stops completely, as seen from where you are.</li>
       </ol>
     </div>
   </section>
@@ -264,8 +305,10 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   const state = {
     inc: 8, k: 1, mode: false, dop: false, sweeping: false,
     playing: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-    time: 0, sweepPhase: 0
+    time: 0, sweepPhase: 0,
+    timeOn: true, probe: { x: 2.6, y: 2.6 }
   };
+  const COL_TIME = '#b49cff';
   playBtn.setAttribute('aria-pressed', String(state.playing));
   playBtn.textContent = state.playing ? 'Pause' : 'Play';
 
@@ -450,13 +493,27 @@ void main(){
       // reverse so photons travel from the disk towards the observer
       const P = r.pts, m = P.length / 2, rev = new Float32Array(P.length), cum = new Float32Array(m);
       for (let i = 0; i < m; i++) { rev[2 * i] = P[2 * (m - 1 - i)]; rev[2 * i + 1] = P[2 * (m - 1 - i) + 1]; }
-      for (let i = 1; i < m; i++) cum[i] = cum[i - 1] + Math.hypot(rev[2 * i] - rev[2 * i - 2], rev[2 * i + 1] - rev[2 * i - 1]);
-      rays.push({ cls: r.cls, pts: rev, cum, len: cum[m - 1], phase: (j * 0.6180339) % 1 });
+      // tcum: arrival time along the path as measured by the distant observer's clock.
+      // Coordinate speed of light in Schwarzschild coordinates, with u = rs/r and the
+      // segment making angle a with the radial direction:  v = (1-u) / sqrt(cos^2 a + (1-u) sin^2 a)
+      const tcum = new Float32Array(m);
+      for (let i = 1; i < m; i++) {
+        const dx = rev[2 * i] - rev[2 * i - 2], dy = rev[2 * i + 1] - rev[2 * i - 1];
+        const ds = Math.hypot(dx, dy);
+        cum[i] = cum[i - 1] + ds;
+        const mx = (rev[2 * i] + rev[2 * i - 2]) / 2, my = (rev[2 * i + 1] + rev[2 * i - 1]) / 2;
+        const rm = Math.hypot(mx, my);
+        const u = Math.min(0.98, state.k / rm);
+        const cr = ds > 0 ? (dx * mx + dy * my) / (ds * rm) : 0;
+        const v = (1 - u) / Math.sqrt(cr * cr + (1 - u) * (1 - cr * cr));
+        tcum[i] = tcum[i - 1] + ds / Math.max(v, 0.02);
+      }
+      rays.push({ cls: r.cls, pts: rev, cum, tcum, len: cum[m - 1], T: tcum[m - 1], phase: (j * 0.6180339) % 1 });
     }
   }
 
-  function pointAt(ray, d) {
-    const c = ray.cum; let lo = 0, hi = c.length - 1;
+  function pointAt(ray, d, key = 'cum') {
+    const c = ray[key]; let lo = 0, hi = c.length - 1;
     while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (c[mid] < d) lo = mid; else hi = mid; }
     const t = (d - c[lo]) / Math.max(1e-6, c[hi] - c[lo]);
     return [ray.pts[2 * lo] + (ray.pts[2 * hi] - ray.pts[2 * lo]) * t, ray.pts[2 * lo + 1] + (ray.pts[2 * hi + 1] - ray.pts[2 * lo + 1]) * t];
@@ -475,6 +532,28 @@ void main(){
     ctx.beginPath();
     for (let g = -16; g <= 16; g += 2) { ctx.moveTo(X(g), 0); ctx.lineTo(X(g), H); ctx.moveTo(0, Y(g)); ctx.lineTo(W, Y(g)); }
     ctx.stroke();
+
+    // time-rate rings: where a hovering clock runs at f of the distant rate, r = rs / (1 - f^2)
+    if (state.timeOn && state.k > 0.001) {
+      const glow = ctx.createRadialGradient(X(0), Y(0), sc * 1, X(0), Y(0), sc * Math.max(1.5, 9 * state.k));
+      glow.addColorStop(0, 'rgba(180,156,255,0.20)'); glow.addColorStop(1, 'rgba(180,156,255,0)');
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+      const rings = [[0.9, 112], [0.75, 128], [0.5, 146], [0.25, null]];
+      ctx.font = `500 ${10 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      for (const [f, angDeg] of rings) {
+        const rr = state.k / (1 - f * f);
+        ctx.strokeStyle = 'rgba(180,156,255,0.45)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([2 * dpr, 3 * dpr]);
+        ctx.beginPath(); ctx.arc(X(0), Y(0), rr * sc, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+        if (angDeg !== null && rr * sc > 14 * dpr) {
+          const a = angDeg * Math.PI / 180, lx = X(rr * Math.cos(a)), ly = Y(rr * Math.sin(a));
+          const label = Math.round(f * 100) + '%';
+          const tw = ctx.measureText(label).width + 6 * dpr;
+          ctx.fillStyle = 'rgba(5,6,10,0.85)'; ctx.fillRect(lx - tw / 2, ly - 7 * dpr, tw, 14 * dpr);
+          ctx.fillStyle = COL_TIME; ctx.fillText(label, lx, ly);
+        }
+      }
+    }
 
     // ray paths
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
@@ -510,11 +589,10 @@ void main(){
     const speed = 7; // world units per second
     for (const r of rays) {
       if (r.cls === 'captured') continue;
-      const period = r.len / speed;
+      const period = r.T / speed;
       for (let k = 0; k < 2; k++) {
         const frac = ((state.time / period) + r.phase + k * 0.5) % 1;
-        const d = frac * r.len;
-        const [x, y] = pointAt(r, d);
+        const [x, y] = pointAt(r, frac * r.T, 'tcum');
         if (Math.abs(x) > VIEW_HALF_W + 1 || Math.abs(y) > VIEW_HALF_W) continue;
         const rad = (r.cls === 'direct' ? 1.8 : 2.4) * dpr;
         ctx.fillStyle = COLORS[r.cls]; ctx.globalAlpha = 0.25;
@@ -546,7 +624,117 @@ void main(){
     ctx.restore();
     ctx.font = font(11, 500); ctx.fillStyle = '#e7e9f0'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     ctx.fillText('you →', ex - 16 * dpr, ey + (si > 0.7 ? 18 * dpr : 0));
+
+    // probe clock
+    if (state.timeOn) {
+      const px = X(state.probe.x), py = Y(state.probe.y), R = 11 * dpr;
+      const rate = probeRate();
+      ctx.fillStyle = 'rgba(5,6,10,0.9)'; ctx.strokeStyle = COL_TIME; ctx.lineWidth = 1.6 * dpr;
+      ctx.beginPath(); ctx.arc(px, py, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      const ang = (clocks.length ? clocks[clocks.length - 1].e : 0) / 10 * Math.PI * 2;
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + Math.sin(ang) * R * 0.75, py - Math.cos(ang) * R * 0.75); ctx.stroke();
+      ctx.font = `500 ${11 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
+      ctx.textBaseline = 'middle';
+      const txt = rate <= 0 ? 'inside horizon' : `probe: ${(rate * 100).toFixed(rate < 0.1 ? 1 : 0)}% speed`;
+      const leftSide = px > W * 0.62;
+      ctx.textAlign = leftSide ? 'right' : 'left';
+      const tx = leftSide ? px - R - 6 * dpr : px + R + 6 * dpr;
+      const tw = ctx.measureText(txt).width + 8 * dpr;
+      ctx.fillStyle = 'rgba(5,6,10,0.85)'; ctx.fillRect(leftSide ? tx - tw + 4 * dpr : tx - 4 * dpr, py - 8 * dpr, tw, 16 * dpr);
+      ctx.fillStyle = COL_TIME; ctx.fillText(txt, tx, py);
+    }
   }
+
+  /* ---------------- time dilation: clocks and probe ---------------- */
+  // Rates relative to the distant observer's clock (units: event-horizon radius rs = 1, scaled by gravity strength k)
+  const hoverRate = r => Math.sqrt(Math.max(0, 1 - state.k / r));
+  const orbitRate = r => Math.sqrt(Math.max(0, 1 - 1.5 * state.k / r));
+  const probeDist = () => Math.hypot(state.probe.x, state.probe.y);
+  const probeRate = () => hoverRate(probeDist());
+
+  const clockDefs = [
+    { name: 'You', where: 'far away', rate: () => 1 },
+    { name: 'Outer edge of disk', where: 'orbiting at 12 rₛ', rate: () => orbitRate(12) },
+    { name: 'Inner edge of disk', where: 'orbiting at 3 rₛ', rate: () => orbitRate(3) },
+    { name: 'Photon sphere', where: 'hovering at 1.5 rₛ', rate: () => hoverRate(1.5) },
+    { name: 'Your probe', where: '', rate: probeRate, probe: true }
+  ];
+  const clocks = [];
+  const dialsEl = $('dials');
+  for (const d of clockDefs) {
+    const el = document.createElement('div');
+    el.className = 'dial' + (d.probe ? ' probe' : '');
+    let ticks = '';
+    for (let i = 0; i < 12; i++) {
+      const a = i * Math.PI / 6, r1 = i % 3 === 0 ? 30 : 33;
+      ticks += `<line x1="${(42 + Math.sin(a) * r1).toFixed(1)}" y1="${(42 - Math.cos(a) * r1).toFixed(1)}" x2="${(42 + Math.sin(a) * 37).toFixed(1)}" y2="${(42 - Math.cos(a) * 37).toFixed(1)}" stroke="#8c94a8" stroke-width="${i % 3 === 0 ? 2 : 1}"/>`;
+    }
+    el.innerHTML = `
+      <svg viewBox="0 0 84 84" aria-hidden="true">
+        <circle cx="42" cy="42" r="40" fill="#06070b" stroke="${d.probe ? COL_TIME : '#1d2330'}" stroke-width="2"/>
+        ${ticks}
+        <line class="hand" x1="42" y1="42" x2="42" y2="10" stroke="${d.probe ? COL_TIME : '#ffb25e'}" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="42" cy="42" r="3" fill="#e7e9f0"/>
+      </svg>
+      <div class="name">${d.name}</div>
+      <div class="where"></div>
+      <div class="rate"></div>
+      <div class="elapsed"></div>
+      <div class="hour"></div>`;
+    dialsEl.appendChild(el);
+    clocks.push({ def: d, el, hand: el.querySelector('.hand'), whereEl: el.querySelector('.where'), rateEl: el.querySelector('.rate'),
+      elapsedEl: el.querySelector('.elapsed'), hourEl: el.querySelector('.hour'), e: 0, lastText: '' });
+  }
+  const fmtElapsed = s => { const m = Math.floor(s / 60), r = s - m * 60; return `${String(m).padStart(2, '0')}:${r.toFixed(1).padStart(4, '0')}`; };
+  const fmtHours = h => { const H = Math.floor(h), M = Math.round((h - H) * 60); return M === 60 ? `${H + 1} h` : (H ? `${H} h ${M} min` : `${M} min`); };
+  function updateClocks(dt) {
+    for (const c of clocks) {
+      const rate = c.def.rate();
+      if (state.playing) c.e += dt * rate;
+      c.hand.setAttribute('transform', `rotate(${((c.e / 10) * 360) % 360} 42 42)`);
+      const where = c.def.probe ? (probeDist() <= state.k ? 'inside the event horizon' : `hovering at ${probeDist().toFixed(2)} rₛ`) : c.def.where;
+      const rateTxt = rate <= 0 ? 'stopped' : `${(rate * 100).toFixed(rate < 0.1 ? 1 : 0)}%`;
+      const hourTxt = c.def.rate === clockDefs[0].rate ? 'Your clock: the reference.'
+        : rate > 0 ? `1 hour there = ${fmtHours(1 / rate)} for you` : 'Its signals never reach you.';
+      const txt = where + rateTxt + hourTxt;
+      if (txt !== c.lastText) { c.whereEl.textContent = where; c.rateEl.textContent = rateTxt; c.hourEl.textContent = hourTxt; c.lastText = txt; }
+      c.elapsedEl.textContent = fmtElapsed(c.e);
+    }
+  }
+  $('resetClocks').addEventListener('click', () => { for (const c of clocks) c.e = 0; });
+
+  const probeEl = $('probeR');
+  function syncProbe() {
+    const d = probeDist();
+    $('probeOut').innerHTML = `${d.toFixed(2)} r<sub>s</sub>`;
+    probeEl.value = Math.min(16, Math.max(1, d)).toFixed(2);
+  }
+  probeEl.addEventListener('input', () => {
+    const d = +probeEl.value, a = Math.atan2(state.probe.y, state.probe.x);
+    state.probe = { x: d * Math.cos(a), y: d * Math.sin(a) };
+    syncProbe();
+  });
+  const timeOnEl = $('timeOn');
+  timeOnEl.addEventListener('change', () => { state.timeOn = timeOnEl.checked; side.classList.toggle('probe-on', state.timeOn); });
+  side.classList.toggle('probe-on', state.timeOn);
+  let dragging = false;
+  function probeFromEvent(ev) {
+    const rect = side.getBoundingClientRect();
+    const sc = rect.width / (2 * VIEW_HALF_W);
+    let x = (ev.clientX - rect.left - rect.width / 2) / sc, y = -(ev.clientY - rect.top - rect.height / 2) / sc;
+    const halfH = rect.height / 2 / sc;
+    x = Math.max(-VIEW_HALF_W + 0.5, Math.min(VIEW_HALF_W - 0.5, x)); y = Math.max(-halfH + 0.5, Math.min(halfH - 0.5, y));
+    if (Math.hypot(x, y) < 0.3) { x = 0.3; y = 0; }
+    state.probe = { x, y }; syncProbe();
+  }
+  side.addEventListener('pointerdown', ev => {
+    if (!state.timeOn) return;
+    dragging = true; side.setPointerCapture(ev.pointerId); probeFromEvent(ev); ev.preventDefault();
+  });
+  side.addEventListener('pointermove', ev => { if (dragging) probeFromEvent(ev); });
+  const endDrag = () => { dragging = false; };
+  side.addEventListener('pointerup', endDrag); side.addEventListener('pointercancel', endDrag);
+  syncProbe();
 
   /* ---------------- sizing + loop ---------------- */
   function resize() {
@@ -582,6 +770,7 @@ void main(){
       gl.uniform1f(uni.uDop, state.dop ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
+    updateClocks(dt);
     drawSide();
     requestAnimationFrame(frame);
   }

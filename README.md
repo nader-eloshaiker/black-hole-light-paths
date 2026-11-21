@@ -31,6 +31,7 @@ The light paths are colour-coded:
 - **Gravity strength** from 0% (light travels in straight lines) to 100% (real physics).
 - **Colour the picture by light path** to match regions of the image to their paths.
 - **Doppler brightening** to see the side of the disk moving towards you glow brighter.
+- **Time dilation**: drag a probe clock around the black hole in the side view and compare it with clocks on the disk and at the photon sphere.
 
 ## The physics
 
@@ -41,6 +42,8 @@ x'' = -1.5 · h² · x / r⁵
 ```
 
 in units of the event-horizon radius, where `h` is the photon's specific angular momentum. This reproduces the photon sphere at 1.5 horizon radii and a shadow of about 2.6 horizon radii.
+
+Time dilation uses the same geometry. A clock hovering at distance `r` runs at `√(1 − rₛ/r)` of the distant observer's rate, and a clock orbiting with the disk at `√(1 − 3rₛ/2r)`. Photons in the side view are timed by the distant observer's clock, using the exact Schwarzschild coordinate speed of light, so they visibly slow near the hole (the Shapiro delay).
 
 Simplifications: the black hole does not spin, the disk spans 3 to 12 horizon radii and is infinitely thin, the disk colours and texture are artistic, and the Doppler option is an approximation.
 
