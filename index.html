@@ -2,13 +2,50 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NQSS86PMWB"></script>
+<!-- Google Analytics, loaded only after the visitor allows it (Consent Mode v2, basic implementation) -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-NQSS86PMWB');
+  gtag('consent', 'default', {
+    analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'
+  });
+  window.bhConsent = (function () {
+    var GA_ID = 'G-NQSS86PMWB', KEY = 'bhlp-consent', MAX_AGE = 365 * 864e5, loaded = false;
+    function read() {
+      try {
+        var c = JSON.parse(localStorage.getItem(KEY) || 'null');
+        return c && (c.v === 'granted' || c.v === 'denied') && Date.now() - c.t < MAX_AGE ? c.v : null;
+      } catch (e) { return null; }
+    }
+    function load() {
+      if (loaded) return; loaded = true;
+      gtag('consent', 'update', { analytics_storage: 'granted' });
+      var s = document.createElement('script');
+      s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      gtag('js', new Date());
+      gtag('config', GA_ID);
+    }
+    function clearCookies() {
+      document.cookie.split(';').forEach(function (c) {
+        var name = c.split('=')[0].trim();
+        if (name.indexOf('_ga') !== 0) return;
+        var exp = '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        document.cookie = name + exp;
+        document.cookie = name + exp + '; domain=' + location.hostname;
+        document.cookie = name + exp + '; domain=.' + location.hostname;
+      });
+    }
+    function set(v) {
+      try { localStorage.setItem(KEY, JSON.stringify({ v: v, t: Date.now() })); } catch (e) {}
+      if (v === 'granted') load();
+      else { gtag('consent', 'update', { analytics_storage: 'denied' }); clearCookies(); }
+    }
+    var choice = read();
+    var gpc = navigator.globalPrivacyControl === true;
+    if (choice === 'granted' && !gpc) load();
+    return { choice: choice, gpc: gpc, set: set };
+  })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Black Hole Light Paths: Interactive Gravitational Lensing Simulator</title>
@@ -194,6 +231,23 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 @media (max-width: 560px) { .time-ctl { grid-template-columns: 1fr; } }
 .formula { margin: 0; font-size: 12px; color: var(--muted); max-width: 90ch; }
 #side.probe-on { touch-action: none; cursor: crosshair; }
+.linklike { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; cursor: pointer; border-radius: 2px; }
+.linklike:hover { border: 0; }
+.consent {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  padding-top: 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: rgba(13, 16, 23, 0.97); border-top: 1px solid var(--line);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
+}
+.consent-inner { max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+.consent p { margin: 0; font-size: 14px; max-width: 80ch; min-width: 0; flex: 1 1 420px; }
+.consent a { color: var(--accent); }
+.consent-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.consent-btns button { min-width: 140px; padding: 9px 16px; font-size: 14px; }
+#consentYes, #consentNo { border-color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 .site-foot { border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
 .site-foot p { margin: 0; }
@@ -288,10 +342,20 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   </section>
   <footer class="site-foot">
     <p>Built with WebGL. Light paths follow the Schwarzschild solution of general relativity; disk colours are artistic.</p>
-    <p>This site uses Google Analytics to count visits. No personal information is collected by the simulation itself.</p>
+    <p>With your permission, this site uses Google Analytics to count visits. The simulation itself collects nothing. <a href="privacy.html">Privacy</a> · <button type="button" class="linklike" id="cookieSettings">Cookie settings</button></p>
     <p><a href="https://github.com/nader-eloshaiker/black-hole-light-paths">Source code on GitHub</a> · <a href="https://github.com/nader-eloshaiker/black-hole-light-paths/blob/main/LICENSE">MIT licence</a> · <a href="https://github.com/nader-eloshaiker/black-hole-light-paths/issues">Report a problem</a></p>
   </footer>
 </main>
+
+<div class="consent" id="consent" role="region" aria-label="Cookie consent" hidden>
+  <div class="consent-inner">
+    <p><b>May we count your visit?</b> With your permission, Google Analytics sets cookies so we can see how many people use this page and which parts they explore. The simulation works the same either way. <a href="privacy.html">Read the privacy notice</a>.</p>
+    <div class="consent-btns">
+      <button type="button" id="consentNo">No thanks</button>
+      <button type="button" id="consentYes">Allow analytics</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -299,6 +363,20 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   const COLORS = { direct: '#ffa040', over: '#4cc0ff', under: '#f25ad9', ring: '#9dff72', captured: '#6b7386' };
 
   const $ = id => document.getElementById(id);
+
+  /* ---------------- cookie consent banner ---------------- */
+  {
+    const banner = $('consent');
+    const show = () => { banner.hidden = false; document.body.style.paddingBottom = banner.offsetHeight + 'px'; };
+    const hide = () => { banner.hidden = true; document.body.style.paddingBottom = ''; };
+    const choose = v => { window.bhConsent.set(v); hide(); $('cookieSettings').focus({ preventScroll: true }); };
+    $('consentYes').addEventListener('click', () => choose('granted'));
+    $('consentNo').addEventListener('click', () => choose('denied'));
+    $('cookieSettings').addEventListener('click', () => { show(); $('consentNo').focus(); });
+    // Ask only when no choice is stored and the browser has not sent Global Privacy Control.
+    if (!window.bhConsent.choice && !window.bhConsent.gpc) show();
+    window.addEventListener('resize', () => { if (!banner.hidden) document.body.style.paddingBottom = banner.offsetHeight + 'px'; });
+  }
   const incEl = $('inc'), kEl = $('k'), modeEl = $('mode'), dopEl = $('dop');
   const sweepBtn = $('sweep'), playBtn = $('play');
 
