@@ -62,6 +62,10 @@ git clone https://github.com/nader-eloshaiker/black-hole-light-paths.git
 open black-hole-light-paths/index.html
 ```
 
+## Author
+
+Created by **Nader Eloshaiker**: [LinkedIn](https://www.linkedin.com/in/nadereloshaiker) · [GitHub](https://github.com/nader-eloshaiker)
+
 ## Contributing
 
 Bug reports, physics corrections and ideas are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
