@@ -33,6 +33,7 @@ The light paths are colour-coded:
 - **Doppler brightening** to see the side of the disk moving towards you glow brighter.
 - **Labels** for the parts of the black hole on the main picture (shadow, photon ring, near side, far side bent over the top, underside bent below), which follow the picture as you change the angle.
 - **Time dilation**: clocks for you, the disk, the photon sphere and a probe you can drag, compared on one shared timeline where each step is 10× more time. Watch minutes, days and years pile up with a time-lapse of up to 1 year per second; the gap between two clocks is the slowdown.
+- **Could you survive the trip?**: why gravity wouldn't crush you near a giant black hole (but would near a small one), why hovering would, and live readouts of the head-to-feet stretch and hovering thrust on the probe.
 - **Real-world size**: give the black hole a real mass (Earth squeezed into a black hole, a 10-Sun black hole, Sagittarius A*, Gargantua or M87*) and compare it with a marble, a marathon, the Sun and planetary orbits drawn to scale, with a scale bar and distances in km or AU.
 - **Miller's planet**: a short scene recreating *Interstellar*'s 1 hour = 7 years that ends when Romilly's 23 years, 4 months and 8 days have passed, and explains why it needs a fast-spinning black hole like Gargantua.
 
