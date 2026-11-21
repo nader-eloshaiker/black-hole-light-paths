@@ -144,6 +144,7 @@
   --ring: #9dff72;
   --fall: #6b7386;
   --time: #b49cff;
+  --scale: #5fd4c4;
   --display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
   --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -208,6 +209,11 @@ button {
 button:hover { border-color: var(--muted); }
 button[aria-pressed="true"] { background: var(--accent); color: #1a1006; border-color: var(--accent); }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.scale-row { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding-top: 4px; border-top: 1px solid var(--line); padding-block-start: 14px; }
+.scale-row label { font-weight: 500; font-size: 14px; }
+.scale-row select { font: 14px var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; max-width: 100%; }
+.scale-info { margin: 0; flex: 1 1 360px; min-width: 0; font-size: 13px; color: var(--muted); }
+.scale-info b { color: var(--scale); font-weight: 500; }
 .toggles { display: flex; flex-wrap: wrap; gap: 8px 22px; grid-column: 1 / -1; font-size: 14px; }
 .toggles label { display: inline-flex; gap: 8px; align-items: center; cursor: pointer; }
 .toggles input { accent-color: var(--accent); width: 16px; height: 16px; }
@@ -248,7 +254,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .lapse-btns button { padding: 6px 12px; }
 .lapse-btns button[aria-checked="true"] { background: var(--time); color: #140d26; border-color: var(--time); }
 .tick-note { margin: 0; font-size: 13px; color: var(--muted); }
-.dial .behind { font-size: 12px; color: var(--fg); line-height: 1.35; height: 2.7em; }
+.dial .behind { font-size: 12px; color: var(--fg); line-height: 1.35; height: 2.7em; font-variant-numeric: tabular-nums; }
 .miller-note { margin: 0; padding: 12px 14px; border: 1px solid var(--time); border-radius: 8px; font-size: 14px; max-width: 90ch; }
 .film { display: grid; gap: 16px; }
 .film h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; }
@@ -284,7 +290,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
       <figcaption>Every pixel is one light ray traced backwards from your eye until it hits the disk, falls into the hole, or escapes to the stars.</figcaption>
     </figure>
     <figure>
-      <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout">units: event-horizon radius</span></div>
+      <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout" id="sideUnits">units: event-horizon radius</span></div>
       <div class="view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
       <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line.</figcaption>
     </figure>
@@ -310,6 +316,18 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
       <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
       <label><input type="checkbox" id="dop"> Doppler brightening (approaching side glows brighter)</label>
       <label><input type="checkbox" id="timeOn" checked> Show how time slows down (side view)</label>
+    </div>
+    <div class="scale-row">
+      <label for="scale">Real-world size</label>
+      <select id="scale">
+        <option value="">Off: measure in horizon radii</option>
+        <option value="earth">Earth squeezed into a black hole</option>
+        <option value="stellar">A black hole of 10 Suns</option>
+        <option value="sgra">Sagittarius A*, centre of our galaxy</option>
+        <option value="gargantua">Gargantua from Interstellar</option>
+        <option value="m87">M87*, the first one photographed</option>
+      </select>
+      <p class="scale-info" id="scaleInfo">Give the black hole a real size to compare it with familiar things in the side view.</p>
     </div>
   </section>
 
@@ -413,7 +431,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
     inc: 8, k: 1, mode: false, dop: false, sweeping: false,
     playing: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     time: 0, sweepPhase: 0,
-    timeOn: true, labelsOn: true, probe: { x: 2.6, y: 2.6 }
+    timeOn: true, labelsOn: true, scale: '', probe: { x: 2.6, y: 2.6 }
   };
   const COL_TIME = '#b49cff';
   playBtn.setAttribute('aria-pressed', String(state.playing));
@@ -728,6 +746,56 @@ void main(){
     ctx.textAlign = 'left';
     ctx.fillText('photon sphere', X(1.1), Y(-1.6));
 
+    // real-world comparisons, drawn to the same scale as the side view
+    const SC = SCALES[state.scale];
+    if (SC) {
+      const halfHs = (H / 2) / sc, col = '#5fd4c4';
+      ctx.font = font(11, 500); ctx.textBaseline = 'middle';
+      let orbitN = 0, barN = 0;
+      const tag = (txt, x, y, align) => {
+        ctx.textAlign = align; const w = ctx.measureText(txt).width + 8 * dpr;
+        ctx.fillStyle = 'rgba(5,6,10,0.8)'; ctx.fillRect(align === 'left' ? x - 4 * dpr : x - w + 4 * dpr, y - 8 * dpr, w, 16 * dpr);
+        ctx.fillStyle = col; ctx.fillText(txt, x, y);
+      };
+      for (const it of SC.items) {
+        if (it.type === 'orbit') {
+          ctx.strokeStyle = col; ctx.lineWidth = 1.2 * dpr; ctx.setLineDash([6 * dpr, 4 * dpr]);
+          ctx.beginPath(); ctx.arc(X(0), Y(0), it.r * sc, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+          // labels sit in a column in the lower right, each with a thin leader to its orbit
+          const a = (-35 - orbitN * 14) * Math.PI / 180;
+          let ax = it.r * Math.cos(a), ay = it.r * Math.sin(a);
+          if (Math.abs(ax) > VIEW_HALF_W - 1 || Math.abs(ay) > halfHs - 1) { const k2 = Math.min((VIEW_HALF_W - 1) / Math.abs(ax), (halfHs - 1) / Math.abs(ay)); ax *= k2; ay *= k2; }
+          const ly = -halfHs + 3.9 + (SC.items.filter(i => i.type === 'orbit').length - 1 - orbitN) * 1.5, lxr = VIEW_HALF_W - 1;
+          orbitN++;
+          const txt = it.label + (it.r < 1 ? ' (inside the horizon)' : '');
+          const tw = ctx.measureText(txt).width;
+          ctx.strokeStyle = 'rgba(95,212,196,0.6)'; ctx.lineWidth = 0.8 * dpr;
+          ctx.beginPath(); ctx.moveTo(X(lxr) - tw - 10 * dpr, Y(ly)); ctx.lineTo(X(ax), Y(ay)); ctx.stroke();
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(ax), Y(ay), 2.5 * dpr, 0, Math.PI * 2); ctx.fill();
+          tag(txt, X(lxr), Y(ly), 'right');
+        } else if (it.type === 'ball') {
+          const bx = -VIEW_HALF_W + 2.5, by = -halfHs + 2.6, rr = Math.max(1.5 * dpr, it.r * sc);
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(bx), Y(by), rr, 0, Math.PI * 2); ctx.fill();
+          tag(it.label + ' (to scale)', X(bx) + rr + 6 * dpr, Y(by), 'left');
+        } else if (it.type === 'bar') {
+          const bx = -VIEW_HALF_W + 1, by = -halfHs + 2 + barN * 1.6; barN++;
+          ctx.strokeStyle = col; ctx.lineWidth = 3 * dpr;
+          ctx.beginPath(); ctx.moveTo(X(bx), Y(by)); ctx.lineTo(X(bx + it.r), Y(by)); ctx.stroke();
+          tag(it.label, X(bx + it.r) + 8 * dpr, Y(by), 'left');
+        }
+      }
+      // scale bar: a round real-world length close to 3 horizon radii
+      const target = 3 * SC.rs, units = [[1e-3, 'mm'], [1e-2, 'cm'], [1, 'm'], [1e3, 'km'], [1e9, 'million km'], [AU, 'AU']];
+      let [uv, un] = units[0]; for (const u of units) if (target / u[0] >= 1) [uv, un] = u;
+      const raw = target / uv, p10 = Math.pow(10, Math.floor(Math.log10(raw)));
+      const nice = [1, 2, 5, 10].map(m => m * p10).filter(v => v <= raw).pop();
+      const len = nice * uv / SC.rs, sx = VIEW_HALF_W - 1 - len, sy = -halfHs + 1.2;
+      ctx.strokeStyle = '#e7e9f0'; ctx.lineWidth = 1.5 * dpr;
+      ctx.beginPath(); ctx.moveTo(X(sx), Y(sy) - 4 * dpr); ctx.lineTo(X(sx), Y(sy)); ctx.lineTo(X(sx + len), Y(sy)); ctx.lineTo(X(sx + len), Y(sy) - 4 * dpr); ctx.stroke();
+      ctx.font = font(11, 500); ctx.fillStyle = '#e7e9f0'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillText(`${sig(nice)} ${un}`, X(sx + len / 2), Y(sy) - 6 * dpr);
+    }
+
     // observer marker: on the panel edge in the observer's direction
     const inc = state.inc * Math.PI / 180, ci = Math.cos(inc), si = Math.sin(inc);
     const halfH = (H / 2) / sc;
@@ -760,6 +828,59 @@ void main(){
       ctx.fillStyle = COL_TIME; ctx.fillText(txt, tx, py);
     }
   }
+
+  /* ---------------- real-world size ---------------- */
+  // Horizon radius rs = 2GM/c^2 = 2953 m per solar mass. Comparison sizes are in units of rs.
+  const AU = 1.496e11, C = 2.998e8;
+  const SCALES = {
+    earth: { name: 'Earth squeezed into a black hole', mass: 'the mass of the Earth', rs: 8.87e-3,
+      fact: 'Squeeze the whole planet until it is smaller than a marble and it becomes a black hole.',
+      items: [{ type: 'ball', r: 0.008 / 8.87e-3, label: 'a marble, 1.6 cm across' }] },
+    stellar: { name: 'A black hole of 10 Suns', mass: '10 times the mass of the Sun', rs: 2.953e4,
+      fact: 'A typical black hole left behind when a giant star collapses. Its horizon would fit inside a big city.',
+      items: [{ type: 'bar', r: 42195 / 2.953e4, label: 'a marathon, 42.2 km' }, { type: 'bar', r: 8849 / 2.953e4, label: 'Mount Everest, 8.8 km high' }] },
+    sgra: { name: 'Sagittarius A*', mass: '4.3 million Suns', rs: 1.27e10,
+      fact: 'The black hole at the centre of the Milky Way, photographed in 2022. Mercury’s orbit would sit inside its disk.',
+      items: [{ type: 'ball', r: 6.96e8 / 1.27e10, label: 'the Sun' }, { type: 'orbit', r: 5.79e10 / 1.27e10, label: 'Mercury’s orbit' }, { type: 'orbit', r: AU / 1.27e10, label: 'Earth’s orbit' }] },
+    gargantua: { name: 'Gargantua', mass: '100 million Suns', rs: 2.953e11,
+      fact: 'The black hole in Interstellar. Earth’s whole orbit would fit inside its event horizon.',
+      items: [{ type: 'ball', r: 6.96e8 / 2.953e11, label: 'the Sun' }, { type: 'orbit', r: AU / 2.953e11, label: 'Earth’s orbit' }, { type: 'orbit', r: 1.524 * AU / 2.953e11, label: 'Mars’s orbit' }, { type: 'orbit', r: 5.2 * AU / 2.953e11, label: 'Jupiter’s orbit' }] },
+    m87: { name: 'M87*', mass: '6.5 billion Suns', rs: 1.92e13,
+      fact: 'The first black hole ever photographed, in 2019. Every planet in the Solar System would fit inside its event horizon.',
+      items: [{ type: 'orbit', r: 30.1 * AU / 1.92e13, label: 'Neptune’s orbit' }, { type: 'orbit', r: 170 * AU / 1.92e13, label: 'Voyager 1, about 170 AU out' }] }
+  };
+  const sig = (x, n = 3) => { const v = +x.toPrecision(n); return v >= 1000 ? Math.round(v).toLocaleString('en') : String(v); };
+  function fmtLen(m) {
+    if (m < 0.01) return `${sig(m * 1000, 2)} mm`;
+    if (m < 1) return `${sig(m * 100, 2)} cm`;
+    if (m < 1000) return `${sig(m, 2)} m`;
+    if (m < 1e9) return `${sig(m / 1000)} km`;
+    if (m < AU) return `${sig(m / 1e9)} million km`;
+    return `${sig(m / AU)} AU`;
+  }
+  function fmtSpan(sec) {
+    if (sec < 1e-9) return `${sig(sec * 1e12, 2)} trillionths of a second`;
+    if (sec < 1e-3) return `${sig(sec * 1e6, 2)} millionths of a second`;
+    if (sec < 1) return `${sig(sec * 1000, 2)} thousandths of a second`;
+    if (sec < 120) return `${sig(sec, 2)} seconds`;
+    if (sec < 7200) return `${sig(sec / 60, 2)} minutes`;
+    return `${sig(sec / 3600, 2)} hours`;
+  }
+  const scaleEl = $('scale');
+  function setScale(id) {
+    state.scale = id || '';
+    scaleEl.value = state.scale;
+    const sc = SCALES[state.scale];
+    const info = $('scaleInfo');
+    if (!sc) { info.textContent = 'Give the black hole a real size to compare it with familiar things in the side view.'; $('sideUnits').textContent = 'units: event-horizon radius'; }
+    else {
+      info.innerHTML = `<b>${sc.name}</b>, ${sc.mass}. Event horizon radius ${fmtLen(sc.rs)}; light crosses it in ${fmtSpan(sc.rs / C)}. ${sc.fact}`;
+      $('sideUnits').textContent = `1 grid square = ${fmtLen(2 * sc.rs)}`;
+    }
+    syncProbe();
+    for (const c of clocks) c.lastText = '';
+  }
+  scaleEl.addEventListener('change', () => setScale(scaleEl.value));
 
   /* ---------------- labels on the main picture ---------------- */
   // Anchors come from the same rays as the side view: a ray launched at screen height s
@@ -917,21 +1038,27 @@ void main(){
   let miller = null; // { done: bool } while the Miller's planet scene is running
   const ROMILLY = 23 * U.y + 4 * U.mo + 8 * U.d;
   function updateClocks(dt) {
-    const S = LAPSE[lapseI].s;
+    const S = LAPSE[lapseI].s, nowMs = performance.now();
     for (const c of clocks) if (state.playing) c.e += dt * c.def.rate() * S;
     const you = clocks[0].e;
     for (const c of clocks) {
       const rate = c.def.rate();
       c.hand.setAttribute('transform', `rotate(${((c.e / (12 * S)) * 360) % 360} 42 42)`);
       const pd = probeDist();
-      const where = c.def.probe ? (pd <= state.k ? 'inside the event horizon' : `${fmtHeight(pd - 1)} rₛ above the horizon`) : c.def.where;
+      const SCc = SCALES[state.scale];
+      const where = c.def.probe ? (pd <= state.k ? 'inside the event horizon' : SCc ? `${fmtLen((pd - 1) * SCc.rs)} above the horizon` : `${fmtHeight(pd - 1)} rₛ above the horizon`) : c.def.where;
       const rateTxt = fmtPct(rate);
       const hourTxt = c.def.you ? 'Your clock: the reference.'
         : rate > 0 ? `1 hour there = ${fmtWords(3600 / rate)} for you` : 'Its signals never reach you.';
       const txt = where + rateTxt + hourTxt;
       if (txt !== c.lastText) { c.whereEl.textContent = where; c.rateEl.textContent = rateTxt; c.hourEl.textContent = hourTxt; c.lastText = txt; }
       const t = fmtClock(c.e); c.calEl.textContent = t.cal; c.hmsEl.textContent = t.hms;
-      c.behindEl.textContent = c.def.you ? '' : (you - c.e >= 0.05 ? `Behind you by ${fmtWords(you - c.e)}` : 'In step with you');
+      // one fixed unit (the time-lapse unit) so only the digits change, refreshed 4 times a second
+      if (!c.def.you && (nowMs - (c.tB || 0) > 250 || c.lapseB !== lapseI)) {
+        const v = (you - c.e) / S, unit = LAPSE[lapseI].unit;
+        c.behindEl.textContent = v < 0.005 ? 'In step with you' : `Behind you by ${v.toFixed(v >= 100 ? 1 : 2)} ${unit}s`;
+        c.tB = nowMs; c.lapseB = lapseI;
+      }
     }
     if (miller && !miller.done && you >= ROMILLY) {
       miller.done = true;
@@ -944,7 +1071,8 @@ void main(){
   const probeEl = $('probeR');
   function syncProbe() {
     const d = probeDist(), h = d - 1;
-    $('probeOut').innerHTML = h <= 0 ? 'inside the horizon' : `${fmtHeight(h)} r<sub>s</sub>`;
+    const SCp = SCALES[state.scale];
+    $('probeOut').innerHTML = h <= 0 ? 'inside the horizon' : `${fmtHeight(h)} r<sub>s</sub>` + (SCp ? ` (${fmtLen(h * SCp.rs)})` : '');
     probeEl.value = Math.min(1.18, Math.max(-10, Math.log10(Math.max(1e-10, h)))).toFixed(2);
   }
   function setProbeDist(d) {
@@ -960,11 +1088,11 @@ void main(){
     kEl.value = 100; state.k = 1; syncReadouts();
     setProbeDist(1 / (1 - f * f)); syncProbe();
     if (!state.timeOn) { timeOnEl.checked = true; timeOnEl.dispatchEvent(new Event('change')); }
-    setLapse(6); resetClocks();
+    setLapse(6); resetClocks(); setScale('gargantua');
     if (!state.playing) togglePlay();
     miller = { done: false };
     const note = $('millerNote');
-    note.textContent = "Miller's planet: the probe now hovers 2.7×10⁻¹⁰ horizon radii above the horizon, where 1 hour = 7 years for you. With time-lapse at 1 year per second, watch your clock pass 23 years while the probe's clock barely reaches 3 hours.";
+    note.textContent = "Miller's planet: the probe now hovers about 78 metres above Gargantua's event horizon (2.7×10⁻¹⁰ horizon radii), where 1 hour = 7 years for you. With time-lapse at 1 year per second, watch your clock pass 23 years while the probe's clock barely reaches 3 hours.";
     note.hidden = false;
   });
   const timeOnEl = $('timeOn');

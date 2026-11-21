@@ -33,6 +33,7 @@ The light paths are colour-coded:
 - **Doppler brightening** to see the side of the disk moving towards you glow brighter.
 - **Labels** for the parts of the black hole on the main picture (shadow, photon ring, near side, far side bent over the top, underside bent below), which follow the picture as you change the angle.
 - **Time dilation**: drag a probe clock around the black hole and compare it with clocks on the disk and at the photon sphere. A time-lapse (up to 1 second = 1 year) shows the gap growing in minutes, days and years.
+- **Real-world size**: give the black hole a real mass (Earth squeezed into a black hole, a 10-Sun black hole, Sagittarius A*, Gargantua or M87*) and compare it with a marble, a marathon, the Sun and planetary orbits drawn to scale, with a scale bar and distances in km or AU.
 - **Miller's planet**: recreates *Interstellar*'s 1 hour = 7 years, and explains why it needs a fast-spinning black hole like Gargantua.
 
 ## The physics
