@@ -153,6 +153,9 @@
   --fall: #6b7386;
   --time: #b49cff;
   --scale: #5fd4c4;
+  --btn: #1c2230;
+  --btn-hover: #262e3f;
+  --btn-line: #3b4559;
   --display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
   --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -227,17 +230,20 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 input[type=range] { width: 100%; accent-color: var(--accent); min-height: 24px; }
 .btns { display: flex; flex-wrap: wrap; gap: 8px; }
 button {
-  font: 500 14px var(--body); color: var(--fg); background: transparent;
-  border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer; min-height: 40px;
+  font: 500 14px var(--body); color: var(--fg); background: var(--btn);
+  border: 1px solid var(--btn-line); border-radius: 999px; padding: 8px 16px; cursor: pointer; min-height: 40px;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 1px 2px rgba(0,0,0,0.4);
+  transition: background .15s, border-color .15s;
 }
 button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; }
 .ic { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .jump { display: inline-flex; align-items: center; gap: 4px; } .jump .ic { width: 14px; height: 14px; }
 /* fixed widths for buttons whose label changes */
 #play { width: 13em; } #sweep { width: 12em; } #clockPause { width: 10.5em; }
-button:hover { border-color: var(--muted); }
+button:hover { background: var(--btn-hover); border-color: var(--muted); }
+button:active { transform: translateY(1px); }
 /* on/off buttons: neutral, the pressed state is a lighter fill, not the accent */
-.tbtn[aria-pressed="true"] { background: rgba(231,233,240,0.1); border-color: var(--fg); }
+.tbtn[aria-pressed="true"] { background: #33405a; border-color: var(--fg); }
 button.primary { background: var(--accent); color: #1a1006; border-color: var(--accent); font-weight: 600; }
 button.primary:hover { filter: brightness(1.08); }
 button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
