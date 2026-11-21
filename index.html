@@ -1078,7 +1078,7 @@ vec3 shade(vec3 hit, vec3 dir, int n, bool fromAbove){
   }
   return c; }
 // The Endurance: a ring (torus) far larger than real scale. Rays that reach it are bent on the way like any other light.
-const float SHIP_R=.5; const float SHIP_T=.12;
+const float SHIP_R=.4; const float SHIP_T=.096;   // 20% smaller than before
 float shipSDF(vec3 q){ vec3 l=q-uShip; float h=dot(l,uShipN); return length(vec2(length(l-uShipN*h)-SHIP_R,h))-SHIP_T; }
 vec3 shadeShip(vec3 q){
   vec2 e=vec2(.01,0.);
