@@ -374,6 +374,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 @media (max-width: 1200px) { .survive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 680px) { .survive-grid { grid-template-columns: 1fr; } }
 .survive h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0 0 6px; text-wrap: balance; }
+.leg { display: inline-block; margin-bottom: 8px; font: 600 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--scale); }
+.dg .helmet { fill: none; stroke: var(--fg); stroke-width: 1.5; }
 .survive-grid p { margin: 0; font-size: 14px; color: #c9cdd8; }
 .survive-live { display: grid; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--sq-panel); corner-shape: squircle; padding: 18px 20px; }
 .sl-head { display: grid; gap: 2px; }
@@ -662,48 +664,97 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   </section>
 
   <section class="survive" id="survive" aria-labelledby="surviveHead">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="sym-endurance" viewBox="-14 -14 28 28"><line x1="0" y1="0" x2="7.07" y2="7.07" stroke="#8c94a8" stroke-width="0.8"/><line x1="0" y1="0" x2="-7.07" y2="7.07" stroke="#8c94a8" stroke-width="0.8"/><line x1="0" y1="0" x2="-7.07" y2="-7.07" stroke="#8c94a8" stroke-width="0.8"/><line x1="0" y1="0" x2="7.07" y2="-7.07" stroke="#8c94a8" stroke-width="0.8"/><circle r="10" fill="none" stroke="#e7e9f0" stroke-width="1.4"/><rect x="7.80" y="-2.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="6.46" y="2.80" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="2.80" y="6.46" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-2.20" y="7.80" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-7.20" y="6.46" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-10.86" y="2.80" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-12.20" y="-2.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-10.86" y="-7.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-7.20" y="-10.86" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-2.20" y="-12.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="2.80" y="-10.86" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="6.46" y="-7.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><circle r="2.6" fill="#5fd4c4"/></symbol>
+        <symbol id="sym-ranger" viewBox="-14 -8 28 16"><path d="M-11 3 L-7 -4 L6 -3.5 L12 0 L6 3.5 Z" fill="#e7e9f0"/><path d="M-3 3.2 L-7 7 L1 3.4 Z" fill="#b9c0cf"/><path d="M-3 -3.4 L-7 -7 L1 -3.6 Z" fill="#b9c0cf"/><rect x="3" y="-1.6" width="4" height="2.2" rx="0.8" fill="#5fd4c4"/></symbol>
+        <symbol id="sym-tars" viewBox="-8 -12 16 24"><rect x="-7.2" y="-11" width="3.2" height="22" rx="0.6" fill="#a9b1c2"/><rect x="-3.6" y="-11" width="3.2" height="22" rx="0.6" fill="#c3c9d6"/><rect x="0" y="-11" width="3.2" height="22" rx="0.6" fill="#a9b1c2"/><rect x="3.6" y="-11" width="3.2" height="22" rx="0.6" fill="#c3c9d6"/><rect x="-6.6" y="-7" width="13.2" height="2.4" rx="0.6" fill="#5fd4c4"/></symbol>
+        <symbol id="sym-miller" viewBox="-10 -10 20 20"><circle r="8.5" fill="#3d77c4"/><path d="M-7.5 1.5 q1.9 -2.4 3.8 0 t3.8 0 t3.8 0 t3.8 0" fill="none" stroke="#d9ecff" stroke-width="1.6" stroke-linecap="round"/></symbol>
+      </defs>
+    </svg>
     <div class="survive-intro">
       <h2 id="surviveHead">Could you survive a trip to Miller&#8217;s planet?</h2>
-      <p>Surprisingly, the gravity itself would not crush you. The danger is somewhere else.</p>
+      <p>Follow the Endurance crew from arrival to the planet. Each leg of the trip has its own danger, and gravity itself is not the one you&#8217;d expect.</p>
     </div>
     <div class="survive-grid">
       <article>
-        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg1t">
-          <title id="dg1t">Animation: a person falling feet-first is stretched like a noodle near a 10-Sun black hole, but stays unharmed near Gargantua.</title>
-          <defs>
-        <marker id="ar-r1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker>
-        <marker id="ar-t1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker>
-        <marker id="ar-m1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker>
-      </defs>
+        <span class="leg">Leg 1 of 4</span>
+        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg1t">
+          <title id="lg1t">Animation: the Endurance arrives from far away, whips around a massive object in a gravitational slingshot, and drops into a fast orbit around Gargantua beside Miller's planet.</title>
+          <circle cx="262" cy="104" r="52" class="orbit"/>
+          <circle cx="262" cy="104" r="34" class="hole"/>
+          <text x="262" y="108" text-anchor="middle" class="mut small">Gargantua</text>
+          <use href="#sym-miller" x="296" y="128" width="20" height="20"/>
+          <text x="314" y="166" text-anchor="end" class="small" fill="#9cc6ff">Miller&#8217;s planet</text>
+          <circle cx="102" cy="122" r="7" class="mass a-glow"/>
+          <text x="102" y="152" text-anchor="middle" class="mut">slingshot</text>
+          <path id="slingPath" d="M14 34 C70 56 88 104 96 114 C104 124 116 138 132 128 C160 108 190 72 222 70 A52 52 0 1 1 302 138 A52 52 0 1 1 222 70" class="path-t"/>
+          <g><use href="#sym-endurance" x="-12" y="-12" width="24" height="24"/><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0.2;0.3;0.42;1" keyTimes="0;0.3;0.38;0.5;1"><mpath href="#slingPath"/></animateMotion></g>
+          <text x="10" y="18" class="teal">Endurance arrives</text>
+        </svg>
+        <h3>Catch the planet</h3>
+        <p>Miller&#8217;s planet races around Gargantua at a big fraction of light speed: far too fast to catch with rockets. So the Endurance borrows speed from gravity, swinging past a massive object to change speed without fuel.</p>
+      </article>
+      <article>
+        <span class="leg">Leg 2 of 4</span>
+        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg2t">
+          <title id="lg2t">Animation: the Ranger lander dives in over the top of Gargantua's glowing disk while X-rays stream off it and the Endurance waits above.</title>
+          <defs><linearGradient id="dkg" x1="0" x2="1"><stop offset="0" stop-color="#ffb25e" stop-opacity="0"/><stop offset=".3" stop-color="#ffb25e" stop-opacity=".9"/><stop offset=".5" stop-color="#fff1d6"/><stop offset=".7" stop-color="#ffb25e" stop-opacity=".9"/><stop offset="1" stop-color="#ffb25e" stop-opacity="0"/></linearGradient></defs>
+          <ellipse cx="160" cy="132" rx="132" ry="11" fill="url(#dkg)" class="a-glow"/>
+          <circle cx="160" cy="132" r="19" class="hole"/>
+          <path d="M28 132 A132 11 0 0 0 292 132" fill="none" stroke="url(#dkg)" stroke-width="4"/>
+          <path d="M112 118 l-5 -7 l6 -5 l-5 -7 l6 -5 l-5 -7" class="xray a-xray"/>
+          <path d="M212 118 l5 -7 l-6 -5 l5 -7 l-6 -5 l5 -7" class="xray a-xray"/>
+          <path d="M128 146 l-5 7 l6 5 l-5 7 l6 5" class="xray a-xray"/>
+          <path d="M196 146 l5 7 l-6 5 l5 7 l-6 5" class="xray a-xray"/>
+          <use href="#sym-endurance" x="20" y="10" width="26" height="26"/>
+          <text x="50" y="28" class="small mut">Endurance waits</text>
+          <path id="divePath" d="M40 34 Q150 26 166 104" class="path-t"/>
+          <g><use href="#sym-ranger" x="-12" y="-7" width="24" height="14"/><animateMotion dur="4s" repeatCount="indefinite" rotate="auto"><mpath href="#divePath"/></animateMotion></g>
+          <text x="14" y="78" class="teal">Ranger dives</text>
+          <text x="14" y="92" class="teal">over the disk</text>
+          <text x="308" y="66" text-anchor="end" class="red">X-rays</text>
+        </svg>
+        <h3>Cross the disk</h3>
+        <p>Gargantua is wrapped in a thin disk of glowing gas. The Ranger dives in from above it, never through it. A busy disk&#8217;s X-rays would be deadly; the film gives Gargantua a quiet, cool one.</p>
+      </article>
+      <article>
+        <span class="leg">Leg 3 of 4</span>
+        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg3t">
+          <title id="lg3t">Animation: an astronaut falling feet-first into a 10-Sun black hole is stretched like a noodle. Cooper and TARS falling towards Gargantua stay unharmed.</title>
+          <defs><marker id="ar-r3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker><marker id="ar-t3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker></defs>
           <clipPath id="clipL"><rect x="0" y="0" width="158" height="190"/></clipPath>
           <clipPath id="clipR"><rect x="162" y="0" width="158" height="190"/></clipPath>
           <line x1="160" y1="12" x2="160" y2="178" class="sep"/>
           <text x="80" y="24" class="hd" text-anchor="middle">10 Suns</text>
-          <circle cx="34" cy="88" r="12" class="hole"/>
+          <circle cx="34" cy="92" r="12" class="hole"/>
           <g clip-path="url(#clipL)"><g class="person a-stretch">
-            <line x1="60" y1="88" x2="92" y2="88" class="body"/>
-            <circle cx="98" cy="88" r="5.5" class="head"/>
-            <line x1="60" y1="88" x2="52" y2="83" class="limb"/><line x1="60" y1="88" x2="52" y2="93" class="limb"/>
-            <line x1="86" y1="88" x2="93" y2="79" class="limb"/><line x1="86" y1="88" x2="93" y2="97" class="limb"/>
+            <line x1="60" y1="92" x2="90" y2="92" class="body"/>
+            <circle cx="97" cy="92" r="6" class="helmet"/><circle cx="97" cy="92" r="3.2" class="head"/>
+            <line x1="60" y1="92" x2="52" y2="87" class="limb"/><line x1="60" y1="92" x2="52" y2="97" class="limb"/>
+            <line x1="84" y1="92" x2="91" y2="83" class="limb"/><line x1="84" y1="92" x2="91" y2="101" class="limb"/>
           </g></g>
-          <line x1="72" y1="114" x2="48" y2="114" class="arr-r a-pulse" marker-end="url(#ar-r1)"/>
-          <line x1="124" y1="114" x2="116" y2="114" class="arr-r" marker-end="url(#ar-r1)"/>
-          <text x="80" y="150" text-anchor="middle" class="red">stretched</text>
-          <text x="80" y="168" text-anchor="middle" class="red">&#8776; 20 million g</text>
+          <line x1="72" y1="118" x2="48" y2="118" class="arr-r a-pulse" marker-end="url(#ar-r3)"/>
+          <line x1="124" y1="118" x2="116" y2="118" class="arr-r" marker-end="url(#ar-r3)"/>
+          <text x="80" y="152" text-anchor="middle" class="red">stretched</text>
+          <text x="80" y="170" text-anchor="middle" class="red">&#8776; 20 million g</text>
           <text x="240" y="24" class="hd" text-anchor="middle">Gargantua</text>
-          <circle cx="332" cy="88" r="62" class="hole"/>
+          <circle cx="332" cy="92" r="62" class="hole"/>
           <g clip-path="url(#clipR)"><g class="person a-drift">
-            <circle cx="206" cy="88" r="5.5" class="head"/>
-            <line x1="212" y1="88" x2="240" y2="88" class="body"/>
-            <line x1="240" y1="88" x2="248" y2="83" class="limb"/><line x1="240" y1="88" x2="248" y2="93" class="limb"/>
-            <line x1="218" y1="88" x2="211" y2="79" class="limb"/><line x1="218" y1="88" x2="211" y2="97" class="limb"/>
+            <use href="#sym-tars" x="214" y="40" width="14" height="22"/>
+            <text x="234" y="54" class="small mut">TARS</text>
+            <circle cx="206" cy="92" r="6" class="helmet"/><circle cx="206" cy="92" r="3.2" class="head"/>
+            <line x1="213" y1="92" x2="240" y2="92" class="body"/>
+            <line x1="240" y1="92" x2="248" y2="87" class="limb"/><line x1="240" y1="92" x2="248" y2="97" class="limb"/>
+            <line x1="218" y1="92" x2="211" y2="83" class="limb"/><line x1="218" y1="92" x2="211" y2="101" class="limb"/>
+            <text x="210" y="80" class="small mut">Cooper</text>
           </g></g>
-          <line x1="200" y1="114" x2="216" y2="114" class="arr-t" marker-end="url(#ar-t1)"/>
-          <line x1="232" y1="114" x2="248" y2="114" class="arr-t" marker-end="url(#ar-t1)"/>
-          <text x="226" y="150" text-anchor="middle" class="teal">unharmed</text>
-          <text x="226" y="168" text-anchor="middle" class="teal">&#8776; 0.0000002 g</text>
+          <line x1="200" y1="118" x2="216" y2="118" class="arr-t" marker-end="url(#ar-t3)"/>
+          <line x1="232" y1="118" x2="248" y2="118" class="arr-t" marker-end="url(#ar-t3)"/>
+          <text x="226" y="152" text-anchor="middle" class="teal">unharmed</text>
+          <text x="226" y="170" text-anchor="middle" class="teal">&#8776; 0.0000002 g</text>
         </svg>
-        <h3>Gravity wouldn&#8217;t crush you</h3>
+        <h3>Get close: would gravity tear you apart?</h3>
         <p>What hurts is the <b>difference</b> in pull between your head and feet. Small black holes stretch you; giant ones barely notice you.</p>
         <ol class="why" aria-label="Why">
           <li>Gravity weakens with distance, so your feet, being closer, are pulled a bit harder than your head.</li>
@@ -713,68 +764,32 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         </ol>
       </article>
       <article>
-        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg2t">
-          <title id="dg2t">Animation: one ship orbits the black hole and its crew floats; another hovers with its rocket firing against gravity.</title>
-          <defs>
-        <marker id="ar-r2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker>
-        <marker id="ar-t2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker>
-        <marker id="ar-m2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker>
-      </defs>
+        <span class="leg">Leg 4 of 4</span>
+        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg4t">
+          <title id="lg4t">Animation: Miller's planet orbits Gargantua in free fall, while a Ranger trying to hover in place has to fire its rocket against gravity.</title>
+          <defs><marker id="ar-r4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker><marker id="ar-m4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker></defs>
           <circle cx="150" cy="104" r="70" class="orbit"/>
           <circle cx="150" cy="104" r="24" class="hole"/>
-          <g class="a-spin" style="transform-origin:150px 104px"><circle cx="150" cy="34" r="6" class="ship-t"/><circle cx="150" cy="34" r="2" class="head a-float"/></g>
-          <text x="12" y="26" class="teal">Orbit: you float</text>
+          <g class="a-spin" style="transform-origin:150px 104px"><use href="#sym-miller" x="139" y="23" width="22" height="22"/></g>
+          <text x="10" y="22" class="teal">Miller&#8217;s planet orbits:</text>
+          <text x="10" y="36" class="teal">free fall, no strain</text>
           <g class="a-shake">
             <polygon points="186,98 172,104 186,110" class="flame a-flicker" style="transform-origin:186px 104px"/>
-            <rect x="186" y="97" width="18" height="14" rx="3" class="ship"/>
+            <use href="#sym-ranger" x="184" y="96" width="28" height="16"/>
           </g>
-          <line x1="210" y1="104" x2="236" y2="104" class="arr-r" marker-end="url(#ar-r2)"/>
-          <line x1="236" y1="124" x2="210" y2="124" class="arr-m" marker-end="url(#ar-m2)"/>
-          <text x="308" y="26" text-anchor="end">Hover: rockets</text>
-          <text x="308" y="40" text-anchor="end">fight gravity</text>
-          <text x="308" y="176" text-anchor="end" class="red">&#8776; a billion g</text>
+          <line x1="216" y1="104" x2="240" y2="104" class="arr-r" marker-end="url(#ar-r4)"/>
+          <line x1="240" y1="124" x2="214" y2="124" class="arr-m" marker-end="url(#ar-m4)"/>
+          <text x="310" y="22" text-anchor="end">Ranger hovering:</text>
+          <text x="310" y="36" text-anchor="end">rockets fight gravity</text>
+          <text x="310" y="176" text-anchor="end" class="red">&#8776; a billion g</text>
         </svg>
-        <h3>Hovering would</h3>
-        <p>In orbit you float. Hovering means rockets fighting gravity: about a billion g near the horizon.</p>
+        <h3>Stay there: orbit, don&#8217;t hover</h3>
+        <p>The planet can stay so close because it orbits, falling around Gargantua. Holding still there on rockets would crush the crew.</p>
         <ol class="why" aria-label="Why">
           <li>Falling feels like floating. Astronauts on the Space Station float because they are falling around Earth all the time, not because gravity is gone.</li>
           <li>You only feel weight when something pushes back against gravity. Standing up, the ground pushes on your feet: that push is your 1 g.</li>
           <li>To hover, your rockets must do that pushing. Near the horizon, where even light can barely climb out, the push needed grows without limit.</li>
         </ol>
-      </article>
-      <article>
-        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg3t">
-          <title id="dg3t">Animation: X-rays stream off a glowing accretion disk while a ship flies in over the top of it.</title>
-          <defs><linearGradient id="dkg" x1="0" x2="1"><stop offset="0" stop-color="#ffb25e" stop-opacity="0"/><stop offset=".3" stop-color="#ffb25e" stop-opacity=".9"/><stop offset=".5" stop-color="#fff1d6"/><stop offset=".7" stop-color="#ffb25e" stop-opacity=".9"/><stop offset="1" stop-color="#ffb25e" stop-opacity="0"/></linearGradient></defs>
-          <ellipse cx="160" cy="128" rx="132" ry="11" fill="url(#dkg)" class="a-glow"/>
-          <circle cx="160" cy="128" r="19" class="hole"/>
-          <path d="M28 128 A132 11 0 0 0 292 128" fill="none" stroke="url(#dkg)" stroke-width="4"/>
-          <path d="M112 114 l-5 -7 l6 -5 l-5 -7 l6 -5 l-5 -7 l6 -5" class="xray a-xray"/>
-          <path d="M212 114 l5 -7 l-6 -5 l5 -7 l-6 -5 l5 -7 l-6 -5" class="xray a-xray"/>
-          <path d="M128 142 l-5 7 l6 5 l-5 7 l6 5" class="xray a-xray"/>
-          <path d="M196 142 l5 7 l-6 5 l5 7 l-6 5" class="xray a-xray"/>
-          <path d="M22 22 Q150 22 166 96" class="path-t"/>
-          <circle r="6" class="ship-t"><animateMotion dur="4s" repeatCount="indefinite" path="M22 22 Q150 22 166 96"/></circle>
-          <text x="14" y="62" class="teal">fly over it</text>
-          <text x="308" y="62" text-anchor="end" class="red">X-rays: deadly</text>
-        </svg>
-        <h3>You&#8217;d go around the disk</h3>
-        <p>The disk is thin, hot gas. Fly over it: its X-rays are the real danger.</p>
-      </article>
-      <article>
-        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg4t">
-          <title id="dg4t">Animation: a ship whips around a massive object in a gravitational slingshot, then drops into orbit around Gargantua.</title>
-          <circle cx="262" cy="104" r="52" class="orbit"/>
-          <circle cx="262" cy="104" r="34" class="hole"/>
-          <text x="262" y="108" text-anchor="middle" class="mut small">Gargantua</text>
-          <circle cx="102" cy="122" r="7" class="mass a-glow"/>
-          <path id="slingPath" d="M14 34 C70 56 88 104 96 114 C104 124 116 138 132 128 C160 108 190 72 222 70 A52 52 0 1 1 302 138 A52 52 0 1 1 222 70" class="path-t"/>
-          <circle r="6" class="ship-t"><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0.2;0.3;0.42;1" keyTimes="0;0.3;0.38;0.5;1"><mpath href="#slingPath"/></animateMotion></circle>
-          <text x="102" y="156" text-anchor="middle" class="mut">slingshot</text>
-          <text x="314" y="182" text-anchor="end" class="teal">deep, fast orbit</text>
-        </svg>
-        <h3>Getting there is the hard part</h3>
-        <p>You must match an orbit moving at a big fraction of light speed. Gravity slingshots do that, not fuel.</p>
       </article>
     </div>
 
@@ -1407,9 +1422,41 @@ void main(){
   // Anchors come from the same rays as the side view: a ray launched at screen height s
   // lands on the picture's centre line at that height, so each class of ray marks a feature.
   const labelsCv = $('labels'), lctx = labelsCv.getContext('2d');
+  // The Endurance, parked in orbit inside the disk on the side facing you. It is projected with the same camera as the
+  // ray tracer; on the near side light reaches you almost in a straight line, so no lensing correction is needed.
+  const ENDURANCE_R = 10;   // orbit radius in horizon radii, out in the disk
+  function drawEndurance(W, H) {
+    const inc = state.inc * Math.PI / 180, ci = Math.cos(inc), si = Math.sin(inc);
+    const ang = -0.6 + 4.0 * Math.pow(ENDURANCE_R, -1.5) * state.time;  // same direction and speed as the disk's gas
+    const P = [ENDURANCE_R * Math.cos(ang), 0, ENDURANCE_R * Math.sin(ang)];
+    const C = [DIST * ci, DIST * si, 0], d = [P[0] - C[0], P[1] - C[1], P[2] - C[2]];
+    const fwd = -(d[0] * ci + d[1] * si);                        // along f = (-ci, -si, 0)
+    const u = -d[2] / fwd, v = (-d[0] * si + d[1] * ci) / fwd;   // along right = (0,0,-1) and up = (-si, ci, 0)
+    const x = W / 2 + u / (2 * TH) * H, y = H / 2 - v / (2 * TH) * H;
+    const near = P[0] / ENDURANCE_R;                             // 1 = straight towards you, -1 = behind the hole
+    const alpha = Math.max(0, Math.min(1, (near - 0.15) / 0.3));
+    if (alpha <= 0) return;
+    const dpr = W / labelsCv.clientWidth, R = 7 * dpr;
+    lctx.save(); lctx.globalAlpha = alpha; lctx.translate(x, y); lctx.scale(1, Math.max(0.35, Math.sin(inc) * 0.9 + 0.1));
+    lctx.strokeStyle = '#e7e9f0'; lctx.lineWidth = 1.4 * dpr;
+    lctx.beginPath(); lctx.arc(0, 0, R, 0, Math.PI * 2); lctx.stroke();
+    lctx.fillStyle = '#e7e9f0';
+    for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6 + state.time * 0.8; lctx.fillRect(Math.cos(a) * R - 1.6 * dpr, Math.sin(a) * R - 1.6 * dpr, 3.2 * dpr, 3.2 * dpr); }
+    lctx.fillStyle = '#5fd4c4'; lctx.beginPath(); lctx.arc(0, 0, 1.8 * dpr, 0, Math.PI * 2); lctx.fill();
+    lctx.restore();
+    if (state.labelsOn) {
+      lctx.save(); lctx.globalAlpha = alpha;
+      lctx.font = `500 ${11 * dpr}px "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif`;
+      lctx.textAlign = 'center'; lctx.textBaseline = 'top';
+      lctx.shadowColor = 'rgba(0,0,0,0.95)'; lctx.shadowBlur = 4 * dpr; lctx.fillStyle = 'rgba(231,233,240,0.9)';
+      lctx.fillText('Endurance (not to scale)', x, y + R + 6 * dpr);
+      lctx.restore();
+    }
+  }
   function drawLabels() {
     const W = labelsCv.width, H = labelsCv.height;
     lctx.setTransform(1, 0, 0, 1, 0, 0); lctx.clearRect(0, 0, W, H);
+    if (W) drawEndurance(W, H);
     if (!state.labelsOn || !W || !slice.length) return;
     const dpr = W / labelsCv.clientWidth, short = labelsCv.clientWidth < 560;
     const stat = cls => {
