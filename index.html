@@ -835,39 +835,59 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
       <article>
         <span class="leg">Leg 4 of 4</span>
         <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg4t">
-          <title id="lg4t">Animation: Miller's planet orbits Gargantua in free fall, while a Ranger trying to hover in place has to fire its rocket against gravity.</title>
-          <defs><marker id="ar-t4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker><marker id="ar-o4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffb25e"/></marker><marker id="ar-r4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker><marker id="ar-m4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker></defs>
-          <circle cx="150" cy="104" r="70" class="orbit"/>
-          <circle cx="150" cy="104" r="24" class="hole"/>
+          <title id="lg4t">Animation in two parts. First, Miller's planet's orbit split into steps: it coasts sideways in a straight line and drifts farther from Gargantua, then falls back in by exactly the same amount, so it ends each step at the same distance. A gauge shows the distance rising and returning. Then the steps shrink until both happen at once: a smooth circular orbit at a constant distance.</title>
+          <circle cx="112" cy="110" r="60" class="orbit"/>
+          <circle cx="112" cy="110" r="26" class="hole"/>
+          <text x="112" y="113.5" text-anchor="middle" class="mut small">Gargantua</text>
           <g>
-            <line x1="0" y1="0" x2="34" y2="0" stroke="#5fd4c4" stroke-width="2" marker-end="url(#ar-t4)"/>
-            <line x1="0" y1="0" x2="0" y2="26" stroke="#ffb25e" stroke-width="2" marker-end="url(#ar-o4)"/>
-            <animateMotion dur="9s" repeatCount="indefinite" rotate="auto" path="M150 34 A70 70 0 1 1 150 174 A70 70 0 1 1 150 34"/>
+            <path d="M112.0 50.0 L146.6 50.0 M142.0 58.0 L172.0 75.4 M164.0 80.0 L181.3 110.0 M172.0 110.0 L172.0 144.6 M164.0 140.0 L146.6 170.0 M142.0 162.0 L112.0 179.3 M112.0 170.0 L77.4 170.0 M82.0 162.0 L52.0 144.6 M60.0 140.0 L42.7 110.0 M52.0 110.0 L52.0 75.4 M60.0 80.0 L77.4 50.0 M82.0 58.0 L112.0 40.7" fill="none" stroke="#5fd4c4" stroke-opacity=".45" stroke-width="1.4"/>
+            <path d="M146.6 50.0 L142.0 58.0 M172.0 75.4 L164.0 80.0 M181.3 110.0 L172.0 110.0 M172.0 144.6 L164.0 140.0 M146.6 170.0 L142.0 162.0 M112.0 179.3 L112.0 170.0 M77.4 170.0 L82.0 162.0 M52.0 144.6 L60.0 140.0 M42.7 110.0 L52.0 110.0 M52.0 75.4 L60.0 80.0 M77.4 50.0 L82.0 58.0 M112.0 40.7 L112.0 50.0" fill="none" stroke="#ffb25e" stroke-opacity=".7" stroke-width="1.6"/>
+            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/>
           </g>
+          <path d="M112.0 50.0 L119.9 50.0 L119.8 50.5 L127.7 51.5 L127.5 52.0 L135.2 54.1 L135.0 54.6 L142.3 57.6 L142.0 58.0 L148.8 62.0 L148.5 62.4 L154.8 67.2 L154.4 67.6 L160.0 73.2 L159.6 73.5 L164.4 79.7 L164.0 80.0 L167.9 86.8 L167.4 87.0 L170.5 94.3 L170.0 94.5 L172.0 102.1 L171.5 102.2 L172.5 110.0 L172.0 110.0 L172.0 117.9 L171.5 117.8 L170.5 125.7 L170.0 125.5 L167.9 133.2 L167.4 133.0 L164.4 140.3 L164.0 140.0 L160.0 146.8 L159.6 146.5 L154.8 152.8 L154.4 152.4 L148.8 158.0 L148.5 157.6 L142.3 162.4 L142.0 162.0 L135.2 165.9 L135.0 165.4 L127.7 168.5 L127.5 168.0 L119.9 170.0 L119.8 169.5 L112.0 170.5 L112.0 170.0 L104.1 170.0 L104.2 169.5 L96.3 168.5 L96.5 168.0 L88.8 165.9 L89.0 165.4 L81.7 162.4 L82.0 162.0 L75.2 158.0 L75.5 157.6 L69.2 152.8 L69.6 152.4 L64.0 146.8 L64.4 146.5 L59.6 140.3 L60.0 140.0 L56.1 133.2 L56.6 133.0 L53.5 125.7 L54.0 125.5 L52.0 117.9 L52.5 117.8 L51.5 110.0 L52.0 110.0 L52.0 102.1 L52.5 102.2 L53.5 94.3 L54.0 94.5 L56.1 86.8 L56.6 87.0 L59.6 79.7 L60.0 80.0 L64.0 73.2 L64.4 73.5 L69.2 67.2 L69.6 67.6 L75.2 62.0 L75.5 62.4 L81.7 57.6 L82.0 58.0 L88.8 54.1 L89.0 54.6 L96.3 51.5 L96.5 52.0 L104.1 50.0 L104.2 50.5 L112.0 49.5 L112.0 50.0" fill="none" stroke="#5fd4c4" stroke-opacity=".35" stroke-width="1" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/></path>
+          <path id="stairA" d="M112.0 50.0 L146.6 50.0 L142.0 58.0 L172.0 75.4 L164.0 80.0 L181.3 110.0 L172.0 110.0 L172.0 144.6 L164.0 140.0 L146.6 170.0 L142.0 162.0 L112.0 179.3 L112.0 170.0 L77.4 170.0 L82.0 162.0 L52.0 144.6 L60.0 140.0 L42.7 110.0 L52.0 110.0 L52.0 75.4 L60.0 80.0 L77.4 50.0 L82.0 58.0 L112.0 40.7 L112.0 50.0" fill="none" stroke="none"/>
+          <path id="orbitB" d="M112 50 A60 60 0 1 1 112 170 A60 60 0 1 1 112 50" fill="none" stroke="none"/>
           <g>
-            <use href="#sym-miller" x="-14" y="-14" width="28" height="28"/>
-            <text x="16" y="-10" class="small" fill="#9cc6ff">Miller&#8217;s planet</text>
-            <animateMotion dur="9s" repeatCount="indefinite" path="M150 34 A70 70 0 1 1 150 174 A70 70 0 1 1 150 34"/>
+            <path d="M11 0 H24 M19.5 -4 L24.5 0 L19.5 4" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#5fd4c4"><animate attributeName="stroke" dur="18s" repeatCount="indefinite" calcMode="discrete" values="#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#5fd4c4" keyTimes="0.0000;0.0329;0.0417;0.0745;0.0833;0.1162;0.1250;0.1579;0.1667;0.1995;0.2083;0.2412;0.2500;0.2829;0.2917;0.3245;0.3333;0.3662;0.3750;0.4079;0.4167;0.4495;0.4583;0.4912;0.5000;1.0000"/></path>
+            <animateMotion dur="18s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#stairA"/></animateMotion>
+            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/>
           </g>
-          <text x="10" y="22" class="teal">&#8594; moving sideways</text>
-          <text x="10" y="36" class="orange">&#8595; always falling in</text>
-          <g class="a-shake">
-            <polygon points="186,98 172,104 186,110" class="flame a-flicker" style="transform-origin:186px 104px"/>
-            <use href="#sym-ranger" x="184" y="96" width="28" height="16"/>
+          <g><use href="#sym-miller" x="-9" y="-9" width="18" height="18"/>
+            <animateMotion dur="18s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#stairA"/></animateMotion>
+            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/>
           </g>
-          <line x1="216" y1="104" x2="240" y2="104" class="arr-r" marker-end="url(#ar-r4)"/>
-          <line x1="240" y1="124" x2="214" y2="124" class="arr-m" marker-end="url(#ar-m4)"/>
-          <text x="310" y="22" text-anchor="end">Ranger hovering:</text>
-          <text x="310" y="36" text-anchor="end">rockets fight gravity</text>
-          <text x="310" y="176" text-anchor="end" class="red">&#8776; a billion g</text>
+          <g opacity="0">
+            <path d="M11 0 H26 M21.5 -4 L26.5 0 L21.5 4" fill="none" stroke="#5fd4c4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0 11 V22 M-4 17.5 L0 22.5 L4 17.5" fill="none" stroke="#ffb25e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <animateMotion dur="18s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#orbitB"/></animateMotion>
+            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/>
+          </g>
+          <g opacity="0"><use href="#sym-miller" x="-9" y="-9" width="18" height="18"/>
+            <animateMotion dur="18s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#orbitB"/></animateMotion>
+            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/>
+          </g>
+          <g><text x="10" y="18" class="teal">&#8594; coast sideways: drift out</text><text x="10" y="32" class="orange">&#8595; fall: drop back the same amount</text><animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/></g>
+          <g opacity="0"><text x="10" y="18">Both at once, every instant:</text><text x="10" y="32" class="mut">falls forever, never gets closer</text><animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/></g>
+          <use href="#sym-miller" x="8" y="170" width="13" height="13"/><text x="25" y="180" class="small" style="fill:#9cc6ff">Miller&#8217;s planet</text>
+          <text x="314" y="52" text-anchor="end" class="small mut">distance from</text>
+          <text x="314" y="64" text-anchor="end" class="small mut">Gargantua</text>
+          <rect x="290" y="72" width="12" height="88" rx="4" fill="#161a26" stroke="#3a4152"/>
+          <rect x="291" y="130" width="10" height="30" rx="3" fill="#9cc6ff">
+            <animate attributeName="y" dur="18s" repeatCount="indefinite" values="130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;130.0" keyTimes="0.0000;0.0052;0.0104;0.0156;0.0208;0.0260;0.0312;0.0365;0.0417;0.0469;0.0521;0.0573;0.0625;0.0677;0.0729;0.0781;0.0833;0.0885;0.0938;0.0990;0.1042;0.1094;0.1146;0.1198;0.1250;0.1302;0.1354;0.1406;0.1458;0.1510;0.1562;0.1615;0.1667;0.1719;0.1771;0.1823;0.1875;0.1927;0.1979;0.2031;0.2083;0.2135;0.2188;0.2240;0.2292;0.2344;0.2396;0.2448;0.2500;0.2552;0.2604;0.2656;0.2708;0.2760;0.2812;0.2865;0.2917;0.2969;0.3021;0.3073;0.3125;0.3177;0.3229;0.3281;0.3333;0.3385;0.3438;0.3490;0.3542;0.3594;0.3646;0.3698;0.3750;0.3802;0.3854;0.3906;0.3958;0.4010;0.4062;0.4115;0.4167;0.4219;0.4271;0.4323;0.4375;0.4427;0.4479;0.4531;0.4583;0.4635;0.4688;0.4740;0.4792;0.4844;0.4896;0.4948;0.5000;1.0000"/>
+            <animate attributeName="height" dur="18s" repeatCount="indefinite" values="30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;30.0" keyTimes="0.0000;0.0052;0.0104;0.0156;0.0208;0.0260;0.0312;0.0365;0.0417;0.0469;0.0521;0.0573;0.0625;0.0677;0.0729;0.0781;0.0833;0.0885;0.0938;0.0990;0.1042;0.1094;0.1146;0.1198;0.1250;0.1302;0.1354;0.1406;0.1458;0.1510;0.1562;0.1615;0.1667;0.1719;0.1771;0.1823;0.1875;0.1927;0.1979;0.2031;0.2083;0.2135;0.2188;0.2240;0.2292;0.2344;0.2396;0.2448;0.2500;0.2552;0.2604;0.2656;0.2708;0.2760;0.2812;0.2865;0.2917;0.2969;0.3021;0.3073;0.3125;0.3177;0.3229;0.3281;0.3333;0.3385;0.3438;0.3490;0.3542;0.3594;0.3646;0.3698;0.3750;0.3802;0.3854;0.3906;0.3958;0.4010;0.4062;0.4115;0.4167;0.4219;0.4271;0.4323;0.4375;0.4427;0.4479;0.4531;0.4583;0.4635;0.4688;0.4740;0.4792;0.4844;0.4896;0.4948;0.5000;1.0000"/>
+          </rect>
+          <line x1="284" y1="130" x2="308" y2="130" stroke="#ffb25e" stroke-dasharray="3 2"/>
+          <text x="281" y="133" text-anchor="end" class="small orange">orbit</text>
+          <text x="281" y="86" text-anchor="end" class="small mut">farther</text>
         </svg>
-        <h3>Stay there: orbit, don&#8217;t hover</h3>
-        <p>An orbit is falling that never ends. That&#8217;s why the planet can stay so close for free, while holding still on rockets would crush the crew.</p>
+        <h3>Stay there: why the planet never falls in</h3>
+        <p>An orbit is a fall that never ends. Miller&#8217;s planet, and the Endurance parked in a higher orbit, stay up with no engines running.</p>
         <ol class="why" aria-label="Why">
-          <li>The planet is <b>always falling</b> towards Gargantua (orange arrow). Nothing holds it up.</li>
-          <li>But it is also racing <b>sideways</b> (teal arrow). In the time it falls a little, it has moved so far sideways that the hole has curved away beneath it. It falls, and keeps missing.</li>
-          <li>That endless fall is an orbit. It costs no fuel, and because the planet and everything on it fall together, nobody feels a thing. Astronauts on the Space Station float for the same reason.</li>
-          <li>Stop moving sideways and you drop straight in. To stay put instead, rockets must push back against the fall the whole time; near the horizon that push is about a billion g.</li>
+          <li>Gravity pulls the planet straight towards Gargantua all the time, so it is <b>always falling</b> (orange). Nothing holds it up.</li>
+          <li>It is also racing <b>sideways</b> (teal). Without gravity it would carry on in a straight line, and a straight line drifts away from a circle: watch the distance gauge rise.</li>
+          <li>Gargantua is round, so as the planet moves sideways the &#8220;ground&#8221; beneath it curves away. At just the right sideways speed, the planet falls exactly as far as the ground has curved away, and the gauge drops back to the same height.</li>
+          <li>The animation splits this into steps so you can see it. In reality both happen at every instant, the steps shrink to nothing, and the path becomes a smooth circle: falling forever, always missing. Any slower and it would dip closer; any faster and it would swing out farther.</li>
+          <li>Because everything falls together, nobody aboard feels a thing, just as astronauts float on the Space Station. That&#8217;s how the Endurance can wait in orbit while Romilly ages 23 years, without burning any fuel.</li>
         </ol>
       </article>
     </div>
