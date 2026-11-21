@@ -372,6 +372,22 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .sl-orbit { margin: 16px 0 0; font-size: 14px; }
 .survive-live .hint { margin: 0; font-size: 12px; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .g-dot { transition: none; } }
+.dg { display: block; width: 100%; height: auto; margin-bottom: 12px; background: #0a0c12; border: 1px solid var(--line); border-radius: 8px; }
+.dg text { font: 500 11px var(--body); fill: var(--fg); }
+.dg text.hd { font-size: 12px; font-weight: 600; }
+.dg text.small { font-size: 10px; }
+.dg .mut { fill: var(--muted); } .dg .red { fill: #ff7a7a; } .dg .teal { fill: var(--scale); }
+.dg .sep { stroke: var(--line); stroke-dasharray: 3 4; }
+.dg .hole { fill: #000; stroke: #ffb25e; stroke-width: 1.5; }
+.dg .body { stroke: var(--fg); stroke-width: 3; stroke-linecap: round; } .dg .body.thin { stroke-width: 2; }
+.dg .head { fill: var(--fg); }
+.dg .arr-r { stroke: #ff7a7a; stroke-width: 2; } .dg .arr-t { stroke: var(--scale); stroke-width: 2; } .dg .arr-m { stroke: var(--muted); stroke-width: 2; }
+.dg .orbit { fill: none; stroke: var(--scale); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.dg .ship { fill: var(--fg); } .dg .ship-t { fill: var(--scale); }
+.dg .flame { fill: #ffb25e; }
+.dg .xray { fill: none; stroke: #ff7a7a; stroke-width: 1.6; stroke-linejoin: round; }
+.dg .path-t { fill: none; stroke: var(--scale); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.dg .mass { fill: var(--fg); }
 /* ---- Miller's planet story ---- */
 .story { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--time); border-radius: 8px; background: rgba(180,156,255,0.05); }
 .story-head { display: grid; gap: 4px; min-height: 64px; }
@@ -562,18 +578,117 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     </div>
     <div class="survive-grid">
       <article>
+        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg1t dg1d">
+      <title id="dg1t">Tidal stretch near a small and a giant black hole</title>
+      <desc id="dg1d">Near a 10-Sun black hole a person's feet are pulled far harder than their head and they are stretched like a noodle. Near Gargantua's huge horizon head and feet are pulled almost equally.</desc>
+      <defs>
+        <marker id="ar-r1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker>
+        <marker id="ar-t1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker>
+        <marker id="ar-m1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker>
+      </defs>
+      <line x1="160" y1="12" x2="160" y2="178" class="sep"/>
+      <text x="80" y="22" class="hd" text-anchor="middle">10 Suns</text>
+      <circle cx="36" cy="88" r="12" class="hole"/>
+      <line x1="66" y1="88" x2="132" y2="88" class="body"/>
+      <ellipse cx="140" cy="88" rx="8" ry="3.5" class="head"/>
+      <line x1="66" y1="88" x2="58" y2="84" class="body thin"/><line x1="66" y1="88" x2="58" y2="92" class="body thin"/>
+      <line x1="70" y1="106" x2="44" y2="106" class="arr-r" marker-end="url(#ar-r1)"/>
+      <line x1="140" y1="106" x2="131" y2="106" class="arr-r" marker-end="url(#ar-r1)"/>
+      <text x="80" y="134" text-anchor="middle">Feet pulled much</text>
+      <text x="80" y="148" text-anchor="middle">harder than the head</text>
+      <text x="80" y="170" text-anchor="middle" class="red">&#8776; 20 million g</text>
+      <text x="240" y="22" class="hd" text-anchor="middle">Gargantua</text>
+      <circle cx="332" cy="88" r="62" class="hole"/>
+      <line x1="216" y1="88" x2="242" y2="88" class="body"/>
+      <circle cx="210" cy="88" r="5.5" class="head"/>
+      <line x1="242" y1="88" x2="250" y2="84" class="body thin"/><line x1="242" y1="88" x2="250" y2="92" class="body thin"/>
+      <line x1="204" y1="106" x2="222" y2="106" class="arr-t" marker-end="url(#ar-t1)"/>
+      <line x1="234" y1="106" x2="252" y2="106" class="arr-t" marker-end="url(#ar-t1)"/>
+      <text x="226" y="134" text-anchor="middle">Head and feet pulled</text>
+      <text x="226" y="148" text-anchor="middle">almost equally</text>
+      <text x="226" y="170" text-anchor="middle" class="teal">&#8776; 0.0000002 g</text>
+    </svg>
         <h3>Gravity wouldn&#8217;t crush you</h3>
         <p>What tears you apart near a black hole is the <b>difference</b> in pull between your head and your feet: the same tidal effect that raises Earth&#8217;s ocean tides. The bigger the black hole, the gentler that difference is at its edge, because the horizon is so huge that space is only gently curved across your body. At the horizon of a 10-Sun black hole the stretch on a 2 m person is about 20 million g, and you would be pulled into a noodle (&#8220;spaghettified&#8221;) long before you got there. At Gargantua&#8217;s horizon it is about 0.0000002 g: far too small to feel.</p>
       </article>
       <article>
+        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg2t dg2d">
+      <title id="dg2t">Orbiting versus hovering</title>
+      <desc id="dg2d">A ship in orbit falls freely around the black hole and its crew floats. A ship hovering close to the black hole must fire its rockets against gravity, about a billion g near the horizon.</desc>
+      <defs>
+        <marker id="ar-r2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker>
+        <marker id="ar-t2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker>
+        <marker id="ar-m2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker>
+      </defs>
+      <circle cx="150" cy="104" r="70" class="orbit"/>
+      <circle cx="150" cy="104" r="24" class="hole"/>
+      <circle cx="100.5" cy="54.5" r="5" class="ship-t"/>
+      <line x1="104" y1="51" x2="122" y2="40" class="arr-t" marker-end="url(#ar-t2)"/>
+      <text x="12" y="24" class="teal">Orbit: free fall,</text>
+      <text x="12" y="38" class="teal">you float weightless</text>
+      <polygon points="186,98 174,104 186,110" class="flame"/>
+      <rect x="186" y="97" width="18" height="14" rx="3" class="ship"/>
+      <line x1="208" y1="104" x2="232" y2="104" class="arr-r" marker-end="url(#ar-r2)"/>
+      <line x1="232" y1="124" x2="206" y2="124" class="arr-m" marker-end="url(#ar-m2)"/>
+      <text x="236" y="108">rockets push out</text>
+      <text x="236" y="128" class="mut">gravity pulls in</text>
+      <text x="308" y="24" text-anchor="end">Hover: rockets</text>
+      <text x="308" y="38" text-anchor="end">fight gravity</text>
+      <text x="308" y="166" text-anchor="end" class="red">&#8776; a billion g</text>
+      <text x="308" y="180" text-anchor="end" class="red">near the horizon</text>
+    </svg>
         <h3>Hovering would</h3>
         <p>Something in orbit is in free fall, so you would float, weightless, however strong the gravity. Hovering is different: your rockets must hold you up the whole time, and near the horizon the thrust needed shoots up. Where an hour costs seven years around a non-spinning black hole, it is about <b>a billion g</b>. That is why the planet has to <i>orbit</i>, which only Gargantua&#8217;s near-maximum spin allows that close in.</p>
       </article>
       <article>
+        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg3t dg3d">
+      <title id="dg3t">Approaching the black hole from above its disk</title>
+      <desc id="dg3d">The accretion disk is a thin sheet of hot gas. A ship approaches from above it, not through it. An active disk gives off X-rays that would be deadly; Gargantua's disk in the film is quiet and cool.</desc>
+      <defs>
+        <marker id="ar-r3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker>
+        <marker id="ar-t3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker>
+        <marker id="ar-m3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker>
+      </defs>
+      <defs><linearGradient id="dkg" x1="0" x2="1"><stop offset="0" stop-color="#ffb25e" stop-opacity="0"/><stop offset=".3" stop-color="#ffb25e" stop-opacity=".9"/><stop offset=".5" stop-color="#fff1d6"/><stop offset=".7" stop-color="#ffb25e" stop-opacity=".9"/><stop offset="1" stop-color="#ffb25e" stop-opacity="0"/></linearGradient></defs>
+      <ellipse cx="160" cy="128" rx="132" ry="11" fill="url(#dkg)" opacity=".85"/>
+      <circle cx="160" cy="128" r="19" class="hole"/>
+      <path d="M28 128 A132 11 0 0 0 292 128" fill="none" stroke="url(#dkg)" stroke-width="4"/>
+      <path d="M112 114 l-5 -7 l6 -5 l-5 -7 l6 -5 l-5 -7" class="xray"/>
+      <path d="M212 114 l5 -7 l-6 -5 l5 -7 l-6 -5 l5 -7" class="xray"/>
+      <path d="M128 142 l-5 7 l6 5 l-5 7" class="xray"/>
+      <path d="M196 142 l5 7 l-6 5 l5 7" class="xray"/>
+      <text x="308" y="62" text-anchor="end" class="red">X-rays from an</text>
+      <text x="308" y="76" text-anchor="end" class="red">active disk: deadly</text>
+      <circle cx="22" cy="22" r="5" class="ship-t"/>
+      <path d="M27 25 Q150 22 166 96" class="path-t" marker-end="url(#ar-t3)"/>
+      <text x="14" y="58" class="teal">Come in from</text>
+      <text x="14" y="72" class="teal">above the disk</text>
+      <text x="160" y="180" text-anchor="middle" class="mut">Gargantua&#8217;s disk in the film: quiet and cool</text>
+    </svg>
         <h3>You&#8217;d go around the disk, not through it</h3>
         <p>An accretion disk is thin, extremely hot gas spiralling inward, not a ring of rocks to dodge. You would approach from above or below it. The real danger is its light: a typical active disk floods the space around it with X-rays that would kill a crew from far away. For the film, Kip Thorne gave Gargantua an unusually quiet, cool disk, which is part of why the crew can get close at all.</p>
       </article>
       <article>
+        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg4t dg4d">
+      <title id="dg4t">A gravitational slingshot into a deep orbit</title>
+      <desc id="dg4d">The ship's path bends sharply around a smaller massive object, which changes its speed without fuel, and then drops into a deep, fast orbit around Gargantua.</desc>
+      <defs>
+        <marker id="ar-r4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker>
+        <marker id="ar-t4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker>
+        <marker id="ar-m4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker>
+      </defs>
+      <circle cx="262" cy="104" r="52" class="orbit"/>
+      <circle cx="262" cy="104" r="34" class="hole"/>
+      <text x="262" y="108" text-anchor="middle" class="mut small">Gargantua</text>
+      <circle cx="102" cy="122" r="7" class="mass"/>
+      <circle cx="14" cy="34" r="5" class="ship-t"/>
+      <path d="M19 37 C70 56 88 104 96 114 C104 124 116 138 132 128 C160 108 190 72 222 70" class="path-t" marker-end="url(#ar-t4)"/>
+      <text x="102" y="150" text-anchor="middle" class="mut">slingshot past a</text>
+      <text x="102" y="164" text-anchor="middle" class="mut">massive object</text>
+      <text x="124" y="30" class="teal">Gravity changes your</text>
+      <text x="124" y="44" class="teal">speed, not fuel</text>
+      <text x="314" y="182" text-anchor="end">Deep orbit: a big fraction of light speed</text>
+    </svg>
         <h3>Getting there is the hard part</h3>
         <p>An orbit that deep moves at a large fraction of the speed of light. To land, you have to match that speed, and no rocket could supply it. The practical way is a gravitational slingshot past another massive object, an idea Thorne explores in <i>The Science of Interstellar</i>.</p>
       </article>
