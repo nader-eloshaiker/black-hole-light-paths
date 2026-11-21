@@ -851,7 +851,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
           <title id="gf2t">Animation: a probe flies in from Earth's orbit towards the Sun, 1.4 million km across, and towards a black hole of the same mass, 6 km across, with a meter showing the pull. Far out both pulls are the same. The Sun's surface stops the probe at 28 g, but the black hole is so small the probe keeps going and the pull climbs to 1.5 trillion g at its edge.</title>
           <defs>
             <radialGradient id="sunBall" cx="40" cy="74" r="263" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff6e6"/><stop offset=".55" stop-color="#ffc277"/><stop offset=".88" stop-color="#f08a36"/><stop offset=".97" stop-color="#c85a1c"/><stop offset="1" stop-color="#c85a1c" stop-opacity=".3"/></radialGradient>
-            <clipPath id="sunLane"><rect x="24" y="44" width="286" height="60" rx="6"/></clipPath>
+            <clipPath id="sunLane"><rect x="40" y="44" width="270" height="60"/></clipPath>
           </defs>
           <text x="16" y="26" class="hd">Fly in towards each one</text>
           <!-- both bodies share one centre: the same mass, before and after collapse -->
@@ -866,8 +866,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
           <text x="420" y="120" text-anchor="end" class="small orange" opacity="0">stopped at the surface: 28 g<animate attributeName="opacity" values="0;0;1;1" keyTimes="0.000;0.430;0.450;1.000" dur="11s" repeatCount="indefinite"/></text>
           <!-- lane 2: the same mass squeezed into 6 km -->
           <text x="70" y="140" class="small">towards the same mass squeezed into a black hole: 6 km across</text>
-          <circle cx="40" cy="162" r="25" fill="rgba(255,178,94,0.16)"/>
-          <circle cx="40" cy="162" r="20" class="hole"/>
+          <clipPath id="bhHalf"><rect x="40" y="130" width="40" height="64"/></clipPath>
+          <g clip-path="url(#bhHalf)">
+            <circle cx="40" cy="162" r="25" fill="rgba(255,178,94,0.16)"/>
+            <circle cx="40" cy="162" r="20" class="hole"/>
+          </g>
           <line x1="66" y1="162" x2="400" y2="162" class="lane"/>
           <circle cx="400" cy="162" r="6.5" class="probe"><animate attributeName="cx" values="400;400;307;307;72;72" keyTimes="0;0.1;0.45;0.58;0.85;1" dur="11s" repeatCount="indefinite"/></circle>
           <rect x="60" y="176" height="7" rx="3.5" width="15.6" class="meter-bh"><animate attributeName="width" values="15.6;15.6;108.9;108.9;316.3;316.3" keyTimes="0;0.1;0.45;0.58;0.85;1" dur="11s" repeatCount="indefinite"/></rect>
@@ -1077,18 +1080,36 @@ vec3 shade(vec3 hit, vec3 dir, int n, bool fromAbove){
     c=tint*(.35+1.3*l);
   }
   return c; }
-// The Endurance: a ring (torus) far larger than real scale. Rays that reach it are bent on the way like any other light.
-const float SHIP_R=.4; const float SHIP_T=.096;   // 20% smaller than before
-float shipSDF(vec3 q){ vec3 l=q-uShip; float h=dot(l,uShipN); return length(vec2(length(l-uShipN*h)-SHIP_R,h))-SHIP_T; }
+// The Endurance: a spinning ring with a central hub and four spokes, far larger than real scale.
+// Rays that reach it are bent on the way like any other light.
+const float SHIP_R=.28; const float SHIP_T=.068; const float HUB_R=.075; const float SPOKE_R=.024;
+float capsule(vec3 p, vec3 a, vec3 b, float r){ vec3 pa=p-a, ba=b-a; float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.); return length(pa-ba*h)-r; }
+float shipParts(vec3 q, out float part){
+  vec3 l=q-uShip; vec3 n=uShipN; float h=dot(l,n);
+  vec3 e1=normalize(cross(n,vec3(.01,.01,1.01))); vec3 e2=cross(n,e1);
+  float sp=-uTime*.8/12.;                                   // spokes turn with the ring's modules
+  vec3 a1=e1*cos(sp)+e2*sin(sp), a2=-e1*sin(sp)+e2*cos(sp);
+  float ring=length(vec2(length(l-n*h)-SHIP_R,h))-SHIP_T;
+  float hub=length(l)-HUB_R;
+  float spokes=min(min(capsule(l,vec3(0.),a1*SHIP_R,SPOKE_R),capsule(l,vec3(0.),-a1*SHIP_R,SPOKE_R)),
+                   min(capsule(l,vec3(0.),a2*SHIP_R,SPOKE_R),capsule(l,vec3(0.),-a2*SHIP_R,SPOKE_R)));
+  part=ring<min(hub,spokes)?0.:(hub<spokes?1.:2.);
+  return min(ring,min(hub,spokes));
+}
+float shipSDF(vec3 q){ float k; return shipParts(q,k); }
 vec3 shadeShip(vec3 q){
-  vec2 e=vec2(.01,0.);
+  float part; shipParts(q,part);
+  vec2 e=vec2(.006,0.);
   vec3 nrm=normalize(vec3(shipSDF(q+e.xyy)-shipSDF(q-e.xyy),shipSDF(q+e.yxy)-shipSDF(q-e.yxy),shipSDF(q+e.yyx)-shipSDF(q-e.yyx)));
-  vec3 l=q-uShip; vec3 e1=normalize(cross(uShipN,vec3(0.,0.,1.)+vec3(.01))); vec3 e2=cross(uShipN,e1);
-  float ang=atan(dot(l,e2),dot(l,e1));
-  float modules=.72+.28*step(0.,sin(ang*12.+uTime*.8));
   float sky=max(dot(nrm,normalize(vec3(.3,1.,.2))),0.);           // soft top light
   float disk=max(dot(nrm,normalize(-uShip+vec3(0.,-.5,0.))),0.);   // warm glow from the disk around the hole
-  return vec3(.86,.89,.96)*(.18+.55*sky)*modules+vec3(1.,.62,.3)*.55*disk;
+  vec3 warm=vec3(1.,.62,.3)*.5*disk;
+  if(part>1.5) return vec3(.62,.66,.75)*(.25+.55*sky)+warm;        // spokes
+  if(part>.5) return vec3(.37,.83,.77)*(.45+.55*sky)+warm*.5;       // hub
+  vec3 l=q-uShip; vec3 e1=normalize(cross(uShipN,vec3(.01,.01,1.01))); vec3 e2=cross(uShipN,e1);
+  float ang=atan(dot(l,e2),dot(l,e1));
+  float modules=.72+.28*step(0.,sin(ang*12.+uTime*.8));
+  return vec3(.86,.89,.96)*(.18+.55*sky)*modules+warm;
 }
 void main(){
   vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
@@ -1104,8 +1125,8 @@ void main(){
     // does this step of the ray pass through the ship?
     vec3 sd=pn-p; float sl=length(sd); vec3 sdir=sd/sl; float tq=clamp(dot(uShip-p,sdir),0.,sl);
     if(length(p+sdir*tq-uShip)<SHIP_R+SHIP_T+.05){
-      for(int j=0;j<10;j++){
-        float tt=clamp(tq+(float(j)/9.*2.-1.)*(SHIP_R+SHIP_T),0.,sl); vec3 qj=p+sdir*tt;
+      for(int j=0;j<20;j++){
+        float tt=clamp(tq+(float(j)/19.*2.-1.)*(SHIP_R+SHIP_T),0.,sl); vec3 qj=p+sdir*tt;
         if(shipSDF(qj)<0.){ col=shadeShip(qj); ended=true; break; }
       }
       if(ended) break;
