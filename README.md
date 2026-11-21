@@ -66,4 +66,4 @@ Bug reports, physics corrections and ideas are welcome. See [CONTRIBUTING.md](CO
 
 ## Privacy
 
-The live site asks before loading Google Analytics (GA4, Consent Mode v2 basic implementation): nothing is loaded and no cookies are set unless the visitor chooses **Allow analytics**, and a Global Privacy Control signal is treated as a refusal. Visitors can change their choice from **Cookie settings** in the footer. See the [privacy notice](https://nader-eloshaiker.github.io/black-hole-light-paths/privacy.html).
+The live site counts visits with [GoatCounter](https://www.goatcounter.com/), which sets no cookies and collects no personal data, so no consent banner is needed. See the [privacy notice](https://nader-eloshaiker.github.io/black-hole-light-paths/privacy.html).
