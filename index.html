@@ -566,6 +566,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <legend>Show on the pictures</legend>
         <label><input type="checkbox" id="labelsOn" checked> Labels for the parts of the black hole</label>
         <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
+        <label><input type="checkbox" id="shipOn" checked> The Endurance (ship in the disk)</label>
       </fieldset>
       <fieldset>
         <legend>Physics</legend>
@@ -618,6 +619,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
       </div>
       <ul class="mini-key" aria-label="Key to the time map">
         <li><i style="background:var(--time)"></i>Time rings: clock speed compared with yours</li>
+        <li><i style="background:linear-gradient(90deg,#ff4628,#cee8ff);height:6px;width:16px;border-radius:3px"></i>Beeps: one per second of each clock&#8217;s own time. Deeper clocks&#8217; beeps reach you less often, and redder</li>
         <li><i style="background:var(--time);height:10px;width:10px;border-radius:50%"></i>Your probe: drag it</li>
         <li><i style="background:var(--scale)"></i>Real-world comparisons</li>
       </ul>
@@ -974,7 +976,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     inc: 8, k: 1, mode: false, dop: false, sweeping: false,
     playing: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     time: 0, sweepPhase: 0,
-    timeOn: true, labelsOn: true, scale: 'gargantua', probe: { x: 2.6, y: 2.6 }
+    timeOn: true, labelsOn: true, shipOn: true, scale: 'gargantua', probe: { x: 2.6, y: 2.6 }
   };
   const COL_TIME = '#b49cff';
   function syncPlayBtn() {
@@ -1390,6 +1392,12 @@ void main(){
       ctx.beginPath(); ctx.moveTo(X(sx), Y(sy) - 4 * dpr); ctx.lineTo(X(sx), Y(sy)); ctx.lineTo(X(sx + len), Y(sy)); ctx.lineTo(X(sx + len), Y(sy) - 4 * dpr); ctx.stroke();
       ctx.font = font(11, 500); ctx.fillStyle = '#e7e9f0'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
       ctx.fillText(`${sig(nice)} ${un}`, X(sx + len / 2), Y(sy) - 6 * dpr);
+      // a pulse of light runs along the bar; the label says how long real light takes to cover it
+      const lightT = nice * uv / C, fr = (state.time / 2.5) % 1;
+      ctx.fillStyle = '#fff6c8'; ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.arc(X(sx + len * fr), Y(sy), 6 * dpr, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(X(sx + len * fr), Y(sy), 2.6 * dpr, 0, Math.PI * 2); ctx.fill();
+      ctx.font = font(10, 500); ctx.fillStyle = '#fff6c8'; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+      ctx.fillText(`light takes ${fmtSpan(lightT)}`, X(sx + len), Y(sy) - 20 * dpr);
     }
 
     // observer marker: on the panel edge in the observer's direction
@@ -1422,40 +1430,46 @@ void main(){
       ctx.fillStyle = COL_TIME; ctx.beginPath(); ctx.moveTo(mx - 6 * dpr, H - 12 * dpr); ctx.lineTo(mx + 6 * dpr, H - 12 * dpr); ctx.lineTo(mx, H - 2 * dpr); ctx.closePath(); ctx.fill();
       ctx.restore();
     }
-    // live clocks: yours (far away, full speed) and one on each time ring, ticking at that ring's rate.
-    // One turn of the hand = 4 s of your time; a ripple marks each tick, so clocks near the hole pulse slowly.
+    // Beeps: every clock sends you a beep (a pulse of light) once per second of its OWN time.
+    // How often they reach your clock shows how fast that clock runs; deeper clocks' beeps also arrive redder.
     if (kind === 'time') {
-      const drawClock = (x, y, R, rate, col) => {
-        const t = state.time * rate;                       // this clock's own elapsed time (s)
-        const ph = t % 1;                                  // ripple once per tick of its own seconds
-        ctx.strokeStyle = col; ctx.globalAlpha = 0.55 * (1 - ph); ctx.lineWidth = 1.2 * dpr;
-        ctx.beginPath(); ctx.arc(x, y, R + ph * 12 * dpr, 0, Math.PI * 2); ctx.stroke();
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = 'rgba(5,6,10,0.92)'; ctx.lineWidth = 1.5 * dpr;
-        ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        const a = t / 4 * Math.PI * 2;
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.sin(a) * R * 0.78, y - Math.cos(a) * R * 0.78); ctx.stroke();
-      };
-      // your clock, top right
-      ctx.font = font(11, 500); ctx.fillStyle = 'rgba(231,233,240,0.85)'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      ctx.fillText('your clock, far away: 100%', W - 34 * dpr, 20 * dpr);
-      drawClock(W - 18 * dpr, 20 * dpr, 9 * dpr, 1, '#e7e9f0');
-      // one clock on each ring, lower left, where nothing else is drawn
-      if (state.k > 0.001) {
-        const ringClocks = [[0.9, 208], [0.75, 222], [0.5, 236], [0.25, 250]];
-        for (const [f, deg] of ringClocks) {
-          const rr = state.k / (1 - f * f), a = deg * Math.PI / 180;
-          drawClock(X(rr * Math.cos(a)), Y(rr * Math.sin(a)), (f > 0.3 ? 8 : 6) * dpr, f, COL_TIME);
+      const tx = W - 18 * dpr, ty = 20 * dpr, now = state.time, speed = 230 * dpr;
+      const beepCol = f => { const k = Math.max(0, Math.min(1, f)); const c = [255 + (206 - 255) * k, 70 + (232 - 70) * k, 40 + (255 - 40) * k]; return `rgb(${c.map(v => Math.round(v)).join(',')})`; };
+      const emitters = [];
+      if (state.k > 0.001) for (const [f, deg] of [[0.9, 208], [0.75, 222], [0.5, 236], [0.25, 250]]) {
+        const rr = state.k / (1 - f * f), a = deg * Math.PI / 180;
+        emitters.push({ x: X(rr * Math.cos(a)), y: Y(rr * Math.sin(a)), f, station: true });
+      }
+      const prate = probeRate();
+      emitters.push({ x: X(state.probe.x), y: Y(state.probe.y), f: prate, station: false });
+      let flash = 0;
+      for (const e of emitters) {
+        if (e.f <= 0) continue;
+        const Tt = Math.hypot(tx - e.x, ty - e.y) / speed;          // travel time across the map
+        const kMin = Math.ceil((now - Tt) * e.f), kMax = Math.floor(now * e.f);
+        const col = beepCol(e.f);
+        for (let k = Math.max(kMin, kMax - 30); k <= kMax; k++) {
+          const fr = (now - k / e.f) / Tt;
+          if (fr < 0 || fr > 1) continue;
+          if (fr > 0.93) flash = Math.max(flash, (fr - 0.93) / 0.07);
+          const bx = e.x + (tx - e.x) * fr, by = e.y + (ty - e.y) * fr;
+          ctx.fillStyle = col; ctx.globalAlpha = 0.3; ctx.beginPath(); ctx.arc(bx, by, 6 * dpr, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(bx, by, 2.6 * dpr, 0, Math.PI * 2); ctx.fill();
+        }
+        if (e.station) {   // the station itself: a small beacon in its beep colour
+          ctx.fillStyle = 'rgba(5,6,10,0.9)'; ctx.strokeStyle = col; ctx.lineWidth = 1.6 * dpr;
+          ctx.beginPath(); ctx.arc(e.x, e.y, 5.5 * dpr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(e.x, e.y, 2 * dpr, 0, Math.PI * 2); ctx.fill();
         }
       }
-      // gas drifting along the disk (inner gas faster, like the real disk)
-      ctx.fillStyle = 'rgba(255,241,214,0.9)';
-      for (let i = 0; i < 14; i++) {
-        const r0 = RIN + (i % 7) * (ROUT - RIN) / 7 + 0.4;
-        const ph = (state.time * 4 * Math.pow(r0, -1.5) / (2 * Math.PI) + i * 0.37) % 1;
-        const xx = r0 * Math.cos(ph * 2 * Math.PI) * (i < 7 ? 1 : -1);
-        ctx.beginPath(); ctx.arc(X(xx), Y(0), 1.8 * dpr, 0, Math.PI * 2); ctx.fill();
-      }
+      // your clock (the receiver) flashes as each beep arrives
+      ctx.fillStyle = 'rgba(5,6,10,0.92)'; ctx.strokeStyle = '#e7e9f0'; ctx.lineWidth = 1.5 * dpr;
+      ctx.beginPath(); ctx.arc(tx, ty, 9 * dpr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      if (flash > 0) { ctx.globalAlpha = flash; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2 * dpr; ctx.beginPath(); ctx.arc(tx, ty, 9 * dpr + 6 * dpr * (1 - flash), 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; }
+      const ha = now / 4 * Math.PI * 2; ctx.strokeStyle = '#e7e9f0';
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + Math.sin(ha) * 7 * dpr, ty - Math.cos(ha) * 7 * dpr); ctx.stroke();
+      ctx.font = font(11, 500); ctx.fillStyle = 'rgba(231,233,240,0.85)'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText('you, far away', W - 34 * dpr, 20 * dpr);
     }
     // probe clock
     if (kind === 'time') {
@@ -1547,6 +1561,7 @@ void main(){
     const ang = -0.6 + 4.0 * Math.pow(ENDURANCE_R, -1.5) * state.time;   // same direction and speed as the disk's gas
     const inc = state.inc * Math.PI / 180;
     const n = [Math.cos(inc), Math.sin(inc) + 0.6, 0.35], nl = Math.hypot(...n);   // ring tilted to face you
+    if (!state.shipOn) return { p: [1e5, 1e5, 1e5], n: [0, 1, 0] };   // hidden: park it far outside the scene
     return { p: [ENDURANCE_R * Math.cos(ang), 0.35, ENDURANCE_R * Math.sin(ang)], n: n.map(c => c / nl) };
   }
   function drawLabels() {
@@ -1614,6 +1629,8 @@ void main(){
       lctx.shadowBlur = 0; lctx.shadowColor = 'transparent';
     }
   }
+  const shipOnEl = $('shipOn');
+  shipOnEl.addEventListener('change', () => { state.shipOn = shipOnEl.checked; document.querySelector('.ship-key').hidden = !state.shipOn; });
   const labelsOnEl = $('labelsOn');
   labelsOnEl.addEventListener('change', () => { state.labelsOn = labelsOnEl.checked; });
 
