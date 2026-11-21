@@ -5,8 +5,8 @@
 <!-- GoatCounter: privacy-friendly visit counter, no cookies, no personal data -->
 <script data-goatcounter="https://black-hole-light-paths.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Black Hole Light Paths: Interactive Gravitational Lensing Simulator</title>
-<meta name="description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light around the black hole and slowing time near it.">
+<title>Black Hole Simulator: Interstellar, Lensing &amp; Time Dilation</title>
+<meta name="description" content="Interactive black hole simulator. See why Interstellar&#39;s Gargantua looks the way it does and why an hour on Miller&#39;s planet costs seven years.">
 <meta name="author" content="Nader Eloshaiker">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://nader-eloshaiker.github.io/black-hole-light-paths/">
@@ -17,8 +17,8 @@
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Black Hole Light Paths">
-<meta property="og:title" content="Why you can see the back of a black hole's disk">
-<meta property="og:description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light around the black hole and slowing time near it.">
+<meta property="og:title" content="Why Interstellar&#39;s black hole looks like that, and why time slows down">
+<meta property="og:description" content="Interactive black hole simulator. See why Interstellar&#39;s Gargantua looks the way it does and why an hour on Miller&#39;s planet costs seven years.">
 <meta property="og:url" content="https://nader-eloshaiker.github.io/black-hole-light-paths/">
 <meta property="og:image" content="https://nader-eloshaiker.github.io/black-hole-light-paths/assets/social-preview.png">
 <meta property="og:image:width" content="1200">
@@ -26,8 +26,8 @@
 <meta property="og:image:alt" content="Ray-traced black hole with its accretion disk bent over and under the shadow, beside a diagram of the curved light paths.">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Why you can see the back of a black hole's disk">
-<meta name="twitter:description" content="Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light around the black hole and slowing time near it.">
+<meta name="twitter:title" content="Why Interstellar&#39;s black hole looks like that, and why time slows down">
+<meta name="twitter:description" content="Interactive black hole simulator. See why Interstellar&#39;s Gargantua looks the way it does and why an hour on Miller&#39;s planet costs seven years.">
 <meta name="twitter:image" content="https://nader-eloshaiker.github.io/black-hole-light-paths/assets/social-preview.png">
 <meta name="twitter:image:alt" content="Ray-traced black hole with its accretion disk bent over and under the shadow.">
 
@@ -36,9 +36,9 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Black Hole Light Paths",
-  "alternateName": "Interactive black hole gravitational lensing simulator",
+  "alternateName": "Interactive black hole simulator: gravitational lensing, time dilation and Interstellar explained",
   "url": "https://nader-eloshaiker.github.io/black-hole-light-paths/",
-  "description": "Why can you see the back of a black hole's accretion disk? A live ray-traced simulation shows gravity bending light over and under the black hole, from any angle.",
+  "description": "Interactive black hole simulator. See why Interstellar's Gargantua looks the way it does and why an hour on Miller's planet costs seven years.",
   "image": "https://nader-eloshaiker.github.io/black-hole-light-paths/assets/social-preview.png",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Any",
@@ -70,13 +70,55 @@
     },
     {
       "@type": "Thing",
+      "name": "Gravitational time dilation",
+      "sameAs": "https://en.wikipedia.org/wiki/Gravitational_time_dilation"
+    },
+    {
+      "@type": "Thing",
       "name": "Accretion disk",
       "sameAs": "https://en.wikipedia.org/wiki/Accretion_disk"
+    },
+    {
+      "@type": "Movie",
+      "name": "Interstellar",
+      "sameAs": "https://en.wikipedia.org/wiki/Interstellar_(film)"
     }
   ],
   "educationalUse": "Demonstration",
   "learningResourceType": "Simulation",
-  "keywords": "black hole, accretion disk, gravitational lensing, general relativity, Schwarzschild, ray tracing, photon sphere, physics simulation"
+  "keywords": "black hole simulator, Interstellar, Gargantua, Miller's planet, time dilation, gravitational lensing, accretion disk, general relativity, Schwarzschild black hole, photon sphere, event horizon, Kip Thorne, ray tracing"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why does the black hole in Interstellar look like that?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Gargantua's halo over the top and thin arch underneath are light from the far side of its accretion disk, bent over and under the black hole by gravity. The film's visual effects were computed from equations worked out with physicist Kip Thorne. This simulator ray-traces the same effect live."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does one hour on Miller's planet equal seven years on Earth?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Gravitational time dilation: clocks deep in a gravitational field run slower than clocks far away. Miller's planet orbits so close to Gargantua that its clocks run about 61,000 times slower than Earth's, so one hour there is seven years on Earth."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the time dilation in Interstellar realistic?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Only for a black hole spinning at almost the maximum possible rate, as Gargantua does. Around a non-spinning black hole, stable orbits end at three horizon radii, where an hour costs only about 1 hour 25 minutes; losing seven years per hour would mean hovering about 80 metres above the horizon of a black hole of 100 million solar masses."
+      }
+    }
+  ]
 }
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -126,7 +168,8 @@ h1 { font-family: var(--display); font-weight: 600; font-size: clamp(26px, 4vw, 
 header p { margin: 0; color: var(--muted); }
 
 .stage { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 880px) { .stage { grid-template-columns: 1fr; } }
+/* side by side only on wide screens; phones and tablets stack the two views */
+@media (max-width: 1099px) { .stage { grid-template-columns: 1fr; max-width: 760px; margin-inline: auto; width: 100%; } }
 figure { margin: 0; min-width: 0; display: grid; gap: 8px; }
 .cap { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg); }
@@ -134,6 +177,7 @@ figure { margin: 0; min-width: 0; display: grid; gap: 8px; }
 .view { position: relative; width: 100%; aspect-ratio: 4 / 3; max-width: 100%; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #000; }
 .view canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .slice { position: absolute; top: 0; bottom: 0; left: 50%; border-left: 1px dashed rgba(231,233,240,.22); pointer-events: none; }
+.labels { pointer-events: none; }
 .slice span { position: absolute; top: 8px; left: 6px; font-family: var(--mono); font-size: 10px; color: rgba(231,233,240,.5); white-space: nowrap; }
 figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 .glerr { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; text-align: center; color: var(--muted); }
@@ -186,6 +230,22 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .dial .hour { font-size: 12px; color: var(--muted); line-height: 1.35; }
 .time-ctl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px 24px; align-items: end; max-width: 760px; }
 @media (max-width: 560px) { .time-ctl { grid-template-columns: 1fr; } }
+.lapse { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.lapse-label { font-size: 14px; font-weight: 500; }
+.lapse-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.lapse-btns button { padding: 6px 12px; }
+.lapse-btns button[aria-checked="true"] { background: var(--time); color: #140d26; border-color: var(--time); }
+.tick-note { margin: 0; font-size: 13px; color: var(--muted); }
+.dial .behind { font-size: 12px; color: var(--fg); line-height: 1.35; }
+.miller-note { margin: 0; padding: 12px 14px; border: 1px solid var(--time); border-radius: 8px; font-size: 14px; max-width: 90ch; }
+.film { display: grid; gap: 16px; }
+.film h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; }
+.film-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 28px; }
+@media (max-width: 980px) { .film-grid { grid-template-columns: 1fr; } }
+.film h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0 0 6px; text-wrap: balance; }
+.film p { margin: 0; font-size: 14px; color: #c9cdd8; }
+.film .refs { font-size: 12px; color: var(--muted); max-width: 110ch; }
+.film a { color: var(--accent); }
 .formula { margin: 0; font-size: 12px; color: var(--muted); max-width: 90ch; }
 #side.probe-on { touch-action: none; cursor: crosshair; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
@@ -199,21 +259,21 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 <noscript><p style="padding:16px;color:#e7e9f0">This interactive simulation needs JavaScript and WebGL. Please enable JavaScript to see the black hole.</p></noscript>
 <main class="wrap">
   <header>
-    <span class="kicker">Gravitational lensing, ray-traced live</span>
+    <span class="kicker">Gravitational lensing and time dilation, ray-traced live</span>
     <h1>Why you can see the back of the disk</h1>
-    <p>The left picture is computed by tracing light rays through the curved space around a non-spinning black hole. The right panel cuts the scene in half along the dashed line and shows the actual paths those rays take. Drag the controls and watch both change together.</p>
+    <p>The main picture is computed by tracing light rays through the curved space around a non-spinning black hole. The side view cuts the scene in half along the dashed line and shows the actual paths those rays take. Drag the controls and watch both change together.</p>
   </header>
 
   <section class="stage">
     <figure>
       <div class="cap"><span class="eyebrow">What you see</span><span class="readout" id="camReadout"></span></div>
-      <div class="view" id="glWrap"><canvas id="gl" aria-label="Ray-traced view of a black hole with an accretion disk"></canvas><div class="slice"><span>slice shown on the right</span></div></div>
+      <div class="view" id="glWrap"><canvas id="gl" aria-label="Ray-traced view of a black hole with an accretion disk"></canvas><div class="slice"><span>side-view slice</span></div><canvas id="labels" class="labels" aria-hidden="true"></canvas></div>
       <figcaption>Every pixel is one light ray traced backwards from your eye until it hits the disk, falls into the hole, or escapes to the stars.</figcaption>
     </figure>
     <figure>
       <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout">units: event-horizon radius</span></div>
       <div class="view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
-      <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the left picture as it has on the dashed line.</figcaption>
+      <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line.</figcaption>
     </figure>
   </section>
 
@@ -233,6 +293,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
       <button id="play" aria-pressed="true">Pause</button>
     </div>
     <div class="toggles">
+      <label><input type="checkbox" id="labelsOn" checked> Label the parts of the black hole</label>
       <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
       <label><input type="checkbox" id="dop"> Doppler brightening (approaching side glows brighter)</label>
       <label><input type="checkbox" id="timeOn" checked> Show how time slows down (side view)</label>
@@ -243,18 +304,54 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
     <div class="time-intro">
       <h2 id="timeHead">Time runs slower near the black hole</h2>
       <p>Gravity does not only bend light; it slows time. A clock close to the hole ticks slower than your clock far away. Anyone sitting next to it would feel nothing odd, since their seconds feel normal to them, but compared with you their clock keeps falling behind. Disk material is also orbiting very fast, which slows its clocks a little more.</p>
-      <p>Drag the clock in the side view, or use the slider below, to move a probe around the black hole and watch its clock fall behind yours.</p>
+      <p>Seconds are too small to show the gap building up, so use the time-lapse to speed up every clock and watch minutes, days and years pile up. Drag the probe in the side view, or use the slider, to move it closer to the hole.</p>
     </div>
+    <div class="lapse" role="radiogroup" aria-label="Time-lapse speed">
+      <span class="lapse-label">Time-lapse: 1 second on screen =</span>
+      <div class="lapse-btns" id="lapseBtns">
+        <button type="button" role="radio" data-i="0" aria-checked="true">1 second</button>
+        <button type="button" role="radio" data-i="1" aria-checked="false">1 minute</button>
+        <button type="button" role="radio" data-i="2" aria-checked="false">1 hour</button>
+        <button type="button" role="radio" data-i="3" aria-checked="false">1 day</button>
+        <button type="button" role="radio" data-i="4" aria-checked="false">1 week</button>
+        <button type="button" role="radio" data-i="5" aria-checked="false">1 month</button>
+        <button type="button" role="radio" data-i="6" aria-checked="false">1 year</button>
+      </div>
+    </div>
+    <p class="tick-note" id="tickNote">On every dial, each tick mark is 1 second of that clock's own time.</p>
     <div class="dials" id="dials"></div>
     <div class="time-ctl">
       <div class="ctl">
-        <label for="probeR">Probe distance from the centre <output id="probeOut">3.7 r<sub>s</sub></output></label>
-        <input type="range" id="probeR" min="1" max="16" step="0.01" value="3.68">
-        <span class="hint">Measured in event-horizon radii (r<sub>s</sub>). At 1 the probe reaches the event horizon.</span>
+        <label for="probeR">Probe height above the event horizon <output id="probeOut">2.68 r<sub>s</sub></output></label>
+        <input type="range" id="probeR" min="-10" max="1.18" step="0.01" value="0.43">
+        <span class="hint">Measured in event-horizon radii (r<sub>s</sub>). The slider is logarithmic, so the left end reaches to within a ten-billionth of the horizon.</span>
       </div>
-      <button id="resetClocks" type="button">Reset the clocks</button>
+      <div class="btns">
+        <button id="miller" type="button">Miller&#8217;s planet (Interstellar)</button>
+        <button id="resetClocks" type="button">Reset the clocks</button>
+      </div>
     </div>
-    <p class="formula">A clock hovering at distance r runs at √(1 − r<sub>s</sub>/r) of your rate. A clock orbiting with the disk runs at √(1 − 3r<sub>s</sub>/2r), because its speed adds to the slowdown. In the side view, photons also move more slowly near the hole when timed by your clock (the Shapiro delay).</p>
+    <p class="miller-note" id="millerNote" hidden></p>
+    <p class="formula">A clock hovering at distance r runs at √(1 − r<sub>s</sub>/r) of your rate. A clock orbiting with the disk runs at √(1 − 3r<sub>s</sub>/2r), because its speed adds to the slowdown. Months are 1/12 of a year (30.44 days). The time-lapse speeds up the clocks only; the disk and photons keep moving at a watchable pace. In the side view, photons also move more slowly near the hole when timed by your clock (the Shapiro delay).</p>
+  </section>
+
+  <section class="film" aria-labelledby="filmHead">
+    <h2 id="filmHead">Interstellar, explained</h2>
+    <div class="film-grid">
+      <article>
+        <h3>Why Gargantua looks like this</h3>
+        <p>The black hole in Christopher Nolan&#8217;s <i>Interstellar</i> (2014), Gargantua, was rendered by the visual effects company Double Negative from equations worked out with physicist Kip Thorne, the film&#8217;s scientific adviser. Its famous halo over the top and thin arch underneath are the same effect as in the picture above: light from the far side of the disk, bent over and under the hole. Set the viewing angle to a few degrees for the film&#8217;s view. The film left out Doppler brightening, which makes the side of the disk coming towards you far brighter; tick <b>Doppler brightening</b> to see what a real one would look like.</p>
+      </article>
+      <article>
+        <h3>Why an hour on Miller&#8217;s planet costs seven years</h3>
+        <p>Miller&#8217;s planet orbits so close to Gargantua that one hour there equals seven years on Earth, a slowdown of about 61,000 times. The landing party spends a little over three hours on the surface; back on the Endurance, Romilly waits 23 years, 4 months and 8 days. Press <b>Miller&#8217;s planet</b> above to recreate it: at one year per second, your clock races through 23 years while the probe&#8217;s clock creeps through about three hours.</p>
+      </article>
+      <article>
+        <h3>Could that really happen?</h3>
+        <p>Not around a black hole like the one on this page. Around a non-spinning black hole, stable orbits end at 3 horizon radii, where clocks run at 71% of your rate: an hour there costs only 1 hour 25 minutes. To lose seven years per hour you would have to hover, rockets firing, about 80 metres above the horizon of a black hole as heavy as Gargantua (100 million times the mass of the Sun). Gargantua manages it because it spins at almost the maximum rate physics allows, which lets stable orbits sit right next to the horizon.</p>
+      </article>
+    </div>
+    <p class="refs">Further reading: Kip Thorne, <i>The Science of Interstellar</i> (W. W. Norton, 2014); O. James, E. von Tunzelmann, P. Franklin and K. S. Thorne, &#8220;<a href="https://doi.org/10.1088/0264-9381/32/6/065001">Gravitational lensing by spinning black holes in astrophysics, and in the movie Interstellar</a>&#8221;, <i>Classical and Quantum Gravity</i> 32, 065001 (2015). This site is an independent educational project and is not affiliated with the film or its makers.</p>
   </section>
 
   <section class="lower">
@@ -274,9 +371,10 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
       <ol class="try">
         <li>Drag gravity down to 0%. The disk becomes a plain flat ellipse, the hole shrinks to a small dot and the arches vanish. Bring it back up slowly and watch the far side of the disk lift up over the top of the hole.</li>
         <li>Press <b>Sweep the angle</b>. Near edge-on you get the familiar arch shape; looking down from above it becomes a ring. Every angle shows the far side wrapped around, so there is no special front.</li>
-        <li>Turn on <b>Colour the picture by light path</b> to match each region of the picture to its path on the right.</li>
+        <li>Turn on <b>Colour the picture by light path</b> to match each region of the picture to its path in the side view.</li>
         <li>Turn on <b>Doppler brightening</b>. The disk orbits at about half the speed of light near its inner edge, so the side coming towards you is much brighter.</li>
         <li>Drag the <b>probe clock</b> in the side view towards the hole. At the photon sphere it runs at 58% of your speed; at the event horizon it stops completely, as seen from where you are.</li>
+        <li>Press <b>Miller&#8217;s planet (Interstellar)</b> and watch 23 years pass on your clock while the probe ages about three hours.</li>
       </ol>
     </div>
   </section>
@@ -300,7 +398,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
     inc: 8, k: 1, mode: false, dop: false, sweeping: false,
     playing: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     time: 0, sweepPhase: 0,
-    timeOn: true, probe: { x: 2.6, y: 2.6 }
+    timeOn: true, labelsOn: true, probe: { x: 2.6, y: 2.6 }
   };
   const COL_TIME = '#b49cff';
   playBtn.setAttribute('aria-pressed', String(state.playing));
@@ -363,11 +461,19 @@ vec3 stars(vec3 d){
   return vec3(s)*vec3(.85,.92,1.)+vec3(.02,.025,.05)*fbm(sc*.03); }
 vec3 shade(vec3 hit, vec3 dir, int n, bool fromAbove){
   float rh=length(hit.xz); float phi=atan(hit.z,hit.x);
-  float om=1.6*pow(rh,-1.5); float ang=phi-om*uTime;
+  // Keplerian rotation (angular speed ~ r^-1.5), sped up so the motion is easy to see
+  float om=4.0*pow(rh,-1.5); float ang=phi-om*uTime;
   vec2 q=vec2(cos(ang),sin(ang))*rh;
-  float tex=.55+.6*fbm(q*1.1+vec2(3.,7.));
+  float tex=.45+.8*fbm(q*1.1+vec2(3.,7.));
   float rings=.85+.15*sin(rh*7.+fbm(q*.7)*4.);
-  float I=pow(RIN/rh,2.)*tex*rings*smoothstep(ROUT,ROUT-3.,rh)*smoothstep(RIN,RIN+.35,rh);
+  float I=pow(RIN/rh,2.)*tex*rings;
+  // bright clumps of gas orbiting at their own Keplerian speed: inner ones lap the outer ones
+  for(int i=0;i<5;i++){
+    float fi=float(i); float rs_=3.8+fi*1.7; float sa=fi*2.4+4.0*pow(rs_,-1.5)*uTime;
+    vec2 d2=hit.xz-vec2(cos(sa),sin(sa))*rs_;
+    I+=0.9*pow(RIN/rs_,1.2)*exp(-dot(d2,d2)*1.4);
+  }
+  I*=smoothstep(ROUT,ROUT-3.,rh)*smoothstep(RIN,RIN+.35,rh);
   float temp=pow(RIN/rh,.8);
   if(uDop>.5){
     float vk=sqrt(.5/(rh-1.));
@@ -437,7 +543,7 @@ void main(){
   /* ---------------- Side view (2D cross-section) ---------------- */
   const side = $('side'), sctx = side.getContext('2d');
   const VIEW_HALF_W = 16; // world units across half the panel width
-  let rays = [], rayKey = '';
+  let rays = [], slice = [], rayKey = '';
 
   function traceRay(inc, K, s) {
     const ci = Math.cos(inc), si = Math.sin(inc);
@@ -478,11 +584,12 @@ void main(){
     if (key === rayKey) return;
     rayKey = key;
     const inc = state.inc * Math.PI / 180;
-    rays = [];
+    rays = []; slice = [];
     const N = 150;
     for (let j = 0; j < N; j++) {
       const s = -0.5 + (j + 0.5) / N;
       const r = traceRay(inc, state.k, s);
+      slice.push({ s, cls: r.cls });
       if (r.cls === 'escaped') continue;
       // reverse so photons travel from the disk towards the observer
       const P = r.pts, m = P.length / 2, rev = new Float32Array(P.length), cum = new Float32Array(m);
@@ -639,6 +746,62 @@ void main(){
     }
   }
 
+  /* ---------------- labels on the main picture ---------------- */
+  // Anchors come from the same rays as the side view: a ray launched at screen height s
+  // lands on the picture's centre line at that height, so each class of ray marks a feature.
+  const labelsCv = $('labels'), lctx = labelsCv.getContext('2d');
+  function drawLabels() {
+    const W = labelsCv.width, H = labelsCv.height;
+    lctx.setTransform(1, 0, 0, 1, 0, 0); lctx.clearRect(0, 0, W, H);
+    if (!state.labelsOn || !W || !slice.length) return;
+    const dpr = W / labelsCv.clientWidth, short = labelsCv.clientWidth < 520;
+    const stat = cls => {
+      const v = slice.filter(o => o.cls === cls).map(o => o.s);
+      return v.length ? { min: Math.min(...v), max: Math.max(...v), mean: v.reduce((a, b) => a + b, 0) / v.length } : null;
+    };
+    const cap = stat('captured'), over = stat('over'), under = stat('under'), direct = stat('direct');
+    const faceOn = state.inc > 60, bent = state.k > 0.05;
+    const items = [];
+    if (over) items.push({ side: 'left', s: over.mean, text: faceOn || !bent ? 'Far side of the disk' : short ? 'Far side, bent over the top' : 'Far side of the disk, bent over the top of the hole' });
+    if (under) items.push({ side: 'left', s: under.mean, text: short ? 'Underside, bent below' : 'Underside of the far side, bent under the hole' });
+    if (cap && state.k > 0.3) items.push({ side: 'right', s: cap.max + 1.5 / slice.length, text: short ? 'Photon ring' : 'Photon ring: light that circled the hole' });
+    if (cap) items.push({ side: 'right', s: (cap.min + cap.max) / 2, text: short ? 'Shadow' : 'Shadow: no light escapes; the event horizon is inside' });
+    if (direct) items.push({ side: 'right', s: direct.mean, text: faceOn ? 'Near side of the disk' : short ? 'Near side of the disk' : 'Near side of the disk, seen directly' });
+    const fs = (short ? 11 : 12) * dpr, lh = fs * 1.3, pad = 5 * dpr, maxW = Math.min(W * (short ? 0.36 : 0.34), 220 * dpr);
+    lctx.font = `500 ${fs}px "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif`;
+    for (const it of items) {
+      const words = it.text.split(' '), lines = []; let cur = '';
+      for (const w of words) { const t = cur ? cur + ' ' + w : w; if (lctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; }
+      lines.push(cur);
+      it.lines = lines; it.w = Math.max(...lines.map(l => lctx.measureText(l).width)) + pad * 2; it.h = lines.length * lh + pad * 2;
+      it.ay = H / 2 - it.s * H; it.y = it.ay - it.h / 2;
+    }
+    for (const side of ['left', 'right']) {
+      const g = items.filter(i => i.side === side).sort((a, b) => a.ay - b.ay);
+      for (let i = 1; i < g.length; i++) g[i].y = Math.max(g[i].y, g[i - 1].y + g[i - 1].h + 6 * dpr);
+      const top = 8 * dpr, bottom = H - 8 * dpr;
+      if (g.length && g[g.length - 1].y + g[g.length - 1].h > bottom) {
+        g[g.length - 1].y = bottom - g[g.length - 1].h;
+        for (let i = g.length - 2; i >= 0; i--) g[i].y = Math.min(g[i].y, g[i + 1].y - g[i].h - 6 * dpr);
+      }
+      for (const it of g) it.y = Math.max(top, it.y);
+    }
+    const cx = W / 2;
+    for (const it of items) {
+      const bx = it.side === 'left' ? 8 * dpr : W - 8 * dpr - it.w, by = it.y;
+      const ex = it.side === 'left' ? bx + it.w : bx, ey = by + it.h / 2;
+      lctx.strokeStyle = 'rgba(231,233,240,0.75)'; lctx.lineWidth = 1 * dpr;
+      lctx.beginPath(); lctx.moveTo(ex, ey); lctx.lineTo(cx, it.ay); lctx.stroke();
+      lctx.fillStyle = '#ffb25e'; lctx.beginPath(); lctx.arc(cx, it.ay, 3 * dpr, 0, Math.PI * 2); lctx.fill();
+      lctx.fillStyle = 'rgba(6,7,11,0.8)'; lctx.strokeStyle = 'rgba(255,178,94,0.55)';
+      lctx.beginPath(); lctx.rect(bx, by, it.w, it.h); lctx.fill(); lctx.stroke();
+      lctx.fillStyle = '#e7e9f0'; lctx.textBaseline = 'top'; lctx.textAlign = 'left';
+      it.lines.forEach((l, i) => lctx.fillText(l, bx + pad, by + pad + i * lh + (lh - fs) / 2));
+    }
+  }
+  const labelsOnEl = $('labelsOn');
+  labelsOnEl.addEventListener('change', () => { state.labelsOn = labelsOnEl.checked; });
+
   /* ---------------- time dilation: clocks and probe ---------------- */
   // Rates relative to the distant observer's clock (units: event-horizon radius rs = 1, scaled by gravity strength k)
   const hoverRate = r => Math.sqrt(Math.max(0, 1 - state.k / r));
@@ -647,12 +810,26 @@ void main(){
   const probeRate = () => hoverRate(probeDist());
 
   const clockDefs = [
-    { name: 'You', where: 'far away', rate: () => 1 },
+    { name: 'You', where: 'far away', rate: () => 1, you: true },
     { name: 'Outer edge of disk', where: 'orbiting at 12 rₛ', rate: () => orbitRate(12) },
     { name: 'Inner edge of disk', where: 'orbiting at 3 rₛ', rate: () => orbitRate(3) },
     { name: 'Photon sphere', where: 'hovering at 1.5 rₛ', rate: () => hoverRate(1.5) },
     { name: 'Your probe', where: '', rate: probeRate, probe: true }
   ];
+  // time-lapse: seconds of your clock per second on screen
+  const LAPSE = [
+    { s: 1, unit: 'second' }, { s: 60, unit: 'minute' }, { s: 3600, unit: 'hour' }, { s: 86400, unit: 'day' },
+    { s: 604800, unit: 'week' }, { s: 2629800, unit: 'month' }, { s: 31557600, unit: 'year' }
+  ];
+  let lapseI = 0;
+  const lapseBtns = [...document.querySelectorAll('#lapseBtns button')];
+  function setLapse(i) {
+    lapseI = i;
+    lapseBtns.forEach(b => b.setAttribute('aria-checked', String(+b.dataset.i === i)));
+    $('tickNote').textContent = `On every dial, each tick mark is 1 ${LAPSE[i].unit} of that clock's own time.`;
+  }
+  lapseBtns.forEach(b => b.addEventListener('click', () => setLapse(+b.dataset.i)));
+
   const clocks = [];
   const dialsEl = $('dials');
   for (const d of clockDefs) {
@@ -674,39 +851,92 @@ void main(){
       <div class="where"></div>
       <div class="rate"></div>
       <div class="elapsed"></div>
+      <div class="behind"></div>
       <div class="hour"></div>`;
     dialsEl.appendChild(el);
     clocks.push({ def: d, el, hand: el.querySelector('.hand'), whereEl: el.querySelector('.where'), rateEl: el.querySelector('.rate'),
-      elapsedEl: el.querySelector('.elapsed'), hourEl: el.querySelector('.hour'), e: 0, lastText: '' });
+      elapsedEl: el.querySelector('.elapsed'), behindEl: el.querySelector('.behind'), hourEl: el.querySelector('.hour'), e: 0, lastText: '' });
   }
-  const fmtElapsed = s => { const m = Math.floor(s / 60), r = s - m * 60; return `${String(m).padStart(2, '0')}:${r.toFixed(1).padStart(4, '0')}`; };
-  const fmtHours = h => { const H = Math.floor(h), M = Math.round((h - H) * 60); return M === 60 ? `${H + 1} h` : (H ? `${H} h ${M} min` : `${M} min`); };
+  const U = { y: 31557600, mo: 2629800, d: 86400, h: 3600, m: 60 };
+  // calendar-style readout, e.g. "23 y 4 mo 8 d · 03:12:05"
+  function fmtClock(sec) {
+    if (sec < 60) return `${sec.toFixed(1)} s`;
+    let r = sec; const y = Math.floor(r / U.y); r -= y * U.y; const mo = Math.floor(r / U.mo); r -= mo * U.mo;
+    const d = Math.floor(r / U.d); r -= d * U.d; const h = Math.floor(r / U.h); r -= h * U.h; const m = Math.floor(r / U.m); r -= m * U.m;
+    const hms = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(Math.floor(r)).padStart(2, '0')}`;
+    const cal = [y ? `${y} y` : '', y || mo ? `${mo} mo` : '', y || mo || d ? `${d} d` : ''].filter(Boolean).join(' ');
+    return cal ? `${cal} · ${hms}` : hms;
+  }
+  // the two largest units in words, e.g. "7 years 0 months" -> "7 years"
+  function fmtWords(sec) {
+    if (sec < 1) return `${sec.toFixed(2)} seconds`;
+    const units = [['year', U.y], ['month', U.mo], ['day', U.d], ['hour', U.h], ['minute', U.m], ['second', 1]];
+    const i = units.findIndex(([, v]) => sec >= v);
+    const part = (n, q) => `${q} ${n}${q === 1 ? '' : 's'}`;
+    const v1 = units[i][1], next = units[i + 1];
+    if (!next) return part(units[i][0], Math.round(sec));
+    // round to the nearest of the smaller unit, carrying over (so 6 y 11.99 mo reads "7 years")
+    let q1 = Math.floor(sec / v1 + 1e-9), q2 = Math.round((sec - q1 * v1) / next[1]);
+    if (q2 * next[1] >= v1 - next[1] / 2) { q1++; q2 = 0; }
+    return q2 ? `${part(units[i][0], q1)} ${part(next[0], q2)}` : part(units[i][0], q1);
+  }
+  const fmtPct = r => r <= 0 ? 'stopped' : r >= 0.1 ? `${(r * 100).toFixed(0)}%` : r >= 0.001 ? `${(r * 100).toFixed(2)}%` : `${(r * 100).toPrecision(2)}%`;
+  const SUP = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+  const fmtSci = x => { const [m, e] = x.toExponential(1).split('e'); return `${m}×10${String(+e).split('').map(c => SUP[c]).join('')}`; };
+  const fmtHeight = h => h >= 0.1 ? h.toFixed(2) : h >= 0.001 ? h.toFixed(4) : fmtSci(h);
+
+  let miller = null; // { done: bool } while the Miller's planet scene is running
+  const ROMILLY = 23 * U.y + 4 * U.mo + 8 * U.d;
   function updateClocks(dt) {
+    const S = LAPSE[lapseI].s;
+    for (const c of clocks) if (state.playing) c.e += dt * c.def.rate() * S;
+    const you = clocks[0].e;
     for (const c of clocks) {
       const rate = c.def.rate();
-      if (state.playing) c.e += dt * rate;
-      c.hand.setAttribute('transform', `rotate(${((c.e / 10) * 360) % 360} 42 42)`);
-      const where = c.def.probe ? (probeDist() <= state.k ? 'inside the event horizon' : `hovering at ${probeDist().toFixed(2)} rₛ`) : c.def.where;
-      const rateTxt = rate <= 0 ? 'stopped' : `${(rate * 100).toFixed(rate < 0.1 ? 1 : 0)}%`;
-      const hourTxt = c.def.rate === clockDefs[0].rate ? 'Your clock: the reference.'
-        : rate > 0 ? `1 hour there = ${fmtHours(1 / rate)} for you` : 'Its signals never reach you.';
+      c.hand.setAttribute('transform', `rotate(${((c.e / (12 * S)) * 360) % 360} 42 42)`);
+      const pd = probeDist();
+      const where = c.def.probe ? (pd <= state.k ? 'inside the event horizon' : `${fmtHeight(pd - 1)} rₛ above the horizon`) : c.def.where;
+      const rateTxt = fmtPct(rate);
+      const hourTxt = c.def.you ? 'Your clock: the reference.'
+        : rate > 0 ? `1 hour there = ${fmtWords(3600 / rate)} for you` : 'Its signals never reach you.';
       const txt = where + rateTxt + hourTxt;
       if (txt !== c.lastText) { c.whereEl.textContent = where; c.rateEl.textContent = rateTxt; c.hourEl.textContent = hourTxt; c.lastText = txt; }
-      c.elapsedEl.textContent = fmtElapsed(c.e);
+      c.elapsedEl.textContent = fmtClock(c.e);
+      c.behindEl.textContent = c.def.you ? '' : (you - c.e >= 0.05 ? `Behind you by ${fmtWords(you - c.e)}` : 'In step with you');
+    }
+    if (miller && !miller.done && you >= ROMILLY) {
+      miller.done = true;
+      $('millerNote').textContent = `Your clock has passed 23 years, 4 months and 8 days: Romilly's wait on the Endurance. In the same time the probe's clock has moved on by only ${fmtWords(clocks[clocks.length - 1].e)}.`;
     }
   }
-  $('resetClocks').addEventListener('click', () => { for (const c of clocks) c.e = 0; });
+  function resetClocks() { for (const c of clocks) c.e = 0; }
+  $('resetClocks').addEventListener('click', () => { resetClocks(); if (miller) miller.done = false; });
 
   const probeEl = $('probeR');
   function syncProbe() {
-    const d = probeDist();
-    $('probeOut').innerHTML = `${d.toFixed(2)} r<sub>s</sub>`;
-    probeEl.value = Math.min(16, Math.max(1, d)).toFixed(2);
+    const d = probeDist(), h = d - 1;
+    $('probeOut').innerHTML = h <= 0 ? 'inside the horizon' : `${fmtHeight(h)} r<sub>s</sub>`;
+    probeEl.value = Math.min(1.18, Math.max(-10, Math.log10(Math.max(1e-10, h)))).toFixed(2);
   }
-  probeEl.addEventListener('input', () => {
-    const d = +probeEl.value, a = Math.atan2(state.probe.y, state.probe.x);
+  function setProbeDist(d) {
+    const a = Math.atan2(state.probe.y, state.probe.x);
     state.probe = { x: d * Math.cos(a), y: d * Math.sin(a) };
-    syncProbe();
+  }
+  probeEl.addEventListener('input', () => { setProbeDist(1 + Math.pow(10, +probeEl.value)); miller = null; $('millerNote').hidden = true; syncProbe(); });
+
+  // Miller's planet: 1 hour there = 7 years for you, a rate of 1/61,362.
+  // A hovering clock runs at sqrt(1 - rs/r), so it needs r = rs / (1 - f^2): about 2.7e-10 rs above the horizon.
+  $('miller').addEventListener('click', () => {
+    const f = 1 / (7 * 365.25 * 24);
+    kEl.value = 100; state.k = 1; syncReadouts();
+    setProbeDist(1 / (1 - f * f)); syncProbe();
+    if (!state.timeOn) { timeOnEl.checked = true; timeOnEl.dispatchEvent(new Event('change')); }
+    setLapse(6); resetClocks();
+    if (!state.playing) togglePlay();
+    miller = { done: false };
+    const note = $('millerNote');
+    note.textContent = "Miller's planet: the probe now hovers 2.7×10⁻¹⁰ horizon radii above the horizon, where 1 hour = 7 years for you. Time-lapse is set to 1 year per second. Watch your clock pass 23 years while the probe's clock barely reaches 3 hours.";
+    note.hidden = false;
   });
   const timeOnEl = $('timeOn');
   timeOnEl.addEventListener('change', () => { state.timeOn = timeOnEl.checked; side.classList.toggle('probe-on', state.timeOn); });
@@ -720,6 +950,7 @@ void main(){
     x = Math.max(-VIEW_HALF_W + 0.5, Math.min(VIEW_HALF_W - 0.5, x)); y = Math.max(-halfH + 0.5, Math.min(halfH - 0.5, y));
     if (Math.hypot(x, y) < 0.3) { x = 0.3; y = 0; }
     state.probe = { x, y }; syncProbe();
+    if (miller) { miller = null; $('millerNote').hidden = true; }
   }
   side.addEventListener('pointerdown', ev => {
     if (!state.timeOn) return;
@@ -733,7 +964,7 @@ void main(){
   /* ---------------- sizing + loop ---------------- */
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    for (const c of [$('gl'), side]) {
+    for (const c of [$('gl'), side, labelsCv]) {
       const w = Math.round(c.clientWidth * dpr), h = Math.round(c.clientHeight * dpr);
       if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
     }
@@ -744,7 +975,9 @@ void main(){
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const realDt = Math.max(0, (now - last) / 1000); last = now;
+    const dt = Math.min(0.05, realDt);            // animation step: capped so a slow frame doesn't jump
+    const clockDt = Math.min(1, realDt);          // clocks follow real time even at low frame rates
     if (state.playing) state.time += dt;
     if (state.sweeping) {
       state.sweepPhase += dt * (2 * Math.PI / 22);
@@ -764,7 +997,8 @@ void main(){
       gl.uniform1f(uni.uDop, state.dop ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
-    updateClocks(dt);
+    drawLabels();
+    updateClocks(clockDt);
     drawSide();
     requestAnimationFrame(frame);
   }

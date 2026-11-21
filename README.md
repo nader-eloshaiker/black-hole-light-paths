@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Pages](https://img.shields.io/github/deployments/nader-eloshaiker/black-hole-light-paths/github-pages?label=pages&style=flat-square)](https://github.com/nader-eloshaiker/black-hole-light-paths/deployments)
 
-An interactive, ray-traced simulation that answers one question: **why can you see the back of a black hole's accretion disk?**
+An interactive, ray-traced black hole simulator. It answers why you can see the back of a black hole's accretion disk, shows how gravity slows time near it, and explains the black hole Gargantua and Miller's planet from the film *Interstellar*.
 
 **▶ Try it: https://nader-eloshaiker.github.io/black-hole-light-paths/**
 
@@ -31,7 +31,9 @@ The light paths are colour-coded:
 - **Gravity strength** from 0% (light travels in straight lines) to 100% (real physics).
 - **Colour the picture by light path** to match regions of the image to their paths.
 - **Doppler brightening** to see the side of the disk moving towards you glow brighter.
-- **Time dilation**: drag a probe clock around the black hole in the side view and compare it with clocks on the disk and at the photon sphere.
+- **Labels** for the parts of the black hole on the main picture (shadow, photon ring, near side, far side bent over the top, underside bent below), which follow the picture as you change the angle.
+- **Time dilation**: drag a probe clock around the black hole and compare it with clocks on the disk and at the photon sphere. A time-lapse (up to 1 second = 1 year) shows the gap growing in minutes, days and years.
+- **Miller's planet**: recreates *Interstellar*'s 1 hour = 7 years, and explains why it needs a fast-spinning black hole like Gargantua.
 
 ## The physics
 
@@ -46,6 +48,10 @@ in units of the event-horizon radius, where `h` is the photon's specific angular
 Time dilation uses the same geometry. A clock hovering at distance `r` runs at `√(1 − rₛ/r)` of the distant observer's rate, and a clock orbiting with the disk at `√(1 − 3rₛ/2r)`. Photons in the side view are timed by the distant observer's clock, using the exact Schwarzschild coordinate speed of light, so they visibly slow near the hole (the Shapiro delay).
 
 Simplifications: the black hole does not spin, the disk spans 3 to 12 horizon radii and is infinitely thin, the disk colours and texture are artistic, and the Doppler option is an approximation.
+
+## Interstellar
+
+The picture of a lensed accretion disk is the effect behind the look of Gargantua in *Interstellar* (2014), rendered by Double Negative from equations worked out with Kip Thorne. See Thorne, *The Science of Interstellar* (2014), and James, von Tunzelmann, Franklin & Thorne, [Classical and Quantum Gravity 32, 065001 (2015)](https://doi.org/10.1088/0264-9381/32/6/065001). This project is not affiliated with the film or its makers.
 
 ## Running locally
 
