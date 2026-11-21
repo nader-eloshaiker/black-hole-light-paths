@@ -842,34 +842,39 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
           <text x="220" y="256" text-anchor="middle" class="cap-t teal" opacity="0">&#8230;and Earth doesn&#8217;t notice: same orbit, same pull.<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.000;0.430;0.450;0.950;0.970;1.000" dur="9s" repeatCount="indefinite"/></text>
         </svg>
         <svg class="dg" viewBox="0 0 440 270" role="img" aria-labelledby="gf2t">
-          <title id="gf2t">Animation: a probe flies in from Earth's orbit towards the Sun and towards a Sun-mass black hole, with a meter showing the pull. Far out both pulls are the same. The Sun's surface stops the probe at 28 g, but near the black hole the probe keeps going and the pull climbs to 1.5 trillion g at its 6 km edge.</title>
-          <defs><linearGradient id="sunBand" x1="0" x2="1"><stop offset="0" stop-color="#fff1d6"/><stop offset=".6" stop-color="#ffb25e"/><stop offset="1" stop-color="#e0742a"/></linearGradient></defs>
+          <title id="gf2t">Animation: a probe flies in from Earth's orbit towards the Sun, 1.4 million km across, and towards a black hole of the same mass, 6 km across, with a meter showing the pull. Far out both pulls are the same. The Sun's surface stops the probe at 28 g, but the black hole is so small the probe keeps going and the pull climbs to 1.5 trillion g at its edge.</title>
+          <defs>
+            <radialGradient id="sunBall" cx="217" cy="74" r="86" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff1d6"/><stop offset=".6" stop-color="#ffb25e"/><stop offset=".93" stop-color="#e0742a"/><stop offset="1" stop-color="#e0742a" stop-opacity=".25"/></radialGradient>
+            <clipPath id="sunLane"><rect x="56" y="44" width="250" height="60"/></clipPath>
+          </defs>
           <text x="16" y="26" class="hd">Fly in towards each one</text>
-          <!-- lane 1: the Sun -->
-          <text x="60" y="54" class="small orange">towards the Sun</text>
-          <rect x="60" y="62" width="237" height="16" rx="8" fill="url(#sunBand)" opacity=".85"/>
-          <line x1="297" y1="70" x2="400" y2="70" class="lane"/>
-          <circle cx="400" cy="70" r="6.5" class="probe"><animate attributeName="cx" values="400;400;297;297" keyTimes="0;0.1;0.45;1" dur="11s" repeatCount="indefinite"/></circle>
-          <rect x="60" y="86" height="7" rx="3.5" width="15.6" class="meter-sun"><animate attributeName="width" values="15.6;15.6;108.9;108.9" keyTimes="0;0.1;0.45;1" dur="11s" repeatCount="indefinite"/></rect>
-          <text x="420" y="96" text-anchor="end" class="small" opacity="1">pull 0.0006 g<animate attributeName="opacity" values="1;1;0;0" keyTimes="0.000;0.450;0.470;1.000" dur="11s" repeatCount="indefinite"/></text>
-          <text x="420" y="96" text-anchor="end" class="small orange" opacity="0">stopped at the surface: 28 g<animate attributeName="opacity" values="0;0;1;1" keyTimes="0.000;0.430;0.450;1.000" dur="11s" repeatCount="indefinite"/></text>
-          <!-- lane 2: the Sun as a black hole -->
-          <text x="60" y="126" class="small">towards a black hole of the same mass</text>
-          <circle cx="60" cy="140" r="3" class="hole"/>
-          <line x1="62" y1="140" x2="400" y2="140" class="lane"/>
-          <circle cx="400" cy="140" r="6.5" class="probe"><animate attributeName="cx" values="400;400;297;297;62;62" keyTimes="0;0.1;0.45;0.58;0.85;1" dur="11s" repeatCount="indefinite"/></circle>
-          <rect x="60" y="156" height="7" rx="3.5" width="15.6" class="meter-bh"><animate attributeName="width" values="15.6;15.6;108.9;108.9;321.7;321.7" keyTimes="0;0.1;0.45;0.58;0.85;1" dur="11s" repeatCount="indefinite"/></rect>
-          <text x="420" y="176" text-anchor="end" class="small" opacity="1">pull 0.0006 g<animate attributeName="opacity" values="1;1;0;0" keyTimes="0.000;0.450;0.470;1.000" dur="11s" repeatCount="indefinite"/></text>
-          <text x="420" y="176" text-anchor="end" class="small" opacity="0">28 g: the same so far<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.000;0.430;0.450;0.600;0.620;1.000" dur="11s" repeatCount="indefinite"/></text>
-          <text x="420" y="176" text-anchor="end" class="small" opacity="0">still climbing&#8230;<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.000;0.580;0.600;0.850;0.870;1.000" dur="11s" repeatCount="indefinite"/></text>
-          <text x="420" y="176" text-anchor="end" class="small red" opacity="0">1.5 trillion g at the edge<animate attributeName="opacity" values="0;0;1;1" keyTimes="0.000;0.830;0.850;1.000" dur="11s" repeatCount="indefinite"/></text>
-          <!-- distance markers -->
-          <line x1="297" y1="186" x2="297" y2="194" class="axis"/><text x="297" y="206" text-anchor="middle" class="small mut">Sun&#8217;s surface</text>
-          <line x1="400" y1="186" x2="400" y2="194" class="axis"/><text x="400" y="206" text-anchor="middle" class="small mut">Earth&#8217;s orbit</text>
-          <line x1="60" y1="186" x2="60" y2="194" class="axis"/><text x="60" y="206" text-anchor="middle" class="small mut">6 km</text>
-          <text x="220" y="256" text-anchor="middle" class="cap-t" opacity="1">Far out, both pull exactly the same.<animate attributeName="opacity" values="1;1;0;0" keyTimes="0.000;0.450;0.470;1.000" dur="11s" repeatCount="indefinite"/></text>
-          <text x="220" y="256" text-anchor="middle" class="cap-t orange" opacity="0">The Sun&#8217;s surface stops you here.<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.000;0.430;0.450;0.580;0.600;1.000" dur="11s" repeatCount="indefinite"/></text>
-          <text x="220" y="256" text-anchor="middle" class="cap-t teal" opacity="0">No surface to stop you: the pull keeps climbing.<animate attributeName="opacity" values="0;0;1;1" keyTimes="0.000;0.560;0.580;1.000" dur="11s" repeatCount="indefinite"/></text>
+          <!-- lane 1: the Sun, a huge ball the probe runs into -->
+          <text x="60" y="40" class="small orange">towards the Sun: 1.4 million km across</text>
+          <g clip-path="url(#sunLane)"><circle cx="217" cy="74" r="86" fill="url(#sunBall)"/></g>
+          <line x1="303" y1="74" x2="400" y2="74" class="lane"/>
+          <circle cx="400" cy="74" r="6.5" class="probe"><animate attributeName="cx" values="400;400;307;307" keyTimes="0;0.1;0.45;1" dur="11s" repeatCount="indefinite"/></circle>
+          <rect x="60" y="110" height="7" rx="3.5" width="15.6" class="meter-sun"><animate attributeName="width" values="15.6;15.6;108.9;108.9" keyTimes="0;0.1;0.45;1" dur="11s" repeatCount="indefinite"/></rect>
+          <text x="420" y="120" text-anchor="end" class="small" opacity="1">pull 0.0006 g<animate attributeName="opacity" values="1;1;0;0" keyTimes="0.000;0.450;0.470;1.000" dur="11s" repeatCount="indefinite"/></text>
+          <text x="420" y="120" text-anchor="end" class="small orange" opacity="0">stopped at the surface: 28 g<animate attributeName="opacity" values="0;0;1;1" keyTimes="0.000;0.430;0.450;1.000" dur="11s" repeatCount="indefinite"/></text>
+          <!-- lane 2: the same mass squeezed into 6 km -->
+          <text x="60" y="146" class="small">towards a black hole of the same mass: 6 km across</text>
+          <circle cx="60" cy="162" r="9" fill="rgba(255,178,94,0.18)"/>
+          <circle cx="60" cy="162" r="5" class="hole"/>
+          <line x1="68" y1="162" x2="400" y2="162" class="lane"/>
+          <circle cx="400" cy="162" r="6.5" class="probe"><animate attributeName="cx" values="400;400;307;307;72;72" keyTimes="0;0.1;0.45;0.58;0.85;1" dur="11s" repeatCount="indefinite"/></circle>
+          <rect x="60" y="176" height="7" rx="3.5" width="15.6" class="meter-bh"><animate attributeName="width" values="15.6;15.6;108.9;108.9;316.3;316.3" keyTimes="0;0.1;0.45;0.58;0.85;1" dur="11s" repeatCount="indefinite"/></rect>
+          <text x="420" y="196" text-anchor="end" class="small" opacity="1">pull 0.0006 g<animate attributeName="opacity" values="1;1;0;0" keyTimes="0.000;0.450;0.470;1.000" dur="11s" repeatCount="indefinite"/></text>
+          <text x="420" y="196" text-anchor="end" class="small" opacity="0">28 g: the same so far<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.000;0.430;0.450;0.600;0.620;1.000" dur="11s" repeatCount="indefinite"/></text>
+          <text x="420" y="196" text-anchor="end" class="small" opacity="0">still climbing&#8230;<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.000;0.580;0.600;0.850;0.870;1.000" dur="11s" repeatCount="indefinite"/></text>
+          <text x="420" y="196" text-anchor="end" class="small red" opacity="0">1.5 trillion g at the edge<animate attributeName="opacity" values="0;0;1;1" keyTimes="0.000;0.830;0.850;1.000" dur="11s" repeatCount="indefinite"/></text>
+          <!-- distance markers (stretched scale: each step is 10x further) -->
+          <line x1="303" y1="204" x2="303" y2="210" class="axis"/><text x="303" y="221" text-anchor="middle" class="small mut">Sun&#8217;s surface</text>
+          <line x1="400" y1="204" x2="400" y2="210" class="axis"/><text x="400" y="221" text-anchor="middle" class="small mut">Earth&#8217;s orbit</text>
+          <line x1="60" y1="204" x2="60" y2="210" class="axis"/><text x="60" y="221" text-anchor="middle" class="small mut">6 km</text>
+          <text x="220" y="236" text-anchor="middle" class="small mut">distance stretched: each step left is 10&#215; closer</text>
+          <text x="220" y="258" text-anchor="middle" class="cap-t" opacity="1">Far out, both pull exactly the same.<animate attributeName="opacity" values="1;1;0;0" keyTimes="0.000;0.450;0.470;1.000" dur="11s" repeatCount="indefinite"/></text>
+          <text x="220" y="258" text-anchor="middle" class="cap-t orange" opacity="0">The Sun&#8217;s surface stops you here.<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.000;0.430;0.450;0.580;0.600;1.000" dur="11s" repeatCount="indefinite"/></text>
+          <text x="220" y="258" text-anchor="middle" class="cap-t teal" opacity="0">No surface to stop you: the pull keeps climbing.<animate attributeName="opacity" values="0;0;1;1" keyTimes="0.000;0.560;0.580;1.000" dur="11s" repeatCount="indefinite"/></text>
         </svg>
       </div>
       <figcaption>Far away, a black hole pulls exactly like a star of the same mass. Only up close, where the star&#8217;s surface would be, does it get extreme.</figcaption>
