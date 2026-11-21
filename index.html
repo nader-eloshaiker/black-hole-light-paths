@@ -775,16 +775,21 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <span class="leg">Leg 4 of 4</span>
         <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg4t">
           <title id="lg4t">Animation: Miller's planet orbits Gargantua in free fall, while a Ranger trying to hover in place has to fire its rocket against gravity.</title>
-          <defs><marker id="ar-r4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker><marker id="ar-m4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker></defs>
+          <defs><marker id="ar-t4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker><marker id="ar-o4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffb25e"/></marker><marker id="ar-r4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker><marker id="ar-m4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c94a8"/></marker></defs>
           <circle cx="150" cy="104" r="70" class="orbit"/>
           <circle cx="150" cy="104" r="24" class="hole"/>
           <g>
+            <line x1="0" y1="0" x2="34" y2="0" stroke="#5fd4c4" stroke-width="2" marker-end="url(#ar-t4)"/>
+            <line x1="0" y1="0" x2="0" y2="26" stroke="#ffb25e" stroke-width="2" marker-end="url(#ar-o4)"/>
+            <animateMotion dur="9s" repeatCount="indefinite" rotate="auto" path="M150 34 A70 70 0 1 1 150 174 A70 70 0 1 1 150 34"/>
+          </g>
+          <g>
             <use href="#sym-miller" x="-14" y="-14" width="28" height="28"/>
-            <text x="16" y="4" class="small" fill="#9cc6ff">Miller&#8217;s planet</text>
+            <text x="16" y="-10" class="small" fill="#9cc6ff">Miller&#8217;s planet</text>
             <animateMotion dur="9s" repeatCount="indefinite" path="M150 34 A70 70 0 1 1 150 174 A70 70 0 1 1 150 34"/>
           </g>
-          <text x="10" y="22" class="teal">The planet orbits:</text>
-          <text x="10" y="36" class="teal">free fall, no strain</text>
+          <text x="10" y="22" class="teal">&#8594; moving sideways</text>
+          <text x="10" y="36" class="orange">&#8595; always falling in</text>
           <g class="a-shake">
             <polygon points="186,98 172,104 186,110" class="flame a-flicker" style="transform-origin:186px 104px"/>
             <use href="#sym-ranger" x="184" y="96" width="28" height="16"/>
@@ -796,11 +801,12 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
           <text x="310" y="176" text-anchor="end" class="red">&#8776; a billion g</text>
         </svg>
         <h3>Stay there: orbit, don&#8217;t hover</h3>
-        <p>The planet can stay so close because it orbits, falling around Gargantua. Holding still there on rockets would crush the crew.</p>
+        <p>An orbit is falling that never ends. That&#8217;s why the planet can stay so close for free, while holding still on rockets would crush the crew.</p>
         <ol class="why" aria-label="Why">
-          <li>Falling feels like floating. Astronauts on the Space Station float because they are falling around Earth all the time, not because gravity is gone.</li>
-          <li>You only feel weight when something pushes back against gravity. Standing up, the ground pushes on your feet: that push is your 1 g.</li>
-          <li>To hover, your rockets must do that pushing. Near the horizon, where even light can barely climb out, the push needed grows without limit.</li>
+          <li>The planet is <b>always falling</b> towards Gargantua (orange arrow). Nothing holds it up.</li>
+          <li>But it is also racing <b>sideways</b> (teal arrow). In the time it falls a little, it has moved so far sideways that the hole has curved away beneath it. It falls, and keeps missing.</li>
+          <li>That endless fall is an orbit. It costs no fuel, and because the planet and everything on it fall together, nobody feels a thing. Astronauts on the Space Station float for the same reason.</li>
+          <li>Stop moving sideways and you drop straight in. To stay put instead, rockets must push back against the fall the whole time; near the horizon that push is about a billion g.</li>
         </ol>
       </article>
     </div>
@@ -1393,10 +1399,40 @@ void main(){
       ctx.fillStyle = COL_TIME; ctx.beginPath(); ctx.moveTo(mx - 6 * dpr, H - 12 * dpr); ctx.lineTo(mx + 6 * dpr, H - 12 * dpr); ctx.lineTo(mx, H - 2 * dpr); ctx.closePath(); ctx.fill();
       ctx.restore();
     }
-    // your own clock is far off this map
+    // live clocks: yours (far away, full speed) and one on each time ring, ticking at that ring's rate.
+    // One turn of the hand = 4 s of your time; a ripple marks each tick, so clocks near the hole pulse slowly.
     if (kind === 'time') {
-      ctx.font = font(11, 500); ctx.fillStyle = 'rgba(231,233,240,0.85)'; ctx.textAlign = 'right'; ctx.textBaseline = 'top';
-      ctx.fillText('your clock: far away, off the map →', W - 10 * dpr, 10 * dpr);
+      const drawClock = (x, y, R, rate, col) => {
+        const t = state.time * rate;                       // this clock's own elapsed time (s)
+        const ph = t % 1;                                  // ripple once per tick of its own seconds
+        ctx.strokeStyle = col; ctx.globalAlpha = 0.55 * (1 - ph); ctx.lineWidth = 1.2 * dpr;
+        ctx.beginPath(); ctx.arc(x, y, R + ph * 12 * dpr, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = 'rgba(5,6,10,0.92)'; ctx.lineWidth = 1.5 * dpr;
+        ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        const a = t / 4 * Math.PI * 2;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.sin(a) * R * 0.78, y - Math.cos(a) * R * 0.78); ctx.stroke();
+      };
+      // your clock, top right
+      ctx.font = font(11, 500); ctx.fillStyle = 'rgba(231,233,240,0.85)'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText('your clock, far away: 100%', W - 34 * dpr, 20 * dpr);
+      drawClock(W - 18 * dpr, 20 * dpr, 9 * dpr, 1, '#e7e9f0');
+      // one clock on each ring, lower left, where nothing else is drawn
+      if (state.k > 0.001) {
+        const ringClocks = [[0.9, 208], [0.75, 222], [0.5, 236], [0.25, 250]];
+        for (const [f, deg] of ringClocks) {
+          const rr = state.k / (1 - f * f), a = deg * Math.PI / 180;
+          drawClock(X(rr * Math.cos(a)), Y(rr * Math.sin(a)), (f > 0.3 ? 8 : 6) * dpr, f, COL_TIME);
+        }
+      }
+      // gas drifting along the disk (inner gas faster, like the real disk)
+      ctx.fillStyle = 'rgba(255,241,214,0.9)';
+      for (let i = 0; i < 14; i++) {
+        const r0 = RIN + (i % 7) * (ROUT - RIN) / 7 + 0.4;
+        const ph = (state.time * 4 * Math.pow(r0, -1.5) / (2 * Math.PI) + i * 0.37) % 1;
+        const xx = r0 * Math.cos(ph * 2 * Math.PI) * (i < 7 ? 1 : -1);
+        ctx.beginPath(); ctx.arc(X(xx), Y(0), 1.8 * dpr, 0, Math.PI * 2); ctx.fill();
+      }
     }
     // probe clock
     if (kind === 'time') {
