@@ -453,6 +453,13 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 @keyframes dgXray { to { stroke-dashoffset: -24; } }
 .anim-paused .dg * { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) { .dg * { animation: none !important; } }
+.why { list-style: none; counter-reset: why; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+.why li { counter-increment: why; position: relative; padding-left: 30px; font-size: 13.5px; line-height: 1.45; color: #c9cdd8; }
+.why li::before { content: counter(why); position: absolute; left: 0; top: 0; width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center; font: 600 11px var(--mono); color: #06070b; background: var(--scale); }
+.why.wide { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 20px; }
+@media (max-width: 1100px) { .why.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .why.wide { grid-template-columns: 1fr; } }
 /* ---- Miller's planet story ---- */
 .story { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--time); border-radius: 8px; background: rgba(180,156,255,0.05); }
 .story-head { display: grid; gap: 4px; min-height: 64px; }
@@ -696,6 +703,12 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         </svg>
         <h3>Gravity wouldn&#8217;t crush you</h3>
         <p>What hurts is the <b>difference</b> in pull between your head and feet. Small black holes stretch you; giant ones barely notice you.</p>
+        <ol class="why" aria-label="Why">
+          <li>Gravity weakens with distance, so your feet, being closer, are pulled a bit harder than your head.</li>
+          <li>Falling, you don&#8217;t feel the pull itself: every part of you falls together. You only feel that <b>difference</b>, as a stretch.</li>
+          <li>The difference depends on how big you are compared with your distance from the centre. At a 10-Sun black hole the edge is 30 km out, so your 2 m is a big slice of it: huge stretch.</li>
+          <li>Gargantua&#8217;s edge is 300 million km out. Your 2 m is nothing by comparison, so head and feet feel the same pull.</li>
+        </ol>
       </article>
       <article>
         <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg2t">
@@ -721,6 +734,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         </svg>
         <h3>Hovering would</h3>
         <p>In orbit you float. Hovering means rockets fighting gravity: about a billion g near the horizon.</p>
+        <ol class="why" aria-label="Why">
+          <li>Falling feels like floating. Astronauts on the Space Station float because they are falling around Earth all the time, not because gravity is gone.</li>
+          <li>You only feel weight when something pushes back against gravity. Standing up, the ground pushes on your feet: that push is your 1 g.</li>
+          <li>To hover, your rockets must do that pushing. Near the horizon, where even light can barely climb out, the push needed grows without limit.</li>
+        </ol>
       </article>
       <article>
         <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="dg3t">
@@ -806,6 +824,12 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         </svg>
       </div>
       <figcaption>Far away, a black hole pulls exactly like a star of the same mass. Only up close, where the star&#8217;s surface would be, does it get extreme.</figcaption>
+      <ol class="why wide" aria-label="Why">
+        <li>Gravity depends only on two things: how much mass there is, and how far you are from its centre.</li>
+        <li>Squeezing the Sun into a black hole doesn&#8217;t change its mass, so at Earth&#8217;s distance the pull is exactly the same.</li>
+        <li>What changes is how close you can get. The Sun&#8217;s surface stops you 700,000 km from its centre; the black hole is only 6 km across.</li>
+        <li>Each time you halve your distance, the pull goes up 4 times. Getting 100,000 times closer than the Sun&#8217;s surface makes it 10 billion times stronger.</li>
+      </ol>
     </figure>
 
     <div class="survive-live">
