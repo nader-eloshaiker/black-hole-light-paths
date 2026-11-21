@@ -132,6 +132,14 @@
     },
     {
       "@type": "Question",
+      "name": "Why doesn't Gargantua's accretion disk kill the crew with X-rays?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Gas spiralling into a black hole is heated by friction, and the hotter it gets, the more energetic the light it gives off. A busy disk with lots of gas pouring in reaches millions of degrees and shines in deadly X-rays. Kip Thorne gave Gargantua an anemic disk with only a trickle of gas, about as hot as the Sun's surface, so it glows in ordinary light instead."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "Would Earth be pulled in if the Sun became a black hole?",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -704,29 +712,80 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         </svg>
         <h3>Catch the planet</h3>
         <p>Miller&#8217;s planet races around Gargantua at a big fraction of light speed: far too fast to catch with rockets. So the Endurance borrows speed from gravity, swinging past a massive object to change speed without fuel.</p>
+        <ol class="why" aria-label="Why">
+          <li>The closer an orbit, the faster it must go. Miller&#8217;s planet orbits so close to Gargantua that it moves incredibly fast, and the Endurance has to match that speed to reach it.</li>
+          <li>Rockets can&#8217;t manage it. Every extra bit of speed needs fuel to push the ship <b>and</b> all the fuel not yet burnt, so the fuel needed grows exponentially.</li>
+          <li>A slingshot borrows speed instead. The ship falls towards a moving massive object and climbs away again. Measured from that object, it leaves as fast as it arrived, only in a new direction.</li>
+          <li>That object is itself moving around Gargantua, so the new direction adds to (or takes away from) the ship&#8217;s speed around Gargantua. Think of a tennis ball coming off a swinging racquet. In the film, Cooper plans to use a neutron star.</li>
+        </ol>
       </article>
       <article>
         <span class="leg">Leg 2 of 4</span>
         <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg2t">
-          <title id="lg2t">Animation: the Ranger lander dives in over the top of Gargantua's glowing disk while X-rays stream off it and the Endurance waits above.</title>
-          <defs><linearGradient id="dkg" x1="0" x2="1"><stop offset="0" stop-color="#ffb25e" stop-opacity="0"/><stop offset=".3" stop-color="#ffb25e" stop-opacity=".9"/><stop offset=".5" stop-color="#fff1d6"/><stop offset=".7" stop-color="#ffb25e" stop-opacity=".9"/><stop offset="1" stop-color="#ffb25e" stop-opacity="0"/></linearGradient></defs>
-          <ellipse cx="160" cy="132" rx="132" ry="11" fill="url(#dkg)" class="a-glow"/>
-          <circle cx="160" cy="132" r="19" class="hole"/>
-          <path d="M28 132 A132 11 0 0 0 292 132" fill="none" stroke="url(#dkg)" stroke-width="4"/>
-          <path d="M112 118 l-5 -7 l6 -5 l-5 -7 l6 -5 l-5 -7" class="xray a-xray"/>
-          <path d="M212 118 l5 -7 l-6 -5 l5 -7 l-6 -5 l5 -7" class="xray a-xray"/>
-          <path d="M128 146 l-5 7 l6 5 l-5 7 l6 5" class="xray a-xray"/>
-          <path d="M196 146 l5 7 l-6 5 l5 7 l-6 5" class="xray a-xray"/>
-          <use href="#sym-endurance" x="20" y="10" width="26" height="26"/>
-          <text x="50" y="28" class="small mut">Endurance waits</text>
-          <path id="divePath" d="M40 34 Q150 26 166 104" class="path-t"/>
-          <g><use href="#sym-ranger" x="-12" y="-7" width="24" height="14"/><animateMotion dur="4s" repeatCount="indefinite" rotate="auto"><mpath href="#divePath"/></animateMotion></g>
-          <text x="14" y="78" class="teal">Ranger dives</text>
-          <text x="14" y="92" class="teal">over the disk</text>
-          <text x="308" y="66" text-anchor="end" class="red">X-rays</text>
+          <title id="lg2t">Animation in two parts. First a busy disk: a clump of gas spirals in, heats from red to white to X-ray hot, and X-rays hit the Ranger diving over the disk. Then Gargantua's quiet disk: the gas only gets as hot as the Sun's surface, gives off ordinary light and no X-rays, and the Ranger is safe.</title>
+          <defs>
+            <radialGradient id="dkBusy"><stop offset="0" stop-color="#cfe6ff" stop-opacity="0"/><stop offset=".13" stop-color="#cfe6ff" stop-opacity="0"/><stop offset=".17" stop-color="#e8f2ff"/><stop offset=".36" stop-color="#fff1d6" stop-opacity=".85"/><stop offset=".62" stop-color="#ff8a3d" stop-opacity=".5"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient>
+            <radialGradient id="dkQuiet"><stop offset="0" stop-color="#fff1d6" stop-opacity="0"/><stop offset=".13" stop-color="#fff1d6" stop-opacity="0"/><stop offset=".17" stop-color="#ffe2b0" stop-opacity=".9"/><stop offset=".42" stop-color="#ffb25e" stop-opacity=".65"/><stop offset=".72" stop-color="#d2412f" stop-opacity=".35"/><stop offset="1" stop-color="#d2412f" stop-opacity="0"/></radialGradient>
+            <linearGradient id="thermoG" gradientUnits="userSpaceOnUse" x1="0" y1="170" x2="0" y2="40"><stop offset="0" stop-color="#8a1f1a"/><stop offset=".25" stop-color="#ff6a2a"/><stop offset=".53" stop-color="#fff1d6"/><stop offset=".75" stop-color="#cfe6ff"/><stop offset="1" stop-color="#b48cff"/></linearGradient>
+            <clipPath id="dkFront"><path d="M124 124 A16 16 0 0 0 156 124 Z"/></clipPath>
+          </defs>
+          <g id="dk2">
+            <ellipse cx="140" cy="124" rx="112" ry="30" fill="url(#dkBusy)"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.51;0.97;1"/></ellipse>
+            <ellipse cx="140" cy="124" rx="112" ry="30" fill="url(#dkQuiet)" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.51;0.97;1"/></ellipse>
+          </g>
+          <path d="M252.0 124.0 L250.8 126.6 L248.8 129.2 L246.0 131.7 L242.4 134.1 L238.0 136.3 L233.0 138.5 L227.4 140.5 L221.1 142.4 L214.3 144.1 L207.1 145.6 L199.4 146.9 L191.4 148.1 L183.2 149.0 L174.7 149.7 L166.0 150.2 L157.3 150.6 L148.6 150.7 L140.0 150.6 L131.5 150.3 L123.2 149.8 L115.1 149.1 L107.4 148.2 L100.0 147.2 L93.0 146.0 L86.5 144.6 L80.6 143.1 L75.1 141.5 L70.3 139.8 L66.0 138.0 L62.4 136.1 L59.5 134.1 L57.2 132.1 L55.6 130.1 L54.6 128.1 L54.4 126.0 L54.8 124.0 L55.8 122.0 L57.5 120.1 L59.7 118.2 L62.6 116.4 L66.0 114.7 L69.9 113.1 L74.2 111.6 L79.0 110.2 L84.2 108.9 L89.7 107.8 L95.6 106.9 L101.6 106.0 L107.8 105.4 L114.2 104.9 L120.7 104.5 L127.1 104.3 L133.6 104.3 L140.0 104.4 L146.3 104.6 L152.4 105.0 L158.3 105.6 L163.9 106.3 L169.3 107.0 L174.3 108.0 L179.0 109.0 L183.2 110.1 L187.1 111.3 L190.5 112.6 L193.5 113.9 L196.0 115.3 L198.0 116.7 L199.5 118.2 L200.5 119.6 L201.1 121.1 L201.1 122.6 L200.7 124.0 L199.8 125.4 L198.5 126.8 L196.8 128.1 L194.6 129.4 L192.1 130.6 L189.3 131.7 L186.1 132.7 L182.6 133.7 L178.9 134.5 L174.9 135.2 L170.8 135.9 L166.6 136.4 L162.2 136.8 L157.7 137.2 L153.3 137.4 L148.8 137.5 L144.4 137.5 L140.0 137.4 L135.7 137.1 L131.6 136.8 L127.7 136.4 L123.9 135.9 L120.4 135.4 L117.1 134.7 L114.0 134.0 L111.3 133.2 L108.8 132.4 L106.6 131.6 L104.8 130.7 L103.3 129.7 L102.1 128.8 L101.2 127.8 L100.7 126.8 L100.5 125.9 L100.6 124.9 L101.0 124.0 L101.7 123.1 L102.7 122.2 L103.9 121.4 L105.4 120.6 L107.1 119.9 L109.0 119.2 L111.2 118.5 L113.4 118.0 L115.8 117.5 L118.4 117.0 L121.0 116.7 L123.7 116.4 L126.4 116.1 L129.2 116.0 L132.0 115.9 L134.7 115.9 L137.4 115.9 L140.0 116.0 L142.5 116.2 L145.0 116.4 L147.3 116.7 L149.5 117.0 L151.5 117.3 L153.4 117.8 L155.1 118.2 L156.6 118.7 L157.9 119.2 L159.1 119.7 L160.0 120.2 L160.8 120.8 L161.4 121.3 L161.8 121.9 L162.0 122.4 L162.0 123.0 L161.8 123.5 L161.5 124.0 L161.0 124.5 L160.4 125.0 L159.7 125.4 L158.8 125.8 L157.8 126.2 L156.7 126.6 L155.5 126.9 L154.2 127.2 L152.9 127.5 L151.5 127.7 L150.1 127.9 L148.7 128.1 L147.2 128.2 L145.7 128.3 L144.3 128.3 L142.8 128.3 L141.4 128.3 L140.0 128.3" id="gasSpiral" fill="none" stroke="#ffb25e" stroke-opacity=".22" stroke-width="1" stroke-dasharray="2 3"/>
+          <g fill="#d2412f" opacity="0">
+            <circle r="7" fill-opacity=".35"/><circle r="3.4"/>
+            <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.04;0.40;1"><mpath href="#gasSpiral"/></animateMotion>
+            <animate attributeName="fill" dur="12s" repeatCount="indefinite" values="#d2412f;#d2412f;#ff8a3d;#fff1d6;#cfe6ff;#b48cff;#b48cff" keyTimes="0;0.04;0.16;0.27;0.34;0.40;1"/>
+            <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.03;0.05;0.40;0.42;1"/>
+          </g>
+          <g fill="#d2412f" opacity="0">
+            <circle r="7" fill-opacity=".35"/><circle r="3.4"/>
+            <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.54;0.90;1"><mpath href="#gasSpiral"/></animateMotion>
+            <animate attributeName="fill" dur="12s" repeatCount="indefinite" values="#d2412f;#d2412f;#ff8a3d;#ffd59a;#fff1d6;#fff1d6" keyTimes="0;0.54;0.68;0.80;0.90;1"/>
+            <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.53;0.55;0.90;0.92;1"/>
+          </g>
+          <circle cx="140" cy="124" r="15" class="hole"/>
+          <use href="#dk2" clip-path="url(#dkFront)"/>
+          <g opacity="0">
+            <path d="M126 100 l-5 -7 l6 -5 l-5 -7 l6 -5 l-5 -7" class="xray a-xray"/>
+            <path d="M156 100 l5 -7 l-6 -5 l5 -7 l-6 -5 l5 -7" class="xray a-xray"/>
+            <path d="M92 104 l-7 -4 l3 -6 l-7 -4 l3 -6" class="xray a-xray"/>
+            <path d="M190 104 l7 -4 l-3 -6 l7 -4 l-3 -6" class="xray a-xray"/>
+            <path d="M126 152 l-5 7 l6 5" class="xray a-xray"/>
+            <path d="M156 152 l5 7 l-6 5" class="xray a-xray"/>
+            <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.24;0.27;0.44;0.47;1"/>
+          </g>
+          <path id="divePath" d="M30 48 Q112 36 122 84" class="path-t" stroke-opacity=".55"/>
+          <g opacity="0">
+            <circle r="13" fill="none" stroke="#ff7a7a" stroke-width="2" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;.3;1;0;0" keyTimes="0;0.27;0.31;0.36;0.41;0.46;1"/></circle>
+            <use href="#sym-ranger" x="-12" y="-7" width="24" height="14"/>
+            <animateMotion dur="12s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;0;1;1;0;0;1;1" keyTimes="0;0.04;0.36;0.49;0.5;0.54;0.86;1"><mpath href="#divePath"/></animateMotion>
+            <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;1;1;0;0;1;1;0;0" keyTimes="0;0.03;0.45;0.48;0.51;0.54;0.95;0.98;1"/>
+          </g>
+          <g><text x="10" y="18" class="red">Busy disk: gas pours in</text><text x="10" y="32" class="small mut">millions of &#176;C &#8594; X-rays</text><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.51;0.97;1"/></g>
+          <g opacity="0"><text x="10" y="18" class="teal">Gargantua: a trickle of gas</text><text x="10" y="32" class="small mut">Sun-hot &#8594; ordinary light</text><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.51;0.97;1"/></g>
+          <text x="10" y="184" class="red" opacity="0">X-rays hit the Ranger: deadly<animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.29;0.32;0.45;0.48;1"/></text>
+          <text x="10" y="184" class="teal" opacity="0">No X-rays: the Ranger is safe<animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.80;0.83;0.95;0.98;1"/></text>
+          <text x="303" y="33" text-anchor="middle" class="small mut">heat</text>
+          <rect x="298" y="40" width="10" height="130" rx="4" fill="#161a26" stroke="#3a4152"/>
+          <rect x="299" y="169" width="8" height="0" rx="3" fill="url(#thermoG)">
+            <animate attributeName="y" dur="12s" repeatCount="indefinite" values="169;169;44;44;169;169;100;100;169" keyTimes="0;0.04;0.40;0.46;0.5;0.54;0.90;0.96;1"/>
+            <animate attributeName="height" dur="12s" repeatCount="indefinite" values="0;0;125;125;0;0;69;69;0" keyTimes="0;0.04;0.40;0.46;0.5;0.54;0.90;0.96;1"/>
+          </rect>
+          <line x1="292" y1="48" x2="297" y2="48" stroke="#8c94a8"/><text x="290" y="51" text-anchor="end" class="small" style="fill:#b48cff">X-rays</text>
+          <line x1="292" y1="100" x2="297" y2="100" stroke="#8c94a8"/><text x="290" y="103" text-anchor="end" class="small" style="fill:#fff1d6">Sun</text>
+          <line x1="292" y1="138" x2="297" y2="138" stroke="#8c94a8"/><text x="290" y="141" text-anchor="end" class="small" style="fill:#ff6a2a">red-hot</text>
         </svg>
-        <h3>Cross the disk</h3>
-        <p>Gargantua is wrapped in a thin disk of glowing gas. The Ranger dives in from above it, never through it. A busy disk&#8217;s X-rays would be deadly; the film gives Gargantua a quiet, cool one.</p>
+        <h3>Cross the disk: could its glow kill you?</h3>
+        <p>Gargantua is wrapped in a disk of gas spiralling into it. A busy disk would cook you with X-rays; the film&#8217;s disk is deliberately quiet, and the Ranger dives in over it, never through it.</p>
+        <ol class="why" aria-label="Why">
+          <li>The gas orbits as it spirals in. Inner rings race faster than outer ones, so they rub, and that friction turns the energy of the fall into heat. Falling into a black hole releases many times more energy than nuclear fusion does.</li>
+          <li>Hot things glow, and the hotter they are, the more energy each particle of light (photon) carries. A stove ring glows red, the Sun&#8217;s surface white, and gas at millions of degrees shines in X-rays: watch the heat bar.</li>
+          <li>How hot the disk gets depends on how much gas is pouring in. A busy disk reaches millions of degrees and floods the space around it with X-rays, enough to kill the crew and fry the ship&#8217;s electronics, even through the hull.</li>
+          <li>Kip Thorne, the film&#8217;s science adviser, gave Gargantua an &#8220;anemic&#8221; disk: only a trickle of gas, about as hot as the Sun&#8217;s surface. It shines in ordinary light rather than X-rays, so the crew can survive close to it.</li>
+        </ol>
       </article>
       <article>
         <span class="leg">Leg 3 of 4</span>
