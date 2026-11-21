@@ -489,6 +489,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .srow { display: grid; grid-template-columns: minmax(150px, 260px) minmax(0, 1fr) 190px; gap: 12px; align-items: center; }
 .sname { font-size: 14px; font-weight: 500; } .sname small { color: var(--muted); font-weight: 400; }
 .strack { position: relative; height: 14px; background: var(--line); border-radius: 7px; overflow: hidden; }
+.sbar { position: relative; padding-bottom: 16px; }
+.sticks { position: absolute; left: 0; right: 0; top: 0; bottom: 0; pointer-events: none; }
+.sticks span { position: absolute; top: 0; height: 14px; border-left: 1px solid rgba(231,233,240,.55); }
+.sticks span b { position: absolute; top: 15px; left: 0; transform: translateX(-50%); font: 500 11px var(--mono); color: var(--muted); white-space: nowrap; }
 .sfill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #ffb25e; border-radius: 7px; }
 .sfill.planet { background: var(--time); min-width: 1px; }
 .stime { text-align: right; font-family: var(--mono); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -599,9 +603,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <h3>Miller&#8217;s planet</h3>
         <p class="story-cap" id="storyCap"></p>
       </div>
-      <div class="srow"><span class="sname">On the Endurance <small>(Romilly)</small></span><div class="strack"><span class="sfill" id="sFillShip"></span></div><span class="stime" id="sTimeShip"></span></div>
-      <div class="srow"><span class="sname">On Miller&#8217;s planet <small>(Cooper, Brand, Doyle)</small></span><div class="strack"><span class="sfill planet" id="sFillPlanet"></span></div><span class="stime" id="sTimePlanet"></span></div>
-      <p class="snote">Both bars use the same scale, from 0 to 23 years, 4 months and 8 days. The planet&#8217;s bar is too small to see at this scale.</p>
+      <div class="srow"><span class="sname">On the Endurance <small>(Romilly)</small></span><div class="sbar"><div class="strack"><span class="sfill" id="sFillShip"></span></div><div class="sticks" data-unit="y"></div></div><span class="stime" id="sTimeShip"></span></div>
+      <div class="srow"><span class="sname">On Miller&#8217;s planet <small>(Cooper, Brand, Doyle)</small></span><div class="sbar"><div class="strack"><span class="sfill planet" id="sFillPlanet"></span></div><div class="sticks" data-unit="h"></div></div><span class="stime" id="sTimePlanet"></span></div>
+      <p class="snote">The bars fill together because they show the same moments. Read the marks: every hour on the planet lines up with 7 years on the ship.</p>
       <div class="btns">
         <button id="storySkip" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14l10-7z" fill="currentColor" stroke="none"/><rect x="16.5" y="5" width="2.5" height="14" rx="1" fill="currentColor" stroke="none"/></svg><span>Skip to the end</span></button>
         <button id="storyReplay" type="button" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.35-5.65"/><path d="M4 4.5V9h4.5"/></svg><span>Replay</span></button>
@@ -627,8 +631,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
       </div>
       <ul class="mini-key" aria-label="Key to the time map">
         <li><i style="background:var(--time)"></i>Time rings: clock speed compared with yours</li>
-        <li><i style="background:linear-gradient(90deg,#ff4628,#cee8ff);height:6px;width:16px;border-radius:3px"></i>Beeps: one per second of each clock&#8217;s own time. Deeper clocks&#8217; beeps reach you less often, and redder</li>
-        <li><i style="background:var(--time);height:10px;width:10px;border-radius:50%"></i>Your probe: drag it</li>
+        <li><i style="background:var(--time);height:10px;width:10px;border-radius:50%"></i>Clocks: each hand turns at the speed time passes there. Yours, top right, sets the pace</li>
+        <li><i style="border:2px dashed var(--time);height:10px;width:10px;border-radius:50%;background:none"></i>Your probe clock: drag it</li>
         <li><i style="background:var(--scale)"></i>Real-world comparisons</li>
       </ul>
       <div class="scale-row">
@@ -1055,7 +1059,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     inc: 8, k: 1, mode: false, dop: false, sweeping: false,
     playing: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     time: 0, sweepPhase: 0,
-    timeOn: true, labelsOn: true, shipOn: true, scale: 'gargantua', probe: { x: 2.6, y: 2.6 }
+    timeOn: true, labelsOn: true, shipOn: true, scale: '', probe: { x: 2.6, y: 2.6 }
   };
   const COL_TIME = '#b49cff';
   function syncPlayBtn() {
@@ -1349,6 +1353,7 @@ void main(){
   }
 
   // kind 'light': the side view of light paths. kind 'time': the time map (rings, probe, real-world size).
+  let scene = null; // Miller's planet scene: { phase: 'run' | 'end', cap: 0..2 }
   function drawCanvas(cv, cctx, kind) {
     const W = cv.width, H = cv.height; if (!W) return;
     const sc = W / (2 * VIEW_HALF_W), cx = W / 2, cy = H / 2;
@@ -1363,6 +1368,8 @@ void main(){
     for (let g = -16; g <= 16; g += 2) { ctx.moveTo(X(g), 0); ctx.lineTo(X(g), H); ctx.moveTo(0, Y(g)); ctx.lineTo(W, Y(g)); }
     ctx.stroke();
 
+    // clock face size on a time ring: as big as fits outside the horizon, or none if it would be too small to read
+    const ringClockR = rr => { const R = Math.min(8 * dpr, (rr - state.k) * sc - 2 * dpr); return R >= 4.5 * dpr ? R : 0; };
     // time-rate rings: where a hovering clock runs at f of the distant rate, r = rs / (1 - f^2)
     if (kind === 'time' && state.k > 0.001) {
       const glow = ctx.createRadialGradient(X(0), Y(0), sc * 1, X(0), Y(0), sc * Math.max(1.5, 9 * state.k));
@@ -1376,7 +1383,8 @@ void main(){
         ctx.strokeStyle = 'rgba(180,156,255,0.45)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([2 * dpr, 3 * dpr]);
         ctx.beginPath(); ctx.arc(X(0), Y(0), rr * sc, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
         if (angDeg !== null && rr * sc > 14 * dpr) {
-          const a = angDeg * Math.PI / 180, lx = X(rr * Math.cos(a)), ly = Y(rr * Math.sin(a));
+          const cR = ringClockR(rr), a = angDeg * Math.PI / 180, out = rr * sc + (cR ? cR + 11 * dpr : 0);
+          const lx = X(0) + Math.cos(a) * out, ly = Y(0) - Math.sin(a) * out;
           const label = Math.round(f * 100) + '%';
           const tw = ctx.measureText(label).width + 6 * dpr;
           ctx.fillStyle = 'rgba(5,6,10,0.85)'; ctx.fillRect(lx - tw / 2, ly - 7 * dpr, tw, 14 * dpr);
@@ -1491,9 +1499,7 @@ void main(){
       ctx.font = font(11, 500); ctx.fillStyle = '#e7e9f0'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
       ctx.fillText(`${sig(nice)} ${un}`, X(sx + len / 2), Y(sy) - 6 * dpr);
       // a pulse of light runs along the bar; the label says how long real light takes to cover it
-      const lightT = nice * uv / C, fr = (state.time / 2.5) % 1;
-      ctx.fillStyle = '#fff6c8'; ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.arc(X(sx + len * fr), Y(sy), 6 * dpr, 0, Math.PI * 2); ctx.fill();
-      ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(X(sx + len * fr), Y(sy), 2.6 * dpr, 0, Math.PI * 2); ctx.fill();
+      const lightT = nice * uv / C;
       ctx.font = font(10, 500); ctx.fillStyle = '#fff6c8'; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
       ctx.fillText(`light takes ${fmtSpan(lightT)}`, X(sx + len), Y(sy) - 20 * dpr);
     }
@@ -1528,46 +1534,29 @@ void main(){
       ctx.fillStyle = COL_TIME; ctx.beginPath(); ctx.moveTo(mx - 6 * dpr, H - 12 * dpr); ctx.lineTo(mx + 6 * dpr, H - 12 * dpr); ctx.lineTo(mx, H - 2 * dpr); ctx.closePath(); ctx.fill();
       ctx.restore();
     }
-    // Beeps: every clock sends you a beep (a pulse of light) once per second of its OWN time.
-    // How often they reach your clock shows how fast that clock runs; deeper clocks' beeps also arrive redder.
+    // Clocks: one sits on each time ring, and every hand turns at the speed time passes there.
+    // Yours, far away, sets the pace: one turn every 4 seconds. Each face flashes as its hand passes 12.
     if (kind === 'time') {
-      const tx = W - 18 * dpr, ty = 20 * dpr, now = state.time, speed = 230 * dpr;
-      const beepCol = f => { const k = Math.max(0, Math.min(1, f)); const c = [255 + (206 - 255) * k, 70 + (232 - 70) * k, 40 + (255 - 40) * k]; return `rgb(${c.map(v => Math.round(v)).join(',')})`; };
-      const emitters = [];
-      if (state.k > 0.001) for (const [f, deg] of [[0.9, 208], [0.75, 222], [0.5, 236], [0.25, 250]]) {
-        const rr = state.k / (1 - f * f), a = deg * Math.PI / 180;
-        emitters.push({ x: X(rr * Math.cos(a)), y: Y(rr * Math.sin(a)), f, station: true });
+      const now = state.time;
+      const face = (x, y, R, f, col) => {
+        const turns = now * f / 4, flash = Math.max(0, 1 - (turns % 1) * 10);
+        ctx.fillStyle = 'rgba(5,6,10,0.92)'; ctx.strokeStyle = col; ctx.lineWidth = 1.5 * dpr;
+        ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        if (flash > 0) { ctx.globalAlpha = flash * 0.55; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+        const a = turns * Math.PI * 2;
+        ctx.strokeStyle = col; ctx.lineWidth = 1.6 * dpr; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.sin(a) * R * 0.72, y - Math.cos(a) * R * 0.72); ctx.stroke();
+      };
+      if (state.k > 0.001) for (const [f, deg] of [[0.9, 112], [0.75, 128], [0.5, 146]]) {
+        const rr = state.k / (1 - f * f), R = ringClockR(rr);
+        if (!R) continue;                                          // no room between the ring and the horizon
+        const a = deg * Math.PI / 180;
+        face(X(rr * Math.cos(a)), Y(rr * Math.sin(a)), R, f, COL_TIME);
       }
-      const prate = probeRate();
-      emitters.push({ x: X(state.probe.x), y: Y(state.probe.y), f: prate, station: false });
-      let flash = 0;
-      for (const e of emitters) {
-        if (e.f <= 0) continue;
-        const Tt = Math.hypot(tx - e.x, ty - e.y) / speed;          // travel time across the map
-        const kMin = Math.ceil((now - Tt) * e.f), kMax = Math.floor(now * e.f);
-        const col = beepCol(e.f);
-        for (let k = Math.max(kMin, kMax - 30); k <= kMax; k++) {
-          const fr = (now - k / e.f) / Tt;
-          if (fr < 0 || fr > 1) continue;
-          if (fr > 0.93) flash = Math.max(flash, (fr - 0.93) / 0.07);
-          const bx = e.x + (tx - e.x) * fr, by = e.y + (ty - e.y) * fr;
-          ctx.fillStyle = col; ctx.globalAlpha = 0.3; ctx.beginPath(); ctx.arc(bx, by, 6 * dpr, 0, Math.PI * 2); ctx.fill();
-          ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(bx, by, 2.6 * dpr, 0, Math.PI * 2); ctx.fill();
-        }
-        if (e.station) {   // the station itself: a small beacon in its beep colour
-          ctx.fillStyle = 'rgba(5,6,10,0.9)'; ctx.strokeStyle = col; ctx.lineWidth = 1.6 * dpr;
-          ctx.beginPath(); ctx.arc(e.x, e.y, 5.5 * dpr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(e.x, e.y, 2 * dpr, 0, Math.PI * 2); ctx.fill();
-        }
-      }
-      // your clock (the receiver) flashes as each beep arrives
-      ctx.fillStyle = 'rgba(5,6,10,0.92)'; ctx.strokeStyle = '#e7e9f0'; ctx.lineWidth = 1.5 * dpr;
-      ctx.beginPath(); ctx.arc(tx, ty, 9 * dpr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      if (flash > 0) { ctx.globalAlpha = flash; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2 * dpr; ctx.beginPath(); ctx.arc(tx, ty, 9 * dpr + 6 * dpr * (1 - flash), 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; }
-      const ha = now / 4 * Math.PI * 2; ctx.strokeStyle = '#e7e9f0';
-      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + Math.sin(ha) * 7 * dpr, ty - Math.cos(ha) * 7 * dpr); ctx.stroke();
+      const tx = W - 20 * dpr, ty = 20 * dpr;
+      face(tx, ty, 10 * dpr, 1, '#e7e9f0');
       ctx.font = font(11, 500); ctx.fillStyle = 'rgba(231,233,240,0.85)'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      ctx.fillText('you, far away', W - 34 * dpr, 20 * dpr);
+      ctx.fillText('your clock, far away: 100%', W - 38 * dpr, ty);
     }
     // probe clock
     if (kind === 'time') {
@@ -1579,11 +1568,11 @@ void main(){
       ctx.save(); ctx.setLineDash([3 * dpr, 3 * dpr]); ctx.lineWidth = 1.5 * dpr; ctx.strokeStyle = 'rgba(180,156,255,0.8)';
       ctx.beginPath(); ctx.arc(px, py, R + 6 * dpr, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       ctx.strokeStyle = COL_TIME; ctx.lineWidth = 1.6 * dpr;
-      const ang = (clocks.length ? clocks[clocks.length - 1].e / LAPSE[lapseI].s : 0) / 12 * Math.PI * 2;
+      const ang = state.time * rate / 4 * Math.PI * 2;
       ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + Math.sin(ang) * R * 0.75, py - Math.cos(ang) * R * 0.75); ctx.stroke();
       ctx.font = `500 ${11 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
       ctx.textBaseline = 'middle';
-      const txt = (rate <= 0 ? 'inside horizon' : `probe: ${fmtPct(rate)} speed`) + '  · drag me';
+      const txt = scene ? 'Miller\u2019s planet: 1 hour here = 7 years for you' : (rate <= 0 ? 'inside horizon' : `probe clock: ${fmtPct(rate)}`) + '  · drag me';
       const leftSide = px > W * 0.62;
       ctx.textAlign = leftSide ? 'right' : 'left';
       const tx = leftSide ? px - R - 12 * dpr : px + R + 12 * dpr;
@@ -1858,12 +1847,12 @@ void main(){
   const fmtHeight = h => h >= 0.1 ? h.toFixed(2) : h >= 0.001 ? h.toFixed(4) : fmtSci(h);
 
   const ROMILLY = 23 * U.y + 4 * U.mo + 8 * U.d;
-  let scene = null; // Miller's planet scene: { phase: 'run' | 'end', cap: 0..2 }
   let lastVisualSec = -1;
   function updateClocks(dt, show = true) {
     const S = LAPSE[lapseI].s;
     if (clocksRunning) for (const c of clocks) c.e += dt * c.def.rate() * S;
     if (scene && scene.phase === 'run' && clocks[0].e >= ROMILLY) endScene();
+    if (scene) updateStory();                            // the story panel has its own place on the page
     if (!show) return;                                   // off screen: keep time, skip drawing
     // under reduced motion, redraw the moving parts once a second
     const sec = Math.floor(performance.now() / 1000);
@@ -1901,7 +1890,6 @@ void main(){
     }
     const hz = clocks[0].zone; headBands.forEach((b, i) => b.classList.toggle('on', i === hz));
     $('pauseHint').textContent = showExact ? '' : 'Pause the clocks to see exact times.';
-    if (scene) updateStory();
   }
   function resetClocks() { for (const c of clocks) c.e = 0; }
   $('resetClocks').addEventListener('click', () => { if (scene) closeScene(); resetClocks(); setClocksRunning(true); });
@@ -1916,11 +1904,12 @@ void main(){
     $('timeLive').textContent = text;
     if (scene) scene.cap = i;
   }
+  const MILLER_F = 1 / (7 * 365.25 * 24);
   function startScene() {
-    const f = 1 / (7 * 365.25 * 24);
+    const f = MILLER_F;
     kEl.value = 100; state.k = 1; syncReadouts();
     setProbeDist(1 / (1 - f * f));
-    setScale('gargantua'); syncProbe();
+    syncProbe();
     setLapse(6); resetClocks(); setClocksRunning(true);
     scene = { phase: 'run', cap: 0 };
     $('story').hidden = false; $('storyReplay').hidden = true; $('storySkip').hidden = false;
@@ -1940,12 +1929,16 @@ void main(){
   function updateStory() {
     const ship = clocks[0].e, planet = clocks[clocks.length - 1].e;
     $('sFillShip').style.width = `${Math.min(100, ship / ROMILLY * 100).toFixed(2)}%`;
-    $('sFillPlanet').style.width = `${Math.min(100, planet / ROMILLY * 100).toFixed(4)}%`;
+    $('sFillPlanet').style.width = `${Math.min(100, planet / (ROMILLY * MILLER_F) * 100).toFixed(2)}%`;
     const ts = fmtQuant(ship, scene.phase === 'end' ? 1 : U.y), tp = fmtQuant(planet, scene.phase === 'end' ? U.m : 10 * U.m);
     if ($('sTimeShip').textContent !== ts) $('sTimeShip').textContent = ts;
     if ($('sTimePlanet').textContent !== tp) $('sTimePlanet').textContent = tp;
     if (scene.phase === 'run' && scene.cap === 0 && planet >= 3600) setCap(1, CAPS[1]);
   }
+  // marks: hour k on the planet sits at the same place as 7k years on the ship
+  document.querySelectorAll('.sticks').forEach(el => {
+    el.innerHTML = [1, 2, 3].map(k => `<span style="left:${(k * 7 * U.y / ROMILLY * 100).toFixed(2)}%"><b>${el.dataset.unit === 'y' ? `${7 * k} years` : `${k} hour${k > 1 ? 's' : ''}`}</b></span>`).join('');
+  });
   $('miller').addEventListener('click', () => { startScene(); $('story').scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }); });
   $('storyReplay').addEventListener('click', startScene);
   $('storyBack').addEventListener('click', () => { closeScene(); setClocksRunning(true); });
@@ -2002,7 +1995,7 @@ void main(){
   tmap.addEventListener('pointerup', endDrag); tmap.addEventListener('pointercancel', endDrag);
   syncProbe();
   setLapse(0);
-  setScale('gargantua');
+  setScale('');
 
   /* ---------------- survival: live forces on the probe ---------------- */
   // Static (hovering) observer in Schwarzschild spacetime, at radius r with horizon radius rs:
