@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Live simulation
+    url: https://nader-eloshaiker.github.io/black-hole-light-paths/
+    about: Try the simulation before reporting a problem.

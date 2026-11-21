@@ -1,0 +1,19 @@
+name: Idea or physics improvement
+description: Suggest a feature, an explanation, or a physics correction
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to see?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help?
+  - type: textarea
+    id: refs
+    attributes:
+      label: References
+      description: For physics corrections, a paper, textbook or article that supports the change.

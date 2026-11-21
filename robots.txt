@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nader-eloshaiker.github.io/black-hole-light-paths/sitemap.xml
