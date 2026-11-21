@@ -348,7 +348,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .ltime .exact { height: auto; }
   .lname span { white-space: normal; }
 }
-.probe-ctl { max-width: 560px; }
+.probe-ctl { max-width: none; }
+/* left edge = map centre, right edge = map's right edge; 9px compensates for the slider thumb */
+.probe-track { position: relative; margin-left: calc(50% - 9px); width: calc(50% + 18px); }
+.probe-track input { accent-color: var(--time); display: block; margin: 0; width: 100%; }
+.probe-ticks { position: relative; height: 34px; margin: 0 9px; }
+.probe-ticks span { position: absolute; top: 2px; font-size: 11px; color: var(--muted); white-space: nowrap; }
+.probe-ticks .pt { transform: translateX(-50%); padding-top: 6px; }
+.probe-ticks .pt::before { content: ""; position: absolute; top: 0; left: 50%; height: 5px; border-left: 1px solid var(--muted); }
+.probe-ticks .pt.low { top: 18px; }
+.probe-ticks .disk { top: 2px; height: 14px; border-top: 3px solid #ffb25e; text-align: center; color: #ffb25e; padding-top: 1px; opacity: .85; }
+@media (max-width: 599px) { .probe-ticks span { font-size: 10px; } }
 .tmap-fig { margin: 0; display: grid; gap: 10px; width: 100%; max-width: min(100%, calc((100svh - 140px) * 4 / 3)); }
 .maths summary { cursor: pointer; font-size: 14px; font-weight: 500; }
 .maths p { margin: 8px 0 0; font-size: 13px; color: var(--muted); max-width: 90ch; }
@@ -574,16 +584,24 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     <figure class="tmap-fig">
       <div class="cap"><span class="eyebrow">Time map: how fast clocks run around the black hole</span><span class="readout" id="tmapUnits">units: event-horizon radius</span></div>
       <div class="view side-view"><canvas id="tmap" aria-label="Time map around the black hole with rings showing how fast clocks run and a draggable probe clock"></canvas></div>
+      <div class="ctl probe-ctl">
+        <label for="probeR">Probe distance from the centre <output id="probeOut">3.68 r<sub>s</sub></output></label>
+        <!-- the slider runs from the map's centre to its right edge, so its thumb sits under the probe's distance -->
+        <div class="probe-track">
+          <input type="range" id="probeR" min="0" max="16" step="0.001" value="3.68" aria-describedby="probeHint">
+          <div class="probe-ticks" aria-hidden="true">
+            <span class="disk" style="left:18.75%;width:56.25%">accretion disk</span>
+            <span class="pt" style="left:6.25%">horizon</span>
+            <span class="pt low" style="left:9.375%">photon sphere</span>
+          </div>
+        </div>
+        <span class="hint" id="probeHint">The slider lines up with the map: drag either one. The Miller&#8217;s planet scene takes the probe to just 78 m above the horizon.</span>
+      </div>
       <ul class="mini-key" aria-label="Key to the time map">
         <li><i style="background:var(--time)"></i>Time rings: clock speed compared with yours</li>
         <li><i style="background:var(--time);height:10px;width:10px;border-radius:50%"></i>Your probe: drag it</li>
         <li><i style="background:var(--scale)"></i>Real-world comparisons</li>
       </ul>
-      <div class="ctl probe-ctl">
-      <label for="probeR">Probe height above the event horizon <output id="probeOut">2.68 r<sub>s</sub></output></label>
-      <input type="range" id="probeR" min="-10" max="1.18" step="0.01" value="0.43">
-      <span class="hint">Or drag the probe on the map. The slider is logarithmic: the left end is a ten-billionth of a horizon radius away.</span>
-    </div>
       <div class="scale-row">
         <label for="scale">Real-world size</label>
         <select id="scale">
@@ -1259,6 +1277,21 @@ void main(){
     ctx.fillText('you →', ex - 16 * dpr, ey + (si > 0.7 ? 18 * dpr : 0));
     }
 
+    // probe distance: dashed circle through the probe, and a ruler along the bottom edge that lines up with the slider below
+    if (kind === 'time') {
+      const pr = Math.hypot(state.probe.x, state.probe.y);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(180,156,255,0.5)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([3 * dpr, 4 * dpr]);
+      ctx.beginPath(); ctx.arc(X(0), Y(0), pr * sc, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(X(Math.min(pr, VIEW_HALF_W)), Y(0)); ctx.lineTo(X(Math.min(pr, VIEW_HALF_W)), H - 10 * dpr); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = 'rgba(231,233,240,0.35)'; ctx.beginPath(); ctx.moveTo(X(0), H - 1 * dpr); ctx.lineTo(W, H - 1 * dpr);
+      for (let r = 1; r <= VIEW_HALF_W; r++) { const tl = (r % 5 === 0 ? 8 : 4) * dpr; ctx.moveTo(X(r), H - 1 * dpr); ctx.lineTo(X(r), H - 1 * dpr - tl); }
+      ctx.stroke();
+      const mx = X(Math.min(pr, VIEW_HALF_W));
+      ctx.fillStyle = COL_TIME; ctx.beginPath(); ctx.moveTo(mx - 6 * dpr, H - 12 * dpr); ctx.lineTo(mx + 6 * dpr, H - 12 * dpr); ctx.lineTo(mx, H - 2 * dpr); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
     // your own clock is far off this map
     if (kind === 'time') {
       ctx.font = font(11, 500); ctx.fillStyle = 'rgba(231,233,240,0.85)'; ctx.textAlign = 'right'; ctx.textBaseline = 'top';
@@ -1640,8 +1673,10 @@ void main(){
   function syncProbe() {
     const d = probeDist(), h = d - 1;
     const SCp = SCALES[state.scale];
-    $('probeOut').innerHTML = h <= 0 ? 'inside the horizon' : `${fmtHeight(h)} r<sub>s</sub>` + (SCp ? ` (${fmtLen(h * SCp.rs)})` : '');
-    probeEl.value = Math.min(1.18, Math.max(-10, Math.log10(Math.max(1e-10, h)))).toFixed(2);
+    $('probeOut').innerHTML = h <= 0 ? 'inside the horizon'
+      : h < 0.01 ? `${fmtHeight(h)} r<sub>s</sub> above the horizon` + (SCp ? ` (${fmtLen(h * SCp.rs)})` : '')
+      : `${d.toFixed(2)} r<sub>s</sub>` + (SCp ? ` (${fmtLen(d * SCp.rs)})` : '');
+    probeEl.value = Math.min(16, Math.max(0, d)).toFixed(3);
     clearTimeout(ariaT);
     ariaT = setTimeout(() => tmap.setAttribute('aria-label',
       `Time map around the black hole. Probe at ${fmtHeight(Math.max(0, h))} horizon radii above the horizon; its clock runs at ${fmtPct(probeRate())} of your speed.`), 300);
@@ -1650,7 +1685,7 @@ void main(){
     const a = Math.atan2(state.probe.y, state.probe.x);
     state.probe = { x: d * Math.cos(a), y: d * Math.sin(a) };
   }
-  probeEl.addEventListener('input', () => { setProbeDist(1 + Math.pow(10, +probeEl.value)); if (scene) closeScene(); syncProbe(); });
+  probeEl.addEventListener('input', () => { setProbeDist(Math.max(1.001, +probeEl.value)); if (scene) closeScene(); syncProbe(); });
 
   tmap.classList.add('probe-on');
   // Drag starts only on the probe itself (44px target), so swiping over the diagram still scrolls the page.
