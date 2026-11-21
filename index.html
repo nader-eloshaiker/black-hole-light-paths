@@ -349,6 +349,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .lname span { white-space: normal; }
 }
 .probe-ctl { max-width: 560px; }
+.tmap-fig { margin: 0; display: grid; gap: 10px; width: 100%; max-width: min(100%, calc((100svh - 140px) * 4 / 3)); }
 .maths summary { cursor: pointer; font-size: 14px; font-weight: 500; }
 .maths p { margin: 8px 0 0; font-size: 13px; color: var(--muted); max-width: 90ch; }
 
@@ -438,7 +439,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .film .refs { font-size: 12px; color: var(--muted); max-width: 110ch; }
 .film a { color: var(--accent); }
 /* scrolling over the side view must still scroll the page; only a drag on the probe moves it */
-#side.probe-on { touch-action: pan-y; }
+#tmap.probe-on { touch-action: pan-y; }
 @media (prefers-reduced-motion: reduce) { .ledger .hand { display: none; } .story-cap.fade { animation: none; } }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 .site-foot { border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
@@ -469,7 +470,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
       <figcaption>Every pixel is one light ray traced backwards from your eye until it hits the disk, falls into the hole, or escapes to the stars.</figcaption>
     </figure>
     <figure>
-      <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout" id="sideUnits">units: event-horizon radius</span></div>
+      <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout">units: event-horizon radius</span></div>
       <div class="view side-view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
       <ul class="mini-key" aria-label="Key to the light paths">
         <li><i style="background:var(--direct)"></i>Direct</li>
@@ -477,21 +478,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <li><i style="background:var(--under)"></i>Underneath</li>
         <li><i style="background:var(--ring)"></i>Wrapped around</li>
         <li><i style="background:var(--fall)"></i>Falls in</li>
-        <li><i style="background:var(--time)"></i>Time rings</li>
       </ul>
-      <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line. Drag the purple probe clock to see how fast time runs there.</figcaption>
-      <div class="scale-row">
-        <label for="scale">Real-world size</label>
-        <select id="scale">
-          <option value="">Off: measure in horizon radii</option>
-          <option value="earth">Earth squeezed into a black hole</option>
-          <option value="stellar">A black hole of 10 Suns</option>
-          <option value="sgra">Sagittarius A*, centre of our galaxy</option>
-          <option value="gargantua">Gargantua from Interstellar</option>
-          <option value="m87">M87*, the first one photographed</option>
-        </select>
-        <p class="scale-info" id="scaleInfo">Give the black hole a real size to compare it with familiar things in the side view.</p>
-      </div>
+      <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line.</figcaption>
     </figure>
   </section>
 
@@ -519,7 +507,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <legend>Show on the pictures</legend>
         <label><input type="checkbox" id="labelsOn" checked> Labels for the parts of the black hole</label>
         <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
-        <label><input type="checkbox" id="timeOn" checked> Time rings and probe clock (side view)</label>
       </fieldset>
       <fieldset>
         <legend>Physics</legend>
@@ -554,6 +541,33 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
       </div>
     </div>
 
+    <figure class="tmap-fig">
+      <div class="cap"><span class="eyebrow">Time map: how fast clocks run around the black hole</span><span class="readout" id="tmapUnits">units: event-horizon radius</span></div>
+      <div class="view side-view"><canvas id="tmap" aria-label="Time map around the black hole with rings showing how fast clocks run and a draggable probe clock"></canvas></div>
+      <ul class="mini-key" aria-label="Key to the time map">
+        <li><i style="background:var(--time)"></i>Time rings: clock speed compared with yours</li>
+        <li><i style="background:var(--time);height:10px;width:10px;border-radius:50%"></i>Your probe: drag it</li>
+        <li><i style="background:var(--scale)"></i>Real-world comparisons</li>
+      </ul>
+      <div class="ctl probe-ctl">
+      <label for="probeR">Probe height above the event horizon <output id="probeOut">2.68 r<sub>s</sub></output></label>
+      <input type="range" id="probeR" min="-10" max="1.18" step="0.01" value="0.43">
+      <span class="hint">Or drag the probe on the map. The slider is logarithmic: the left end is a ten-billionth of a horizon radius away.</span>
+    </div>
+      <div class="scale-row">
+        <label for="scale">Real-world size</label>
+        <select id="scale">
+          <option value="">Off: measure in horizon radii</option>
+          <option value="earth">Earth squeezed into a black hole</option>
+          <option value="stellar">A black hole of 10 Suns</option>
+          <option value="sgra">Sagittarius A*, centre of our galaxy</option>
+          <option value="gargantua">Gargantua from Interstellar</option>
+          <option value="m87">M87*, the first one photographed</option>
+        </select>
+        <p class="scale-info" id="scaleInfo">Give the black hole a real size to compare it with familiar things on the time map.</p>
+      </div>
+    </figure>
+
     <div class="lapse-ctl">
       <label for="lapse">Time-lapse: 1 screen second = <output id="lapseOut">1 second</output></label>
       <input type="range" id="lapse" min="0" max="6" step="1" value="0">
@@ -563,11 +577,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     <div class="ledger" id="ledger" role="table" aria-label="Clocks compared with yours"></div>
     <p class="ledger-cap">The timeline stretches as it goes: seconds on the left, decades on the right, and each band is a bigger unit. Every equal step is 10&#215; more time, so the gap between two clocks never changes: that gap is the slowdown. <span id="pauseHint"></span></p>
 
-    <div class="ctl probe-ctl">
-      <label for="probeR">Probe height above the event horizon <output id="probeOut">2.68 r<sub>s</sub></output></label>
-      <input type="range" id="probeR" min="-10" max="1.18" step="0.01" value="0.43">
-      <span class="hint">Or drag the probe in the side view. The slider is logarithmic: the left end is a ten-billionth of a horizon radius away.</span>
-    </div>
 
     <details class="maths">
       <summary>The maths behind the clocks</summary>
@@ -805,7 +814,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <button type="button" id="slStellar">Try a black hole of 10 Suns</button>
         <button type="button" id="slGarg">Try Gargantua</button>
       </div>
-      <p class="hint">Move the probe in the side view or with the probe slider. Forces assume gravity at 100%. The gauges run from a hundred-millionth of a g on the left to ten billion g on the right.</p>
+      <p class="hint">Move the probe on the time map or with the probe slider. Forces assume gravity at 100%. The gauges run from a hundred-millionth of a g on the left to ten billion g on the right.</p>
     </div>
   </section>
 
@@ -819,7 +828,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <li><i style="background:var(--ring)"></i><span><b>Wrapped around.</b> Light that circled the hole before escaping: the thin photon ring.</span></li>
         <li><i style="background:var(--fall)"></i><span><b>Falls in.</b> Look in these directions and nothing comes back. That is the black shadow.</span></li>
         <li><i style="background:transparent;border-top:1px dashed var(--fg);height:0"></i><span><b>Dashed circle.</b> The event horizon at its true size. Bending of light makes the black shadow around it about 2.6 times wider.</span></li>
-        <li><i style="background:var(--time)"></i><span><b>Time rings.</b> How fast a clock hovering there ticks, compared with yours far away.</span></li>
+        <li><i style="background:var(--time)"></i><span><b>Time rings</b> (time map). How fast a clock hovering there ticks, compared with yours far away.</span></li>
       </ul>
     </div>
     <div>
@@ -829,7 +838,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <li>Press <b>Sweep the angle</b>. Near edge-on you get the familiar arch shape; looking down from above it becomes a ring. Every angle shows the far side wrapped around, so there is no special front.</li>
         <li>Turn on <b>Colour the picture by light path</b> to match each region of the picture to its path in the side view.</li>
         <li>Turn on <b>Doppler brightening</b>. The disk orbits at about half the speed of light near its inner edge, so the side coming towards you is much brighter.</li>
-        <li>Drag the <b>probe clock</b> in the side view towards the hole. At the photon sphere it runs at 58% of your speed; at the event horizon it stops completely, as seen from where you are.</li>
+        <li>Drag the <b>probe clock</b> on the time map towards the hole. At the photon sphere it runs at 58% of your speed; at the event horizon it stops completely, as seen from where you are.</li>
         <li>In <b>Could you survive a trip to Miller&#8217;s planet?</b>, press <b>Try a black hole of 10 Suns</b> and drag the probe towards the hole: the stretch on your body becomes deadly long before the horizon. Then try Gargantua.</li>
         <li>Press <b>Play the Miller&#8217;s planet scene</b> and watch 23 years pass on your clock while the planet ages about three hours.</li>
       </ol>
@@ -1005,6 +1014,7 @@ void main(){
 
   /* ---------------- Side view (2D cross-section) ---------------- */
   const side = $('side'), sctx = side.getContext('2d');
+  const tmap = $('tmap'), tctx = tmap.getContext('2d');
   const VIEW_HALF_W = 16; // world units across half the panel width
   let rays = [], slice = [], rayKey = '';
 
@@ -1083,11 +1093,12 @@ void main(){
     return [ray.pts[2 * lo] + (ray.pts[2 * hi] - ray.pts[2 * lo]) * t, ray.pts[2 * lo + 1] + (ray.pts[2 * hi + 1] - ray.pts[2 * lo + 1]) * t];
   }
 
-  function drawSide() {
-    const W = side.width, H = side.height; if (!W) return;
+  // kind 'light': the side view of light paths. kind 'time': the time map (rings, probe, real-world size).
+  function drawCanvas(cv, cctx, kind) {
+    const W = cv.width, H = cv.height; if (!W) return;
     const sc = W / (2 * VIEW_HALF_W), cx = W / 2, cy = H / 2;
     const X = x => cx + x * sc, Y = y => cy - y * sc;
-    const ctx = sctx, dpr = W / side.clientWidth;
+    const ctx = cctx, dpr = W / cv.clientWidth;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = '#05060a'; ctx.fillRect(0, 0, W, H);
 
@@ -1098,7 +1109,7 @@ void main(){
     ctx.stroke();
 
     // time-rate rings: where a hovering clock runs at f of the distant rate, r = rs / (1 - f^2)
-    if (state.timeOn && state.k > 0.001) {
+    if (kind === 'time' && state.k > 0.001) {
       const glow = ctx.createRadialGradient(X(0), Y(0), sc * 1, X(0), Y(0), sc * Math.max(1.5, 9 * state.k));
       glow.addColorStop(0, 'rgba(180,156,255,0.20)'); glow.addColorStop(1, 'rgba(180,156,255,0)');
       ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
@@ -1121,7 +1132,7 @@ void main(){
 
     // ray paths
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    for (const r of rays) {
+    if (kind === 'light') for (const r of rays) {
       const strong = r.cls === 'over' || r.cls === 'under' || r.cls === 'ring';
       ctx.strokeStyle = COLORS[r.cls];
       ctx.globalAlpha = r.cls === 'captured' ? 0.16 : r.cls === 'direct' ? 0.28 : 0.55;
@@ -1151,7 +1162,7 @@ void main(){
 
     // photons
     const speed = 7; // world units per second
-    for (const r of rays) {
+    if (kind === 'light') for (const r of rays) {
       if (r.cls === 'captured') continue;
       const period = r.T / speed;
       for (let k = 0; k < 2; k++) {
@@ -1171,14 +1182,14 @@ void main(){
     const font = (sz, w = 400) => `${w} ${sz * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
     ctx.font = font(11); ctx.fillStyle = 'rgba(231,233,240,0.78)'; ctx.textBaseline = 'top';
     ctx.textAlign = 'center';
-    ctx.fillText('near side of disk', X((RIN + ROUT) / 2), Y(0) + th + 4 * dpr);
-    ctx.fillText('far side of disk', X(-(RIN + ROUT) / 2), Y(0) + th + 4 * dpr);
+    ctx.fillText(kind === 'light' ? 'near side of disk' : 'accretion disk', X((RIN + ROUT) / 2), Y(0) + th + 4 * dpr);
+    ctx.fillText(kind === 'light' ? 'far side of disk' : 'accretion disk', X(-(RIN + ROUT) / 2), Y(0) + th + 4 * dpr);
     ctx.textAlign = 'left';
     ctx.fillText('photon sphere', X(1.1), Y(-1.6));
 
     // real-world comparisons, drawn to the same scale as the side view
     const SC = SCALES[state.scale];
-    if (SC) {
+    if (kind === 'time' && SC) {
       const halfHs = (H / 2) / sc, col = '#5fd4c4';
       ctx.font = font(11, 500); ctx.textBaseline = 'middle';
       let orbitN = 0, barN = 0;
@@ -1227,6 +1238,7 @@ void main(){
     }
 
     // observer marker: on the panel edge in the observer's direction
+    if (kind === 'light') {
     const inc = state.inc * Math.PI / 180, ci = Math.cos(inc), si = Math.sin(inc);
     const halfH = (H / 2) / sc;
     const t = Math.min((VIEW_HALF_W - 1.3) / Math.abs(ci || 1e-6), (halfH - 1.3) / Math.abs(si || 1e-6));
@@ -1238,9 +1250,15 @@ void main(){
     ctx.restore();
     ctx.font = font(11, 500); ctx.fillStyle = '#e7e9f0'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     ctx.fillText('you →', ex - 16 * dpr, ey + (si > 0.7 ? 18 * dpr : 0));
+    }
 
+    // your own clock is far off this map
+    if (kind === 'time') {
+      ctx.font = font(11, 500); ctx.fillStyle = 'rgba(231,233,240,0.85)'; ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+      ctx.fillText('your clock: far away, off the map →', W - 10 * dpr, 10 * dpr);
+    }
     // probe clock
-    if (state.timeOn) {
+    if (kind === 'time') {
       const px = X(state.probe.x), py = Y(state.probe.y), R = 11 * dpr;
       const rate = probeRate();
       ctx.fillStyle = 'rgba(5,6,10,0.9)'; ctx.strokeStyle = COL_TIME; ctx.lineWidth = 1.6 * dpr;
@@ -1262,6 +1280,9 @@ void main(){
       ctx.fillStyle = COL_TIME; ctx.fillText(txt, tx, py);
     }
   }
+
+  function drawSide() { drawCanvas(side, sctx, 'light'); }
+  function drawTimeMap() { drawCanvas(tmap, tctx, 'time'); }
 
   /* ---------------- real-world size ---------------- */
   // Horizon radius rs = 2GM/c^2 = 2953 m per solar mass. Comparison sizes are in units of rs.
@@ -1306,10 +1327,10 @@ void main(){
     scaleEl.value = state.scale;
     const sc = SCALES[state.scale];
     const info = $('scaleInfo');
-    if (!sc) { info.textContent = 'Give the black hole a real size to compare it with familiar things in the side view.'; $('sideUnits').textContent = 'units: event-horizon radius'; }
+    if (!sc) { info.textContent = 'Give the black hole a real size to compare it with familiar things on the time map.'; $('tmapUnits').textContent = 'units: event-horizon radius'; }
     else {
       info.innerHTML = `<b>${sc.name}</b>, ${sc.mass}. Event horizon radius ${fmtLen(sc.rs)}; light crosses it in ${fmtSpan(sc.rs / C)}. ${sc.fact}`;
-      $('sideUnits').textContent = `1 grid square = ${fmtLen(2 * sc.rs)}`;
+      $('tmapUnits').textContent = `1 grid square = ${fmtLen(2 * sc.rs)}`;
     }
     syncProbe();
     for (const c of clocks) c.lastText = '';
@@ -1575,7 +1596,6 @@ void main(){
     const f = 1 / (7 * 365.25 * 24);
     kEl.value = 100; state.k = 1; syncReadouts();
     setProbeDist(1 / (1 - f * f));
-    if (!state.timeOn) { timeOnEl.checked = true; timeOnEl.dispatchEvent(new Event('change')); }
     setScale('gargantua'); syncProbe();
     setLapse(6); resetClocks(); setClocksRunning(true);
     scene = { phase: 'run', cap: 0 };
@@ -1616,8 +1636,8 @@ void main(){
     $('probeOut').innerHTML = h <= 0 ? 'inside the horizon' : `${fmtHeight(h)} r<sub>s</sub>` + (SCp ? ` (${fmtLen(h * SCp.rs)})` : '');
     probeEl.value = Math.min(1.18, Math.max(-10, Math.log10(Math.max(1e-10, h)))).toFixed(2);
     clearTimeout(ariaT);
-    ariaT = setTimeout(() => side.setAttribute('aria-label',
-      `Side view of the light paths around the black hole. Probe at ${fmtHeight(Math.max(0, h))} horizon radii above the horizon; its clock runs at ${fmtPct(probeRate())} of your speed.`), 300);
+    ariaT = setTimeout(() => tmap.setAttribute('aria-label',
+      `Time map around the black hole. Probe at ${fmtHeight(Math.max(0, h))} horizon radii above the horizon; its clock runs at ${fmtPct(probeRate())} of your speed.`), 300);
   }
   function setProbeDist(d) {
     const a = Math.atan2(state.probe.y, state.probe.x);
@@ -1625,13 +1645,11 @@ void main(){
   }
   probeEl.addEventListener('input', () => { setProbeDist(1 + Math.pow(10, +probeEl.value)); if (scene) closeScene(); syncProbe(); });
 
-  const timeOnEl = $('timeOn');
-  timeOnEl.addEventListener('change', () => { state.timeOn = timeOnEl.checked; side.classList.toggle('probe-on', state.timeOn); });
-  side.classList.toggle('probe-on', state.timeOn);
+  tmap.classList.add('probe-on');
   // Drag starts only on the probe itself (44px target), so swiping over the diagram still scrolls the page.
   let dragging = false;
   function sidePoint(ev) {
-    const rect = side.getBoundingClientRect(), sc = rect.width / (2 * VIEW_HALF_W);
+    const rect = tmap.getBoundingClientRect(), sc = rect.width / (2 * VIEW_HALF_W);
     return { rect, sc, x: (ev.clientX - rect.left - rect.width / 2) / sc, y: -(ev.clientY - rect.top - rect.height / 2) / sc };
   }
   function nearProbe(ev) {
@@ -1646,16 +1664,16 @@ void main(){
     state.probe = { x, y }; syncProbe();
     if (scene) closeScene();
   }
-  side.addEventListener('pointerdown', ev => {
-    if (!state.timeOn || !nearProbe(ev)) return;
-    dragging = true; side.setPointerCapture(ev.pointerId); side.style.cursor = 'grabbing'; ev.preventDefault();
+  tmap.addEventListener('pointerdown', ev => {
+    if (!nearProbe(ev)) return;
+    dragging = true; tmap.setPointerCapture(ev.pointerId); tmap.style.cursor = 'grabbing'; ev.preventDefault();
   });
-  side.addEventListener('pointermove', ev => {
+  tmap.addEventListener('pointermove', ev => {
     if (dragging) probeFromEvent(ev);
-    else side.style.cursor = state.timeOn && nearProbe(ev) ? 'grab' : '';
+    else tmap.style.cursor = nearProbe(ev) ? 'grab' : '';
   });
-  const endDrag = () => { dragging = false; side.style.cursor = ''; };
-  side.addEventListener('pointerup', endDrag); side.addEventListener('pointercancel', endDrag);
+  const endDrag = () => { dragging = false; tmap.style.cursor = ''; };
+  tmap.addEventListener('pointerup', endDrag); tmap.addEventListener('pointercancel', endDrag);
   syncProbe();
   setLapse(0);
   setScale('gargantua');
@@ -1708,7 +1726,7 @@ void main(){
   /* ---------------- sizing + loop ---------------- */
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    for (const c of [$('gl'), side, labelsCv]) {
+    for (const c of [$('gl'), side, labelsCv, tmap]) {
       // the ray tracer costs per pixel: keep its backing store under ~1.6 million pixels
       const k = c.id === 'gl' ? Math.min(dpr, Math.sqrt(1.6e6 / Math.max(1, c.clientWidth * c.clientHeight))) : dpr;
       const w = Math.round(c.clientWidth * k), h = Math.round(c.clientHeight * k);
@@ -1716,6 +1734,7 @@ void main(){
     }
   }
   new ResizeObserver(resize).observe(side);
+  new ResizeObserver(resize).observe(tmap);
   new ResizeObserver(resize).observe($('gl'));
   resize();
 
@@ -1747,6 +1766,7 @@ void main(){
     updateClocks(clockDt);
     updateSurvival();
     drawSide();
+    drawTimeMap();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
