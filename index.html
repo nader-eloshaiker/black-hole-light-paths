@@ -229,13 +229,17 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 @media (max-width: 980px) { .dials { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .dials { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .dial { display: grid; justify-items: center; align-content: start; gap: 6px; text-align: center; padding: 14px 10px; border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+/* every text row has a fixed height, so cards keep their size while the numbers change */
+.dial > div { width: 100%; overflow: hidden; }
 .dial.probe { border-color: var(--time); }
 .dial svg { width: 84px; height: 84px; }
-.dial .name { font-weight: 600; font-size: 13px; line-height: 1.3; }
-.dial .where { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-.dial .rate { font-family: var(--mono); font-size: 18px; color: var(--time); font-variant-numeric: tabular-nums; }
-.dial .elapsed { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
-.dial .hour { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.dial .name { font-weight: 600; font-size: 13px; line-height: 1.3; height: 2.6em; display: grid; align-items: center; }
+.dial .where { font-family: var(--mono); font-size: 11px; line-height: 1.35; height: 2.7em; color: var(--muted); }
+.dial .rate { font-family: var(--mono); font-size: 18px; line-height: 1.3; height: 1.3em; color: var(--time); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dial .elapsed { font-family: var(--mono); font-size: 13px; line-height: 1.4; height: 2.8em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dial .elapsed span { display: block; }
+.dial .hour { font-size: 12px; color: var(--muted); line-height: 1.35; height: 2.7em; }
+@media (max-width: 560px) { .dial .hour, .dial .behind { height: 4.05em; } }
 .time-ctl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px 24px; align-items: end; max-width: 760px; }
 @media (max-width: 560px) { .time-ctl { grid-template-columns: 1fr; } }
 .lapse { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
@@ -244,7 +248,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .lapse-btns button { padding: 6px 12px; }
 .lapse-btns button[aria-checked="true"] { background: var(--time); color: #140d26; border-color: var(--time); }
 .tick-note { margin: 0; font-size: 13px; color: var(--muted); }
-.dial .behind { font-size: 12px; color: var(--fg); line-height: 1.35; }
+.dial .behind { font-size: 12px; color: var(--fg); line-height: 1.35; height: 2.7em; }
 .miller-note { margin: 0; padding: 12px 14px; border: 1px solid var(--time); border-radius: 8px; font-size: 14px; max-width: 90ch; }
 .film { display: grid; gap: 16px; }
 .film h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; }
@@ -372,6 +376,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
         <li><i style="background:var(--under)"></i><span><b>Bent underneath.</b> Far side of the disk, bottom surface. This is the thinner arch below.</span></li>
         <li><i style="background:var(--ring)"></i><span><b>Wrapped around.</b> Light that circled the hole before escaping: the thin photon ring.</span></li>
         <li><i style="background:var(--fall)"></i><span><b>Falls in.</b> Look in these directions and nothing comes back. That is the black shadow.</span></li>
+        <li><i style="background:transparent;border-top:1px dashed var(--fg);height:0"></i><span><b>Dashed circle.</b> The event horizon at its true size. Bending of light makes the black shadow around it about 2.6 times wider.</span></li>
         <li><i style="background:var(--time)"></i><span><b>Time rings.</b> How fast a clock hovering there ticks, compared with yours far away.</span></li>
       </ul>
     </div>
@@ -764,49 +769,65 @@ void main(){
     const W = labelsCv.width, H = labelsCv.height;
     lctx.setTransform(1, 0, 0, 1, 0, 0); lctx.clearRect(0, 0, W, H);
     if (!state.labelsOn || !W || !slice.length) return;
-    const dpr = W / labelsCv.clientWidth, short = labelsCv.clientWidth < 520;
+    const dpr = W / labelsCv.clientWidth, short = labelsCv.clientWidth < 560;
     const stat = cls => {
       const v = slice.filter(o => o.cls === cls).map(o => o.s);
       return v.length ? { min: Math.min(...v), max: Math.max(...v), mean: v.reduce((a, b) => a + b, 0) / v.length } : null;
     };
     const cap = stat('captured'), over = stat('over'), under = stat('under'), direct = stat('direct');
     const faceOn = state.inc > 60, bent = state.k > 0.05;
+    const cx = W / 2, cy = H / 2;
+    const yOf = sv => cy - sv * H;
+    // event horizon drawn to scale: angular radius rs/D, mapped like the shader (2*TH spans the height)
+    const rH = (state.k / DIST) / (2 * TH) * H;
     const items = [];
-    if (over) items.push({ side: 'left', s: over.mean, text: faceOn || !bent ? 'Far side of the disk' : short ? 'Far side, bent over the top' : 'Far side of the disk, bent over the top of the hole' });
-    if (under) items.push({ side: 'left', s: under.mean, text: short ? 'Underside, bent below' : 'Underside of the far side, bent under the hole' });
-    if (cap && state.k > 0.3) items.push({ side: 'right', s: cap.max + 1.5 / slice.length, text: short ? 'Photon ring' : 'Photon ring: light that circled the hole' });
-    if (cap) items.push({ side: 'right', s: (cap.min + cap.max) / 2, text: short ? 'Shadow' : 'Shadow: no light escapes; the event horizon is inside' });
-    if (direct) items.push({ side: 'right', s: direct.mean, text: faceOn ? 'Near side of the disk' : short ? 'Near side of the disk' : 'Near side of the disk, seen directly' });
-    const fs = (short ? 11 : 12) * dpr, lh = fs * 1.3, pad = 5 * dpr, maxW = Math.min(W * (short ? 0.36 : 0.34), 220 * dpr);
+    if (over) items.push({ side: 'left', ax: cx, ay: yOf(over.mean), text: faceOn || !bent ? 'Far side of the disk' : short ? 'Far side, bent over the top' : 'Far side of the disk, bent over the top' });
+    if (under) items.push({ side: 'left', ax: cx, ay: yOf(under.mean), text: short ? 'Underside, bent below' : 'Underside of the far side, bent below' });
+    if (direct) items.push({ side: faceOn ? 'left' : 'right', ax: cx, ay: yOf(direct.mean), text: 'Near side of the disk' });
+    if (cap && state.k > 0.3) items.push({ side: 'right', ax: cx, ay: yOf(cap.max) - 2 * dpr, text: short ? 'Photon ring' : 'Photon ring: light that circled the hole' });
+    if (cap) items.push({ side: 'right', ax: cx, ay: yOf(cap.min + 0.22 * (cap.max - cap.min)), text: short ? 'Shadow' : 'Shadow: light that falls in' });
+    if (bent && rH > 2 * dpr) items.push({ side: 'right', ax: cx + rH * 0.7071, ay: cy - rH * 0.7071, text: short ? 'Event horizon (true size)' : 'Event horizon at its true size, hidden inside the shadow' });
+
+    // the event horizon itself: a faint dashed circle at its true size
+    if (bent && rH > 2 * dpr) {
+      lctx.setLineDash([3 * dpr, 3 * dpr]); lctx.strokeStyle = 'rgba(231,233,240,0.55)'; lctx.lineWidth = 1 * dpr;
+      lctx.beginPath(); lctx.arc(cx, cy, rH, 0, Math.PI * 2); lctx.stroke(); lctx.setLineDash([]);
+    }
+
+    const fs = (short ? 10.5 : 11.5) * dpr, lh = fs * 1.3, maxW = Math.min(W * 0.3, 190 * dpr), edge = 10 * dpr;
     lctx.font = `500 ${fs}px "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif`;
     for (const it of items) {
-      const words = it.text.split(' '), lines = []; let cur = '';
-      for (const w of words) { const t = cur ? cur + ' ' + w : w; if (lctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; }
+      const lines = []; let cur = '';
+      for (const w of it.text.split(' ')) { const t = cur ? cur + ' ' + w : w; if (lctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; }
       lines.push(cur);
-      it.lines = lines; it.w = Math.max(...lines.map(l => lctx.measureText(l).width)) + pad * 2; it.h = lines.length * lh + pad * 2;
-      it.ay = H / 2 - it.s * H; it.y = it.ay - it.h / 2;
+      it.lines = lines; it.w = Math.max(...lines.map(l => lctx.measureText(l).width)); it.h = lines.length * lh;
+      it.y = it.ay - it.h / 2;
     }
     for (const side of ['left', 'right']) {
       const g = items.filter(i => i.side === side).sort((a, b) => a.ay - b.ay);
-      for (let i = 1; i < g.length; i++) g[i].y = Math.max(g[i].y, g[i - 1].y + g[i - 1].h + 6 * dpr);
-      const top = 8 * dpr, bottom = H - 8 * dpr;
+      for (let i = 1; i < g.length; i++) g[i].y = Math.max(g[i].y, g[i - 1].y + g[i - 1].h + 8 * dpr);
+      const bottom = H - edge;
       if (g.length && g[g.length - 1].y + g[g.length - 1].h > bottom) {
         g[g.length - 1].y = bottom - g[g.length - 1].h;
-        for (let i = g.length - 2; i >= 0; i--) g[i].y = Math.min(g[i].y, g[i + 1].y - g[i].h - 6 * dpr);
+        for (let i = g.length - 2; i >= 0; i--) g[i].y = Math.min(g[i].y, g[i + 1].y - g[i].h - 8 * dpr);
       }
-      for (const it of g) it.y = Math.max(top, it.y);
+      for (const it of g) it.y = Math.max(edge, it.y);
     }
-    const cx = W / 2;
+    lctx.lineWidth = 0.75 * dpr;
     for (const it of items) {
-      const bx = it.side === 'left' ? 8 * dpr : W - 8 * dpr - it.w, by = it.y;
-      const ex = it.side === 'left' ? bx + it.w : bx, ey = by + it.h / 2;
-      lctx.strokeStyle = 'rgba(231,233,240,0.75)'; lctx.lineWidth = 1 * dpr;
-      lctx.beginPath(); lctx.moveTo(ex, ey); lctx.lineTo(cx, it.ay); lctx.stroke();
-      lctx.fillStyle = '#ffb25e'; lctx.beginPath(); lctx.arc(cx, it.ay, 3 * dpr, 0, Math.PI * 2); lctx.fill();
-      lctx.fillStyle = 'rgba(6,7,11,0.8)'; lctx.strokeStyle = 'rgba(255,178,94,0.55)';
-      lctx.beginPath(); lctx.rect(bx, by, it.w, it.h); lctx.fill(); lctx.stroke();
-      lctx.fillStyle = '#e7e9f0'; lctx.textBaseline = 'top'; lctx.textAlign = 'left';
-      it.lines.forEach((l, i) => lctx.fillText(l, bx + pad, by + pad + i * lh + (lh - fs) / 2));
+      const left = it.side === 'left';
+      const tx = left ? edge : W - edge - it.w;
+      const lx = left ? tx + it.w + 6 * dpr : tx - 6 * dpr, ly = it.y + lh / 2;
+      // thin leader line with an elbow, ending in a small dot on the feature
+      lctx.strokeStyle = 'rgba(231,233,240,0.38)';
+      lctx.beginPath(); lctx.moveTo(lx, ly); lctx.lineTo(lx + (left ? 10 : -10) * dpr, ly); lctx.lineTo(it.ax, it.ay); lctx.stroke();
+      lctx.fillStyle = 'rgba(255,214,160,0.9)'; lctx.beginPath(); lctx.arc(it.ax, it.ay, 2 * dpr, 0, Math.PI * 2); lctx.fill();
+      // text with a soft dark halo for legibility, no box
+      lctx.textBaseline = 'top'; lctx.textAlign = 'left';
+      lctx.shadowColor = 'rgba(0,0,0,0.95)'; lctx.shadowBlur = 4 * dpr;
+      lctx.fillStyle = 'rgba(231,233,240,0.88)';
+      it.lines.forEach((l, i) => lctx.fillText(l, left ? tx : tx + it.w - lctx.measureText(l).width, it.y + i * lh + (lh - fs) / 2));
+      lctx.shadowBlur = 0; lctx.shadowColor = 'transparent';
     }
   }
   const labelsOnEl = $('labelsOn');
@@ -860,22 +881,20 @@ void main(){
       <div class="name">${d.name}</div>
       <div class="where"></div>
       <div class="rate"></div>
-      <div class="elapsed"></div>
+      <div class="elapsed"><span class="cal"></span><span class="hms"></span></div>
       <div class="behind"></div>
       <div class="hour"></div>`;
     dialsEl.appendChild(el);
     clocks.push({ def: d, el, hand: el.querySelector('.hand'), whereEl: el.querySelector('.where'), rateEl: el.querySelector('.rate'),
-      elapsedEl: el.querySelector('.elapsed'), behindEl: el.querySelector('.behind'), hourEl: el.querySelector('.hour'), e: 0, lastText: '' });
+      calEl: el.querySelector('.cal'), hmsEl: el.querySelector('.hms'), behindEl: el.querySelector('.behind'), hourEl: el.querySelector('.hour'), e: 0, lastText: '' });
   }
   const U = { y: 31557600, mo: 2629800, d: 86400, h: 3600, m: 60 };
   // calendar-style readout, e.g. "23 y 4 mo 8 d · 03:12:05"
+  // odometer-style readout: "23 y 4 mo 8 d" over "03:12:05"
   function fmtClock(sec) {
-    if (sec < 60) return `${sec.toFixed(1)} s`;
-    let r = sec; const y = Math.floor(r / U.y); r -= y * U.y; const mo = Math.floor(r / U.mo); r -= mo * U.mo;
+    let r = Math.max(0, sec); const y = Math.floor(r / U.y); r -= y * U.y; const mo = Math.floor(r / U.mo); r -= mo * U.mo;
     const d = Math.floor(r / U.d); r -= d * U.d; const h = Math.floor(r / U.h); r -= h * U.h; const m = Math.floor(r / U.m); r -= m * U.m;
-    const hms = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(Math.floor(r)).padStart(2, '0')}`;
-    const cal = [y ? `${y} y` : '', y || mo ? `${mo} mo` : '', y || mo || d ? `${d} d` : ''].filter(Boolean).join(' ');
-    return cal ? `${cal} · ${hms}` : hms;
+    return { cal: `${y} y ${mo} mo ${d} d`, hms: `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(Math.floor(r)).padStart(2, '0')}` };
   }
   // the two largest units in words, e.g. "7 years 0 months" -> "7 years"
   function fmtWords(sec) {
@@ -911,7 +930,7 @@ void main(){
         : rate > 0 ? `1 hour there = ${fmtWords(3600 / rate)} for you` : 'Its signals never reach you.';
       const txt = where + rateTxt + hourTxt;
       if (txt !== c.lastText) { c.whereEl.textContent = where; c.rateEl.textContent = rateTxt; c.hourEl.textContent = hourTxt; c.lastText = txt; }
-      c.elapsedEl.textContent = fmtClock(c.e);
+      const t = fmtClock(c.e); c.calEl.textContent = t.cal; c.hmsEl.textContent = t.hms;
       c.behindEl.textContent = c.def.you ? '' : (you - c.e >= 0.05 ? `Behind you by ${fmtWords(you - c.e)}` : 'In step with you');
     }
     if (miller && !miller.done && you >= ROMILLY) {
@@ -945,7 +964,7 @@ void main(){
     if (!state.playing) togglePlay();
     miller = { done: false };
     const note = $('millerNote');
-    note.textContent = "Miller's planet: the probe now hovers 2.7×10⁻¹⁰ horizon radii above the horizon, where 1 hour = 7 years for you. Time-lapse is set to 1 year per second. Watch your clock pass 23 years while the probe's clock barely reaches 3 hours.";
+    note.textContent = "Miller's planet: the probe now hovers 2.7×10⁻¹⁰ horizon radii above the horizon, where 1 hour = 7 years for you. With time-lapse at 1 year per second, watch your clock pass 23 years while the probe's clock barely reaches 3 hours.";
     note.hidden = false;
   });
   const timeOnEl = $('timeOn');
