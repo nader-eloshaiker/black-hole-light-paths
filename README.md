@@ -8,7 +8,7 @@ An interactive, ray-traced black hole simulator. It answers why you can see the 
 
 **▶ Try it: https://nader-eloshaiker.github.io/black-hole-light-paths/**
 
-![Ray-traced black hole beside a diagram of the curved light paths](assets/social-preview.png)
+![Ray-traced black hole with its accretion disk bent over and under the shadow](assets/social-preview.png)
 
 ## What it shows
 

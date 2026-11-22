@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://nader-eloshaiker.github.io/black-hole-light-paths/assets/social-preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Ray-traced black hole with its accretion disk bent over and under the shadow, beside a diagram of the curved light paths.">
+<meta property="og:image:alt" content="Ray-traced black hole with its accretion disk bent over and under the shadow.">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Why Interstellar&#39;s black hole looks like that, and why time slows down">
@@ -164,10 +164,10 @@
   --accent: #ffb25e;
   --direct: #ffa040;
   --over: #4cc0ff;
-  --under: #f25ad9;
+  --under: #ff5c72;
   --ring: #9dff72;
-  --fall: #6b7386;
-  --time: #b49cff;
+  --fall: #93a0b8;
+  --time: #9cc6ff;  /* same ice blue as Miller's planet */
   --scale: #5fd4c4;
   --btn: #1c2230;
   --btn-hover: #262e3f;
@@ -204,7 +204,7 @@ header p { margin: 0; color: var(--muted); }
 /* Diagrams stack by default, each as large as fits the screen height (4:3).
    Only on wide screens do they sit side by side. */
 .stage { display: grid; grid-template-columns: 1fr; gap: 24px; }
-.stage > figure { width: 100%; max-width: min(100%, calc((100svh - 140px) * 4 / 3)); margin-inline: auto; }
+.stage > figure { align-content: start; width: 100%; max-width: min(100%, calc((100svh - 140px) * 4 / 3)); margin-inline: auto; }
 @media (min-width: 1600px) { .stage { grid-template-columns: 1fr 1fr; gap: 20px; } .stage > figure { max-width: none; } }
 figure { margin: 0; min-width: 0; display: grid; gap: 8px; }
 .cap { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
@@ -250,7 +250,7 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 .ctl .hint { font-size: 12px; color: var(--muted); }
 input[type=range] { width: 100%; accent-color: var(--accent); min-height: 24px; }
 .btns { display: flex; flex-wrap: wrap; gap: 8px; }
-button {
+button, select {
   font: 500 14px var(--body); color: var(--fg); background: var(--btn);
   border: 1px solid var(--btn-line); border-radius: var(--sq-ctl); corner-shape: squircle; padding: 8px 16px; cursor: pointer; min-height: 40px;
   box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 1px 2px rgba(0,0,0,0.4);
@@ -261,7 +261,7 @@ button { display: inline-flex; align-items: center; justify-content: center; gap
 .jump { display: inline-flex; align-items: center; gap: 4px; } .jump .ic { width: 14px; height: 14px; }
 /* fixed widths for buttons whose label changes */
 #play { width: 13em; } #sweep { width: 12em; } #clockPause { width: 10.5em; }
-button:hover { background: var(--btn-hover); border-color: var(--muted); }
+button:hover, select:hover { background-color: var(--btn-hover); border-color: var(--muted); }
 button:active { transform: translateY(1px); }
 /* on/off buttons: neutral, the pressed state is a lighter fill, not the accent */
 .tbtn[aria-pressed="true"] { background: #33405a; border-color: var(--fg); }
@@ -283,11 +283,19 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .mini-key i { display: block; width: 16px; height: 3px; border-radius: 2px; }
 .scale-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding-top: 4px; }
 .scale-row label { font-weight: 500; font-size: 14px; }
-.scale-row select { font: 14px var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: var(--sq-ctl); corner-shape: squircle; padding: 8px 10px; max-width: 100%; min-height: 40px; }
+.scale-row select { max-width: 100%; }
+/* dropdowns are secondary buttons with an arrow */
+select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-overflow: ellipsis;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e7e9f0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center; background-size: 16px; }
 .scale-info { margin: 0; flex: 1 1 360px; min-width: 0; font-size: 13px; color: var(--muted); }
 .scale-info b { color: var(--scale); font-weight: 500; }
 .scale-info .au-note { display: block; margin-top: 6px; }
 @media (max-width: 599px) { .side-view { aspect-ratio: 1 / 1; } }
+/* light paths: the view follows its content, so a wider frame wastes no space. Beside the picture it matches the picture's height. */
+.light-view { aspect-ratio: 16 / 9; }
+@media (min-width: 1600px) { .light-view { aspect-ratio: 4 / 3; } }
+@media (max-width: 599px) { .light-view { aspect-ratio: 4 / 3; } }
 
 .lower { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 40px; }
 @media (max-width: 880px) { .lower { grid-template-columns: 1fr; } }
@@ -325,7 +333,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .ltrack .band { position: absolute; top: 0; bottom: 0; background: rgba(231,233,240,0.025); border-left: 1px solid rgba(231,233,240,0.08); transition: background .3s; }
 .ltrack .band.odd { background: rgba(231,233,240,0.055); }
 .ltrack .band.on { background: rgba(255,178,94,0.16); }
-.lrow.probe .ltrack .band.on { background: rgba(180,156,255,0.2); }
+.lrow.probe .ltrack .band.on { background: rgba(156,198,255,0.2); }
 .lrow svg { width: 44px; height: 44px; }
 .lname { display: grid; gap: 1px; min-width: 0; line-height: 1.3; }
 .lname b { font-size: 14px; font-weight: 600; }
@@ -481,7 +489,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .dg .probe { fill: #fff; stroke: #06070b; stroke-width: 2; }
 .dg .meter-sun { fill: #ffb25e; } .dg .meter-bh { fill: var(--fg); }
 /* ---- Miller's planet story ---- */
-.story { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--time); border-radius: var(--sq-panel); corner-shape: squircle; background: rgba(180,156,255,0.05); }
+.story { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--time); border-radius: var(--sq-panel); corner-shape: squircle; background: rgba(156,198,255,0.05); }
 .story-head { display: grid; gap: 4px; min-height: 64px; }
 .story h3 { font-family: var(--display); font-weight: 500; font-size: 18px; margin: 0; }
 .story-cap { margin: 0; font-size: 16px; min-height: 1.5em; }
@@ -543,7 +551,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     </figure>
     <figure>
       <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout">units: event-horizon radius</span></div>
-      <div class="view side-view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
+      <div class="view light-view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
       <ul class="mini-key" aria-label="Key to the light paths">
         <li><i style="background:var(--direct)"></i>Direct</li>
         <li><i style="background:var(--over)"></i>Over the top</li>
@@ -551,7 +559,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <li><i style="background:var(--ring)"></i>Wrapped around</li>
         <li><i style="background:var(--fall)"></i>Falls in</li>
       </ul>
-      <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line.</figcaption>
+      <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line. Grey dots with tails are light going the other way: aimed at the shadow, it falls in and never comes back. You are farther out than drawn, 34 horizon radii away, so the rays fade before they reach your eye.</figcaption>
     </figure>
   </section>
 
@@ -692,7 +700,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <symbol id="sym-endurance" viewBox="-14 -14 28 28"><line x1="0" y1="0" x2="7.07" y2="7.07" stroke="#8c94a8" stroke-width="0.8"/><line x1="0" y1="0" x2="-7.07" y2="7.07" stroke="#8c94a8" stroke-width="0.8"/><line x1="0" y1="0" x2="-7.07" y2="-7.07" stroke="#8c94a8" stroke-width="0.8"/><line x1="0" y1="0" x2="7.07" y2="-7.07" stroke="#8c94a8" stroke-width="0.8"/><circle r="10" fill="none" stroke="#e7e9f0" stroke-width="1.4"/><rect x="7.80" y="-2.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="6.46" y="2.80" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="2.80" y="6.46" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-2.20" y="7.80" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-7.20" y="6.46" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-10.86" y="2.80" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-12.20" y="-2.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-10.86" y="-7.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-7.20" y="-10.86" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-2.20" y="-12.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="2.80" y="-10.86" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="6.46" y="-7.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><circle r="2.6" fill="#5fd4c4"/></symbol>
         <symbol id="sym-ranger" viewBox="-14 -8 28 16"><path d="M-11 3 L-7 -4 L6 -3.5 L12 0 L6 3.5 Z" fill="#e7e9f0"/><path d="M-3 3.2 L-7 7 L1 3.4 Z" fill="#b9c0cf"/><path d="M-3 -3.4 L-7 -7 L1 -3.6 Z" fill="#b9c0cf"/><rect x="3" y="-1.6" width="4" height="2.2" rx="0.8" fill="#5fd4c4"/></symbol>
         <symbol id="sym-tars" viewBox="-8 -12 16 24"><rect x="-7.2" y="-11" width="3.2" height="22" rx="0.6" fill="#a9b1c2"/><rect x="-3.6" y="-11" width="3.2" height="22" rx="0.6" fill="#c3c9d6"/><rect x="0" y="-11" width="3.2" height="22" rx="0.6" fill="#a9b1c2"/><rect x="3.6" y="-11" width="3.2" height="22" rx="0.6" fill="#c3c9d6"/><rect x="-6.6" y="-7" width="13.2" height="2.4" rx="0.6" fill="#5fd4c4"/></symbol>
-        <symbol id="sym-miller" viewBox="-10 -10 20 20"><circle r="9" fill="#2f6fbf"/><path d="M-8 -2.5 q1.6 -2 3.2 0 t3.2 0 t3.2 0 t3.2 0 t3.2 0" fill="none" stroke="#d9ecff" stroke-width="1.3" stroke-linecap="round"/><path d="M-8.5 2.5 q1.7 -2.2 3.4 0 t3.4 0 t3.4 0 t3.4 0 t3.4 0" fill="none" stroke="#d9ecff" stroke-width="1.3" stroke-linecap="round"/><circle r="9" fill="none" stroke="#9cc6ff" stroke-width="1"/></symbol>
+        <symbol id="sym-miller" viewBox="-10 -10 20 20"><circle r="9" fill="#2f6fbf"/><path d="M-8.06 4 C-5.4 2.6 -4.8 -5.8 1 -5.8 C5.2 -5.8 7 -2.4 5.4 .6 C5 -1.6 3.4 -2.8 1.8 -2.1 C-.7 -1 -.4 4 4 4.4 C5.6 4.5 7 4.3 8.06 4 A9 9 0 0 1 -8.06 4 Z" fill="#d9ecff"/><circle r="9" fill="none" stroke="#9cc6ff" stroke-width="1"/></symbol>
       </defs>
     </svg>
     <div class="survive-intro">
@@ -1019,7 +1027,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
         <li><i style="background:var(--over)"></i><span><b>Bent over the top.</b> Far side of the disk, top surface. This is the arch above the hole.</span></li>
         <li><i style="background:var(--under)"></i><span><b>Bent underneath.</b> Far side of the disk, bottom surface. This is the thinner arch below.</span></li>
         <li><i style="background:var(--ring)"></i><span><b>Wrapped around.</b> Light that circled the hole before escaping: the thin photon ring.</span></li>
-        <li><i style="background:var(--fall)"></i><span><b>Falls in.</b> Look in these directions and nothing comes back. That is the black shadow.</span></li>
+        <li><i style="background:var(--fall)"></i><span><b>Falls in.</b> Look in these directions and nothing comes back. That is the black shadow. The grey dots are light sent that way, falling in.</span></li>
         <li><i style="background:transparent;border-top:1px dashed var(--fg);height:0"></i><span><b>Dashed circle.</b> The event horizon at its true size. Bending of light makes the black shadow around it about 2.6 times wider.</span></li>
         <li><i style="background:var(--time)"></i><span><b>Time rings</b> (time map). How fast a clock hovering there ticks, compared with yours far away.</span></li>
       </ul>
@@ -1048,7 +1056,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 <script>
 (() => {
   const RIN = 3.0, ROUT = 12.0, DIST = 34.0, TH = 0.297; // TH = tan(half vertical field of view)
-  const COLORS = { direct: '#ffa040', over: '#4cc0ff', under: '#f25ad9', ring: '#9dff72', captured: '#6b7386' };
+  const COLORS = { direct: '#ffa040', over: '#4cc0ff', under: '#ff5c72', ring: '#9dff72', captured: '#93a0b8' };
 
   const $ = id => document.getElementById(id);
   const ICON = {"play": "<path d=\"M7 4.5v15l12-7.5z\" fill=\"currentColor\" stroke=\"none\"/>", "pause": "<rect x=\"6\" y=\"4.5\" width=\"4\" height=\"15\" rx=\"1\" fill=\"currentColor\" stroke=\"none\"/><rect x=\"14\" y=\"4.5\" width=\"4\" height=\"15\" rx=\"1\" fill=\"currentColor\" stroke=\"none\"/>", "stop": "<rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\" fill=\"currentColor\" stroke=\"none\"/>", "sweep": "<path d=\"M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4\"/>", "reset": "<path d=\"M4 12a8 8 0 1 0 2.35-5.65\"/><path d=\"M4 4.5V9h4.5\"/>", "skip": "<path d=\"M5 5v14l10-7z\" fill=\"currentColor\" stroke=\"none\"/><rect x=\"16.5\" y=\"5\" width=\"2.5\" height=\"14\" rx=\"1\" fill=\"currentColor\" stroke=\"none\"/>", "back": "<path d=\"M19 12H5M11 6l-6 6 6 6\"/>", "down": "<path d=\"M12 4v15M6 13l6 6 6-6\"/>"};
@@ -1062,7 +1070,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
     time: 0, sweepPhase: 0,
     timeOn: true, labelsOn: true, shipOn: true, scale: '', probe: { x: 2.6, y: 2.6 }
   };
-  const COL_TIME = '#b49cff';
+  const COL_TIME = '#9cc6ff';
   function syncPlayBtn() {
     playBtn.setAttribute('aria-pressed', String(!state.playing));
     setBtn(playBtn, state.playing ? 'pause' : 'play', state.playing ? 'Pause animation' : 'Play animation');
@@ -1133,6 +1141,7 @@ precision highp float;
 uniform vec2 uRes; uniform float uInc; uniform float uK; uniform float uTime; uniform float uMode; uniform float uDop;
 uniform vec3 uShip; uniform vec3 uShipN;
 const float RIN=${RIN.toFixed(1)}; const float ROUT=${ROUT.toFixed(1)}; const float DIST=${DIST.toFixed(1)}; const float TH=${TH};
+const float SWIRL=16.;   // seconds of winding before a disk texture is replaced
 float h2;
 float hash(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
 float noise(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
@@ -1154,10 +1163,20 @@ vec3 stars(vec3 d){
 vec3 shade(vec3 hit, vec3 dir, int n, bool fromAbove){
   float rh=length(hit.xz); float phi=atan(hit.z,hit.x);
   // Keplerian rotation (angular speed ~ r^-1.5), sped up so the motion is easy to see
-  float om=4.0*pow(rh,-1.5); float ang=phi-om*uTime;
-  vec2 q=vec2(cos(ang),sin(ang))*rh;
-  float tex=.45+.8*fbm(q*1.1+vec2(3.,7.));
-  float rings=.85+.15*sin(rh*7.+fbm(q*.7)*4.);
+  float om=4.0*pow(rh,-1.5);
+  // Inner gas laps outer gas, so one texture would wind ever tighter until it is finer than a pixel and
+  // shows as a moire pattern. Instead two copies take turns: each fades in fresh, winds for SWIRL seconds
+  // and fades out. sin weights half a cycle apart (w1^2+w2^2=1) keep the contrast steady.
+  vec2 gas=vec2(0.);
+  for(int k=0;k<2;k++){
+    float cyc=uTime/SWIRL+.5*float(k); float age=fract(cyc); float id=mod(floor(cyc),16.);
+    float ang=phi-om*age*SWIRL; vec2 q=vec2(cos(ang),sin(ang))*rh;
+    vec2 seed=vec2(id*7.3+float(k)*41.,id*11.9);             // a different patch of noise every time
+    gas+=sin(3.14159*age)*(vec2(fbm(q*1.1+vec2(3.,7.)+seed),fbm(q*.7+seed))-.469);   // .469 = mean of fbm
+  }
+  gas+=.469;
+  float tex=.45+.8*gas.x;
+  float rings=.85+.15*sin(rh*7.+gas.y*4.);
   float I=pow(RIN/rh,2.)*tex*rings;
   // bright clumps of gas orbiting at their own Keplerian speed: inner ones lap the outer ones
   for(int i=0;i<5;i++){
@@ -1180,7 +1199,7 @@ vec3 shade(vec3 hit, vec3 dir, int n, bool fromAbove){
     if(n>=3 || (hit.x>0. && n>1)) tint = vec3(.62,1.,.45);
     else if(hit.x>0.) tint = vec3(1.,.63,.25);
     else if(fromAbove) tint = vec3(.3,.75,1.);
-    else tint = vec3(.95,.35,.85);
+    else tint = vec3(1.,.36,.45);
     float l=dot(c,vec3(.3,.5,.2));
     c=tint*(.35+1.3*l);
   }
@@ -1277,6 +1296,26 @@ void main(){
   const tmap = $('tmap'), tctx = tmap.getContext('2d');
   const VIEW_HALF_W = 16; // world units across half the panel width
   let rays = [], slice = [], rayKey = '';
+  // Side view framing: rays fade out between these distances towards you (you are really DIST away), the eye sits just past them
+  const FADE0 = 12.2, FADE1 = 15, EYE_D = 16;
+  let sideBox = null, sideCam = null;
+  function frameSide(inc) {
+    const dx = Math.cos(inc), dy = Math.sin(inc);
+    const b = { x0: -ROUT - 0.6, x1: ROUT + 0.6, y0: -2.6, y1: 2.2 };
+    const add = (x, y) => { b.x0 = Math.min(b.x0, x); b.x1 = Math.max(b.x1, x); b.y0 = Math.min(b.y0, y); b.y1 = Math.max(b.y1, y); };
+    for (const r of rays) for (let i = 0; i < r.pts.length; i += 2) if (r.pts[i] * dx + r.pts[i + 1] * dy < FADE1 - 0.7) add(r.pts[i], r.pts[i + 1]);
+    add(EYE_D * dx + 0.7, EYE_D * dy + 0.7); add(EYE_D * dx - 0.7, EYE_D * dy - 0.7);
+    sideBox = b;
+  }
+  // where the side view looks: glides to the frame that fits everything at this angle
+  function sideView(W, H, dpr) {
+    const b = sideBox, pad = 12 * dpr, now = performance.now();
+    const s = Math.min((W - 2 * pad) / (b.x1 - b.x0), (H - 2 * pad) / (b.y1 - b.y0));
+    const to = { half: W / (2 * s), x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, t: now };
+    const gap = sideCam ? (now - sideCam.t) / 1000 : 1;
+    if (sideCam && gap < 0.4) { const e = 1 - Math.exp(-gap * 7); for (const k of ['half', 'x', 'y']) to[k] = sideCam[k] + (to[k] - sideCam[k]) * e; }
+    return sideCam = to;
+  }
 
   function traceRay(inc, K, s) {
     const ci = Math.cos(inc), si = Math.sin(inc);
@@ -1344,6 +1383,7 @@ void main(){
       }
       rays.push({ cls: r.cls, pts: rev, cum, tcum, len: cum[m - 1], T: tcum[m - 1], phase: (j * 0.6180339) % 1 });
     }
+    frameSide(inc);
   }
 
   function pointAt(ray, d, key = 'cum') {
@@ -1357,16 +1397,20 @@ void main(){
   let scene = null; // Miller's planet scene: { phase: 'run' | 'end', cap: 0..2 }
   function drawCanvas(cv, cctx, kind) {
     const W = cv.width, H = cv.height; if (!W) return;
-    const sc = W / (2 * VIEW_HALF_W), cx = W / 2, cy = H / 2;
-    const X = x => cx + x * sc, Y = y => cy - y * sc;
     const ctx = cctx, dpr = W / cv.clientWidth;
+    const cam = kind === 'light' && sideBox ? sideView(W, H, dpr) : { half: VIEW_HALF_W, x: 0, y: 0 };
+    const sc = W / (2 * cam.half), cx = W / 2 - cam.x * sc, cy = H / 2 + cam.y * sc;
+    const X = x => cx + x * sc, Y = y => cy - y * sc;
+    const dirX = Math.cos(state.inc * Math.PI / 180), dirY = Math.sin(state.inc * Math.PI / 180);   // towards you
+    const nearFade = (x, y) => Math.min(1, Math.max(0, (FADE1 - (x * dirX + y * dirY)) / (FADE1 - FADE0)));
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = '#05060a'; ctx.fillRect(0, 0, W, H);
 
     // faint grid every 2 units
     ctx.strokeStyle = 'rgba(140,148,168,0.07)'; ctx.lineWidth = 1;
     ctx.beginPath();
-    for (let g = -16; g <= 16; g += 2) { ctx.moveTo(X(g), 0); ctx.lineTo(X(g), H); ctx.moveTo(0, Y(g)); ctx.lineTo(W, Y(g)); }
+    for (let g = 2 * Math.ceil(-cx / sc / 2); X(g) <= W; g += 2) { ctx.moveTo(X(g), 0); ctx.lineTo(X(g), H); }
+    for (let g = 2 * Math.ceil((cy - H) / sc / 2); Y(g) >= 0; g += 2) { ctx.moveTo(0, Y(g)); ctx.lineTo(W, Y(g)); }
     ctx.stroke();
 
     // time map: the disk seen from above, a glowing ring of gas turning around the hole (inner gas laps the outer)
@@ -1392,15 +1436,15 @@ void main(){
     const ringClockR = rr => { const R = Math.min(8 * dpr, (rr - state.k) * sc - 2 * dpr); return R >= 4.5 * dpr ? R : 0; };
     // time-rate rings: where a hovering clock runs at f of the distant rate, r = rs / (1 - f^2)
     if (kind === 'time' && state.k > 0.001) {
-      const glow = ctx.createRadialGradient(X(0), Y(0), sc * 1, X(0), Y(0), sc * Math.max(1.5, 9 * state.k));
-      glow.addColorStop(0, 'rgba(180,156,255,0.20)'); glow.addColorStop(1, 'rgba(180,156,255,0)');
+      const glow = ctx.createRadialGradient(X(0), Y(0), sc * 1, X(0), Y(0), sc * Math.max(1.5, 3.4 * state.k));   // stays inside the disk's gap, so it doesn't grey the gas
+      glow.addColorStop(0, 'rgba(156,198,255,0.20)'); glow.addColorStop(1, 'rgba(156,198,255,0)');
       ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
       const rings = [[0.9, 112], [0.75, 128], [0.5, 146], [0.25, null]];
       ctx.font = `500 ${11 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       for (const [f, angDeg] of rings) {
         const rr = state.k / (1 - f * f);
-        ctx.strokeStyle = 'rgba(180,156,255,0.45)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([2 * dpr, 3 * dpr]);
+        ctx.strokeStyle = 'rgba(156,198,255,0.45)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([2 * dpr, 3 * dpr]);
         ctx.beginPath(); ctx.arc(X(0), Y(0), rr * sc, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
         if (angDeg !== null && rr * sc > 14 * dpr) {
           const cR = ringClockR(rr), a = angDeg * Math.PI / 180, out = rr * sc + (cR ? cR + 11 * dpr : 0);
@@ -1415,10 +1459,15 @@ void main(){
 
     // ray paths
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const rayPaint = {};
+    if (kind === 'light') for (const cls in COLORS) {
+      const g = rayPaint[cls] = ctx.createLinearGradient(X(0), Y(0), X(FADE1 * dirX), Y(FADE1 * dirY));
+      g.addColorStop(0, COLORS[cls]); g.addColorStop(FADE0 / FADE1, COLORS[cls]); g.addColorStop(1, COLORS[cls] + '00');
+    }
     if (kind === 'light') for (const r of rays) {
       const strong = r.cls === 'over' || r.cls === 'under' || r.cls === 'ring';
-      ctx.strokeStyle = COLORS[r.cls];
-      ctx.globalAlpha = r.cls === 'captured' ? 0.16 : r.cls === 'direct' ? 0.28 : 0.55;
+      ctx.strokeStyle = rayPaint[r.cls];
+      ctx.globalAlpha = r.cls === 'captured' ? 0.3 : r.cls === 'direct' ? 0.28 : 0.55;
       ctx.lineWidth = (strong ? 1.4 : 1) * dpr;
       ctx.beginPath();
       const p = r.pts; ctx.moveTo(X(p[0]), Y(p[1]));
@@ -1446,16 +1495,32 @@ void main(){
     // photons
     const speed = 7; // world units per second
     if (kind === 'light') for (const r of rays) {
-      if (r.cls === 'captured') continue;
       const period = r.T / speed;
+      if (r.cls === 'captured') {
+        // no light can come out along these paths, so show light going in: it dims as it nears the horizon and is gone
+        const d = (1 - ((state.time / period) + r.phase) % 1) * r.T;
+        const [x, y] = pointAt(r, d, 'tcum'), fade = Math.min(1, Math.max(0, (Math.hypot(x, y) - 1) / 1.2)) * nearFade(x, y);
+        if (fade <= 0) continue;
+        ctx.strokeStyle = ctx.fillStyle = COLORS.captured; ctx.lineWidth = 1.6 * dpr;
+        for (let s = 0; s < 4; s++) {                       // tail, pointing back the way it came
+          const a = pointAt(r, Math.min(r.T, d + s * 0.3), 'tcum'), b = pointAt(r, Math.min(r.T, d + (s + 1) * 0.3), 'tcum');
+          ctx.globalAlpha = fade * 0.7 * (1 - s / 4);
+          ctx.beginPath(); ctx.moveTo(X(a[0]), Y(a[1])); ctx.lineTo(X(b[0]), Y(b[1])); ctx.stroke();
+        }
+        ctx.globalAlpha = fade;
+        ctx.fillStyle = '#d3dae6';
+        ctx.beginPath(); ctx.arc(X(x), Y(y), 2.4 * dpr, 0, Math.PI * 2); ctx.fill();
+        continue;
+      }
       for (let k = 0; k < 2; k++) {
         const frac = ((state.time / period) + r.phase + k * 0.5) % 1;
         const [x, y] = pointAt(r, frac * r.T, 'tcum');
-        if (Math.abs(x) > VIEW_HALF_W + 1 || Math.abs(y) > VIEW_HALF_W) continue;
+        const fade = nearFade(x, y);
+        if (fade <= 0) continue;
         const rad = (r.cls === 'direct' ? 1.8 : 2.4) * dpr;
-        ctx.fillStyle = COLORS[r.cls]; ctx.globalAlpha = 0.25;
+        ctx.fillStyle = COLORS[r.cls]; ctx.globalAlpha = 0.25 * fade;
         ctx.beginPath(); ctx.arc(X(x), Y(y), rad * 2.6, 0, Math.PI * 2); ctx.fill();
-        ctx.globalAlpha = 1; ctx.fillStyle = '#fff';
+        ctx.globalAlpha = fade; ctx.fillStyle = '#fff';
         ctx.beginPath(); ctx.arc(X(x), Y(y), rad * 0.8, 0, Math.PI * 2); ctx.fill();
       }
     }
@@ -1472,7 +1537,7 @@ void main(){
       ctx.fillText('accretion disk, seen from above', X(-7.4), Y(7.9));
     }
     ctx.textAlign = 'left';
-    ctx.fillText('photon sphere', X(1.1), Y(-1.6));
+    ctx.fillText('photon sphere', X(1.1), kind === 'light' ? Math.max(Y(-1.6), Y(0) + th + 20 * dpr) : Y(-1.6));
 
     // real-world comparisons, drawn to the same scale as the side view
     const SC = SCALES[state.scale];
@@ -1529,24 +1594,22 @@ void main(){
 
     // observer marker: on the panel edge in the observer's direction
     if (kind === 'light') {
-    const inc = state.inc * Math.PI / 180, ci = Math.cos(inc), si = Math.sin(inc);
-    const halfH = (H / 2) / sc;
-    const t = Math.min((VIEW_HALF_W - 1.3) / Math.abs(ci || 1e-6), (halfH - 1.3) / Math.abs(si || 1e-6));
-    const ex = X(ci * t), ey = Y(si * t);
+    const inc = state.inc * Math.PI / 180;
+    const ex = X(EYE_D * dirX), ey = Y(EYE_D * dirY);
     ctx.save(); ctx.translate(ex, ey); ctx.rotate(-inc + Math.PI);
     ctx.strokeStyle = '#e7e9f0'; ctx.lineWidth = 1.4 * dpr;
     ctx.beginPath(); ctx.ellipse(0, 0, 11 * dpr, 6.5 * dpr, 0, 0, Math.PI * 2); ctx.stroke();
     ctx.fillStyle = '#e7e9f0'; ctx.beginPath(); ctx.arc(3 * dpr, 0, 3 * dpr, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
     ctx.font = font(11, 500); ctx.fillStyle = '#e7e9f0'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    ctx.fillText('you →', ex - 16 * dpr, ey + (si > 0.7 ? 18 * dpr : 0));
+    ctx.fillText('you →', ex - 16 * dpr, ey);
     }
 
     // probe distance: dashed circle through the probe, and a ruler along the bottom edge that lines up with the slider below
     if (kind === 'time') {
       const pr = Math.hypot(state.probe.x, state.probe.y);
       ctx.save();
-      ctx.strokeStyle = 'rgba(180,156,255,0.5)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([3 * dpr, 4 * dpr]);
+      ctx.strokeStyle = 'rgba(156,198,255,0.5)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([3 * dpr, 4 * dpr]);
       ctx.beginPath(); ctx.arc(X(0), Y(0), pr * sc, 0, Math.PI * 2); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(X(Math.min(pr, VIEW_HALF_W)), Y(0)); ctx.lineTo(X(Math.min(pr, VIEW_HALF_W)), H - 10 * dpr); ctx.stroke();
       ctx.setLineDash([]);
@@ -1588,7 +1651,7 @@ void main(){
       ctx.fillStyle = 'rgba(5,6,10,0.9)'; ctx.strokeStyle = COL_TIME; ctx.lineWidth = 1.6 * dpr;
       ctx.beginPath(); ctx.arc(px, py, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       // dashed halo says "you can grab this"
-      ctx.save(); ctx.setLineDash([3 * dpr, 3 * dpr]); ctx.lineWidth = 1.5 * dpr; ctx.strokeStyle = 'rgba(180,156,255,0.8)';
+      ctx.save(); ctx.setLineDash([3 * dpr, 3 * dpr]); ctx.lineWidth = 1.5 * dpr; ctx.strokeStyle = 'rgba(156,198,255,0.8)';
       ctx.beginPath(); ctx.arc(px, py, R + 6 * dpr, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       ctx.strokeStyle = COL_TIME; ctx.lineWidth = 1.6 * dpr;
       const ang = state.time * rate / 4 * Math.PI * 2;
