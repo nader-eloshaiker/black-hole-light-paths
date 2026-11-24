@@ -161,6 +161,7 @@
   --line: #1d2330;
   --fg: #e7e9f0;
   --muted: #8c94a8;
+  --fg2: #c9cdd8;     /* body copy on dark: softer than headings, brighter than captions */
   --accent: #ffb25e;
   --direct: #ffa040;
   --over: #4cc0ff;
@@ -188,7 +189,7 @@ body {
   line-height: 1.55;
 }
 .wrap {
-  max-width: 1800px;
+  max-width: 1680px;
   margin: 0 auto;
   padding-block: 28px 56px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -221,21 +222,20 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 .ship-key b { color: var(--fg); font-weight: 600; }
 .glerr { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; text-align: center; color: var(--muted); }
 
-.stage-intro { display: grid; gap: 6px; max-width: 75ch; }
-.stage-intro h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; text-wrap: balance; }
-.stage-intro p { margin: 0; color: var(--muted); }
 .jump { justify-self: start; font-size: 14px; color: var(--accent); text-underline-offset: 3px; }
 
 /* ---- controls: a compact dock that stays at the bottom of the screen while the diagrams are in view ---- */
 .dock {
   position: sticky; bottom: 0; z-index: 15;
-  display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px 28px; align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1.1fr) 1fr 1fr minmax(0, 1.25fr) auto; gap: 12px 28px; align-items: start;
   background: rgba(13,16,23,0.96); border: 1px solid var(--line); border-radius: var(--sq-panel); corner-shape: squircle;
   padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -8px 24px rgba(0,0,0,0.45);
 }
 @media (min-width: 1600px) { .dock { position: static; box-shadow: none; } }
-@media (max-width: 1240px) { .dock { grid-template-columns: 1fr 1fr 1fr; } .dock .btns { grid-column: 1 / -1; } }
+@media (max-width: 1240px) { .dock { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 22px; } .dock .btns { grid-column: 1 / -1; justify-content: flex-end; } .dock .hint { display: none; }
+  .dock .ctl .xl { display: none; } .dock .ctl .sm { display: inline; } .dock .btns button { min-height: 34px; padding: 5px 14px; } }
+@media (max-width: 900px) and (min-width: 600px) { .dock { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 599px) {
   .dock { grid-template-columns: 1fr; gap: 4px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); }
   .dock .hint { display: none; }
@@ -243,7 +243,9 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
   .dock .ctl label { font-size: 13px; }
   .dock .ctl .xl { display: none; }
   .dock .ctl .sm { display: inline; }
-  .dock .hole-row { grid-column: 1 / -1; padding-top: 4px; }
+  .dock .hole-ctl { grid-template-columns: 7.6em minmax(0, 1fr); }
+  .dock .hole-ctl .preset { grid-column: 1 / -1; }
+  .dock .ticks { display: none; }
   .dock .btns { flex-wrap: nowrap; gap: 6px; }
   .dock .btns button { flex: 1 1 0; width: auto; min-height: 36px; padding: 6px 10px; font-size: 13px; }
 }
@@ -256,7 +258,6 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 .hole-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .hole-row label { font-size: 13px; color: var(--muted); white-space: nowrap; }
 .hole-pick { flex: 1 1 auto; min-width: 0; min-height: 32px; padding: 4px 10px; font-size: 13px; }
-@media (max-width: 900px) and (min-width: 600px) { .dock { grid-template-columns: 1fr 1fr; } .dock .spin-ctl { grid-column: 1 / -1; } }
 input[type=range] { width: 100%; accent-color: var(--accent); min-height: 24px; }
 .btns { display: flex; flex-wrap: wrap; gap: 8px; }
 button, select {
@@ -290,14 +291,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .mini-key { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--fg); }
 .mini-key li { display: inline-flex; align-items: center; gap: 6px; }
 .mini-key i { display: block; width: 16px; height: 3px; border-radius: 2px; }
-.scale-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding-top: 4px; }
-.scale-row label { font-weight: 500; font-size: 14px; }
-.scale-row select { max-width: 100%; }
 /* dropdowns are secondary buttons with an arrow */
 select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-overflow: ellipsis;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e7e9f0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 13px center; background-size: 16px; }
-.scale-info { margin: 0; flex: 1 1 360px; min-width: 0; font-size: 13px; color: var(--muted); }
+.scale-info { margin: 0; min-width: 0; font-size: 13.5px; color: var(--muted); }
 .scale-info b { color: var(--scale); font-weight: 500; }
 .scale-info .au-note { display: block; margin-top: 6px; }
 @media (max-width: 599px) { .side-view { aspect-ratio: 1 / 1; } }
@@ -306,9 +304,6 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 @media (min-width: 1600px) { .light-view { aspect-ratio: 4 / 3; } }
 @media (max-width: 599px) { .light-view { aspect-ratio: 4 / 3; } }
 
-.lower { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 40px; }
-@media (max-width: 880px) { .lower { grid-template-columns: 1fr; } }
-.lower h2 { font-family: var(--display); font-weight: 500; font-size: 18px; margin: 0 0 10px; }
 .legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
 .legend li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; font-size: 14px; }
 .legend i { display: block; height: 4px; margin-top: 9px; border-radius: 2px; }
@@ -317,11 +312,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 .try li::marker { color: var(--accent); font-family: var(--mono); }
 
 /* ---- time section ---- */
-.time { display: grid; gap: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--sq-panel); corner-shape: squircle; padding: 20px; scroll-margin-top: 16px; }
-.time-intro { display: grid; gap: 6px; max-width: 75ch; }
-.time h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; text-wrap: balance; }
-.time-intro p { margin: 0; color: var(--muted); }
-.time-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.time { display: grid; gap: 22px; }
 .clock-ctl { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 28px; }
 .lapse-ctl { display: grid; gap: 4px; max-width: 560px; flex: 1 1 340px; }
 .lapse-ctl label { font-weight: 500; font-size: 14px; }
@@ -391,24 +382,19 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 .probe-ticks .pt.low { top: 18px; }
 .probe-ticks .disk { top: 2px; height: 14px; border-top: 3px solid #ffb25e; text-align: center; color: #ffb25e; padding-top: 1px; opacity: .85; }
 @media (max-width: 599px) { .probe-ticks span { font-size: 10px; } }
-.tmap-fig { margin: 0; display: grid; gap: 10px; width: 100%; max-width: min(100%, calc((100svh - 140px) * 4 / 3)); }
+.tmap-fig { margin: 0; display: grid; gap: 10px; align-content: start; width: 100%; min-width: 0; max-width: min(100%, calc((100svh - 140px) * 4 / 3)); }
 .maths summary { cursor: pointer; font-size: 14px; font-weight: 500; }
 .maths a { color: var(--accent); }
 .maths p { margin: 8px 0 0; font-size: 13px; color: var(--muted); max-width: 90ch; }
 
 /* ---- survival ---- */
-.survive { display: grid; gap: 18px; scroll-margin-top: 16px; }
-.survive-intro { display: grid; gap: 6px; max-width: 75ch; }
-.survive h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; text-wrap: balance; }
-.survive-intro p { margin: 0; color: var(--muted); }
-.survive-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 28px; }
-@media (max-width: 1200px) { .survive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 680px) { .survive-grid { grid-template-columns: 1fr; } }
+.survive { display: grid; gap: 22px; }
 .survive h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0 0 6px; text-wrap: balance; }
 .leg { display: inline-block; margin-bottom: 8px; font: 600 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--scale); }
 .dg .helmet { fill: none; stroke: var(--fg); stroke-width: 1.5; }
-.survive-grid p { margin: 0; font-size: 14px; color: #c9cdd8; }
+.leg-text p { margin: 0; color: var(--fg2); }
 .survive-live { display: grid; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--sq-panel); corner-shape: squircle; padding: 18px 20px; }
+.survive-live h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0; }
 .sl-head { display: grid; gap: 2px; }
 .sl-where { margin: 0; font-size: 13px; color: var(--muted); min-height: 1.5em; }
 .sl-meters { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 28px; }
@@ -446,7 +432,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 .gravity-fig h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0; }
 .gf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 900px) { .gf-grid { grid-template-columns: 1fr; } }
-.gravity-fig figcaption { max-width: 95ch; font-size: 14px; color: #c9cdd8; }
+.gravity-fig figcaption { max-width: 75ch; font-size: 15px; color: var(--fg2); }
 .gf-grid .dg { margin: 0; }
 .dg .earth { fill: #4cc0ff; }
 .dg .lead { stroke: var(--muted); stroke-width: 1; }
@@ -489,12 +475,11 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 .anim-paused .dg *, .dg.offscreen * { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) { .dg * { animation: none !important; } }
 .why { list-style: none; counter-reset: why; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
-.why li { counter-increment: why; position: relative; padding-left: 30px; font-size: 13.5px; line-height: 1.45; color: #c9cdd8; }
+.why li { counter-increment: why; position: relative; padding-left: 32px; font-size: 14.5px; line-height: 1.5; color: var(--fg2); max-width: 62ch; }
 .why li::before { content: counter(why); position: absolute; left: 0; top: 0; width: 21px; height: 21px; border-radius: 8px; corner-shape: squircle;
   display: grid; place-items: center; font: 600 11px var(--mono); color: #06070b; background: var(--scale); }
-.why.wide { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 20px; }
-@media (max-width: 1100px) { .why.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 600px) { .why.wide { grid-template-columns: 1fr; } }
+.why.two { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 40px; max-width: 1180px; }
+@media (max-width: 760px) { .why.two { grid-template-columns: 1fr; } }
 .dg .cap-t { font-size: 12.5px; font-weight: 600; }
 .dg .lane { stroke: var(--line); stroke-width: 2; stroke-dasharray: 2 4; }
 .dg .probe { fill: #fff; stroke: #06070b; stroke-width: 2; }
@@ -520,25 +505,21 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 @media (max-width: 760px) { .srow { grid-template-columns: 1fr auto; } .strack { grid-column: 1 / -1; grid-row: 2; } }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.film { display: grid; gap: 16px; }
-.film h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; }
-.film-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 28px; }
+.film { display: grid; gap: 22px; }
+.film-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 40px; max-width: 1180px; }
 @media (max-width: 980px) { .film-grid { grid-template-columns: 1fr; } }
 .film h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0 0 6px; text-wrap: balance; }
-.film p { margin: 0; font-size: 14px; color: #c9cdd8; }
-.film-spin { display: grid; gap: 4px; scroll-margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.film p { margin: 0; color: var(--fg2); }
+.film-spin { display: grid; gap: 4px; scroll-margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--line); }
 .film-spin .why { margin-top: 6px; }
-.film .film-note { font-size: 13.5px; color: var(--muted); max-width: 90ch; margin-top: 8px; }
+.film .film-note { font-size: 14px; color: var(--muted); max-width: 75ch; margin-top: 12px; }
 .film .refs { font-size: 12px; color: var(--muted); max-width: 110ch; }
 .film a { color: var(--accent); }
 /* scrolling over the side view must still scroll the page; only a drag on the probe moves it */
 #tmap.probe-on { touch-action: pan-y; }
 @media (prefers-reduced-motion: reduce) { .ledger .hand { display: none; } .story-cap.fade { animation: none; } }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
-.eqs { display: grid; gap: 16px; scroll-margin-top: 16px; }
-.eqs h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; }
-.eqs-head { display: grid; gap: 6px; max-width: 75ch; }
-.eqs-head p { margin: 0; color: var(--muted); }
+.eqs { display: grid; gap: 22px; }
 .eqs-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 980px) { .eqs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .eqs-grid { grid-template-columns: 1fr; } }
@@ -546,22 +527,128 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 .eqcard h3 { font-family: var(--display); font-weight: 500; font-size: 16px; margin: 0; }
 .eq { display: grid; gap: 2px; font-family: var(--mono); font-size: 13px; line-height: 1.6; color: var(--fg); background: #000; border: 1px solid var(--line); border-radius: var(--sq-ctl); corner-shape: squircle; padding: 9px 12px; overflow-wrap: anywhere; }
 .eqs .nb { white-space: nowrap; }
-.eqcard p { margin: 0; font-size: 14px; color: #c9cdd8; }
+.eqcard p { margin: 0; font-size: 14px; color: var(--fg2); }
 .eqcard .src { font-size: 12px; color: var(--muted); }
 .eqs-limits h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0 0 8px; }
-.eqs-limits ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; color: #c9cdd8; max-width: 80ch; }
+.eqs-limits ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; color: var(--fg2); max-width: 80ch; }
 .eqs-limits li::marker { color: var(--accent); }
 .eqs .refs { margin: 0; font-size: 12px; color: var(--muted); max-width: 110ch; }
 .eqs a { color: var(--accent); }
 .site-foot { border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
 .site-foot p { margin: 0; }
 .site-foot a { color: var(--accent); }
+
+/* ---- chapters: a numbered kicker, a heading and one line of lede, then generous space before the next ---- */
+.chapter { display: grid; gap: 22px; padding-top: 56px; border-top: 1px solid var(--line); scroll-margin-top: 8px; min-width: 0; }
+#picture { border-top: 0; padding-top: 8px; }
+.chead { display: grid; gap: 8px; max-width: 70ch; }
+.ckicker { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.chead h2 { font-family: var(--display); font-weight: 500; font-size: clamp(23px, 2.4vw, 30px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chead p { margin: 0; color: var(--muted); font-size: 16px; }
+.film-spin h3, .clocks-head h3 { font-family: var(--display); font-weight: 500; font-size: 19px; margin: 0; }
+
+/* chapter navigation: a small floating bar that hides while you scroll down and comes back when you scroll up */
+.toc { position: sticky; top: max(8px, env(safe-area-inset-top, 0px)); z-index: 20; justify-self: start; max-width: 100%;
+  display: flex; gap: 2px; padding: 4px; overflow-x: auto; scrollbar-width: none;
+  background: rgba(13,16,23,0.92); border: 1px solid var(--line); border-radius: 14px; corner-shape: squircle;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+  transition: transform .25s ease, opacity .25s ease; }
+.toc::-webkit-scrollbar { display: none; }
+.toc.away { transform: translateY(calc(-100% - 16px)); opacity: 0; }
+.toc a { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 7px; min-height: 34px; border-radius: 10px; corner-shape: squircle;
+  font-size: 13.5px; font-weight: 500; color: var(--muted); text-decoration: none; white-space: nowrap; }
+.toc a span { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; corner-shape: squircle; font: 600 11px var(--mono); background: var(--btn); color: var(--fg); }
+.toc a:hover { color: var(--fg); background: var(--btn); }
+.toc a[aria-current="true"] { color: var(--fg); background: var(--btn); }
+.toc a[aria-current="true"] span { background: var(--accent); color: #1a1006; }
+@media (prefers-reduced-motion: reduce) { .toc { transition: none; } }
+.toc em { font-style: normal; } .toc em.s { display: none; }
+@media (max-width: 599px) { .toc { justify-self: stretch; justify-content: space-between; } .toc a { padding: 6px 10px; font-size: 13px; } .toc a span, .toc em { display: none; } .toc em.s { display: inline; }
+  .toc a[aria-current="true"] { background: var(--accent); color: #1a1006; } }
+
+/* the three collapsibles under the picture sit in one row */
+.extras { display: flex; flex-wrap: wrap; gap: 12px; align-items: start; }
+.extras > details { flex: 1 1 300px; min-width: 0; }
+.extras .legend, .extras .try { padding-bottom: 16px; }
+
+/* slider tick marks; 9px each side lines them up with the thumb's travel */
+.ticks { position: relative; height: 18px; margin: -2px 9px 0; font: 500 10.5px var(--mono); color: var(--muted); }
+.ticks i { position: absolute; top: 0; height: 5px; border-left: 1px solid rgba(140,148,168,0.6); }
+.ticks i.major { height: 7px; border-left-color: var(--muted); }
+.ticks b { position: absolute; top: 7px; font-weight: 500; white-space: nowrap; transform: translateX(-50%); }
+.ticks b.first { transform: none; margin-left: -9px; } .ticks b.last { transform: translateX(-100%); margin-left: 9px; }
+.ticks b.on { color: var(--accent); }
+
+/* a black hole preset: says when your sliders no longer match it, with a way back */
+.hole-ctl { align-content: start; }
+.hole-ctl > label { font-weight: 500; font-size: 14px; }
+.hole-ctl select { width: 100%; min-height: 36px; padding-block: 5px; font-size: 13.5px; }
+.preset { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 30px; font-size: 12.5px; color: var(--muted); }
+.preset-state b { color: var(--fg); font-weight: 600; }
+.preset-state .mod { color: var(--accent); }
+.preset .restore { min-height: 30px; padding: 3px 10px; font-size: 12.5px; }
+.preset .restore .ic { width: 14px; height: 14px; }
+
+/* chapter 2: the map with its settings beside it */
+.time-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (min-width: 1100px) { .time-grid { grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr); } .time-grid .tmap-fig { max-width: none; } }
+.inspector { display: grid; gap: 14px; min-width: 0; }
+.card { display: grid; gap: 10px; min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--sq-panel); corner-shape: squircle; padding: 16px 18px; }
+.hole-card .hole-row label { font-weight: 500; font-size: 14px; color: var(--fg); }
+.hole-card select { min-height: 38px; }
+.miller-card { border-color: rgba(156,198,255,0.45); background: rgba(156,198,255,0.05); }
+.mc-head { display: flex; align-items: center; gap: 10px; }
+.mc-head svg { width: 22px; height: 22px; flex: none; }
+.mc-head h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0; flex: 1; }
+.mc-rate { font: 600 16px var(--mono); color: var(--time); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mc-info { margin: 0; font-size: 14px; color: var(--fg2); }
+.mc-info .moved { color: var(--accent); }
+.miller-card button { justify-self: start; }
+.card .probe-ctl label { font-size: 14px; }
+.tkey { gap: 6px 14px; }
+.clocks-head { display: grid; gap: 4px; padding-top: 8px; }
+.clocks-head p { margin: 0; color: var(--muted); max-width: 75ch; }
+.lrow.miller { box-shadow: inset 3px 0 0 #2f6fbf; padding-left: 6px; }
+.lrow.miller .fill, .lrow.miller .dot { background: #6aa5ef; }
+.lrow.miller .ltrack .band.on { background: rgba(106,165,239,0.2); }
+
+/* chapter 4: one leg of the trip at a time */
+.legs { display: grid; gap: 18px; }
+.leg-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.leg-tabs::-webkit-scrollbar { display: none; }
+.leg-tabs [role="tab"] { flex: 1 1 0; justify-content: flex-start; gap: 10px; min-height: 48px; padding: 8px 14px; background: transparent; box-shadow: none; color: var(--muted); }
+.leg-tabs [role="tab"]:hover { color: var(--fg); }
+.leg-tabs [role="tab"][aria-selected="true"] { background: var(--panel); border-color: var(--scale); color: var(--fg); }
+.lnum { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 8px; corner-shape: squircle; font: 600 12px var(--mono); background: var(--btn); color: var(--fg); }
+[aria-selected="true"] .lnum { background: var(--scale); color: #06070b; }
+@media (max-width: 760px) { .leg-tabs [role="tab"] { flex: 0 0 auto; } }
+.leg-panel { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px 40px; align-items: start; }
+@media (min-width: 900px) { .leg-panel { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.leg-fig .dg { margin: 0; }
+.leg-text { display: grid; gap: 10px; align-content: start; }
+.leg-text h3 { font-family: var(--display); font-weight: 500; font-size: 21px; margin: 0; text-wrap: balance; }
+.leg-text .why { margin-top: 4px; }
+.leg-nav { display: flex; justify-content: space-between; gap: 10px; }
+.leg-nav button[disabled] { visibility: hidden; }
+
+/* sources and long reference lists: one click away */
+.sources summary { cursor: pointer; font-size: 14px; font-weight: 500; color: var(--muted); }
+.sources summary:hover { color: var(--fg); }
+.sources .refs { margin: 10px 0 0; }
 </style>
 
 </head>
 <body>
 <noscript><p style="padding:16px;color:#e7e9f0">This interactive simulation needs JavaScript and WebGL. Please enable JavaScript to see the black hole.</p></noscript>
 <main class="wrap">
+  <nav class="toc" aria-label="Chapters">
+    <a href="#picture"><span>1</span><em>The picture</em><em class="s">Picture</em></a>
+    <a href="#millers-planet"><span>2</span><em>Time</em><em class="s">Time</em></a>
+    <a href="#interstellar"><span>3</span><em>Interstellar</em><em class="s">Film</em></a>
+    <a href="#survive"><span>4</span><em>The trip</em><em class="s">Trip</em></a>
+    <a href="#maths"><span>5</span><em>The maths</em><em class="s">Maths</em></a>
+  </nav>
+
   <header>
     <span class="kicker">Interactive · ray-traced live</span>
     <h1>Inside Interstellar&#8217;s black hole</h1>
@@ -569,80 +656,161 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
     <a class="jump" href="#millers-planet">Jump to Miller&#8217;s planet <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M6 13l6 6 6-6"/></svg></a>
   </header>
 
-  <div class="stage-intro">
-    <h2>Why you can see the back of the disk</h2>
-    <p>The main picture traces light rays through the curved space around a black hole; the spin control below sets how fast it turns. The side view cuts the scene along the dashed line and shows the paths those rays take.</p>
-  </div>
-
-  <section class="stage">
-    <figure>
-      <div class="cap"><span class="eyebrow">What you see</span><span class="readout" id="camReadout"></span></div>
-      <div class="view" id="glWrap"><canvas id="gl" aria-label="Ray-traced view of a black hole with an accretion disk"></canvas><div class="slice"><span>side-view slice</span></div><canvas id="labels" class="labels" aria-hidden="true"></canvas></div>
-      <figcaption>Every pixel is one light ray traced backwards from your eye until it hits the disk, falls into the hole, or escapes to the stars.</figcaption>
-      <p class="ship-key"><svg viewBox="-14 -14 28 28" aria-hidden="true"><use href="#sym-endurance" x="-14" y="-14" width="28" height="28"/></svg><span><b>Endurance</b>, the ring in the disk. It is drawn far larger than its real size so you can see it; its light bends around the hole like everything else, so it rides over the top when it passes behind.</span></p>
-    </figure>
-    <figure>
-      <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout" id="sideUnits">units: event-horizon radius</span></div>
-      <div class="view light-view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
-      <ul class="mini-key" aria-label="Key to the light paths">
-        <li><i style="background:var(--direct)"></i>Direct</li>
-        <li><i style="background:var(--over)"></i>Over the top</li>
-        <li><i style="background:var(--under)"></i>Underneath</li>
-        <li><i style="background:var(--ring)"></i>Wrapped around</li>
-        <li><i style="background:var(--fall)"></i>Falls in</li>
-      </ul>
-      <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line. Grey dots with tails are light going the other way: aimed at the shadow, it falls in and never comes back. You are farther out than drawn, 34 horizon radii away, so the rays fade before they reach your eye.</figcaption>
-    </figure>
-  </section>
-
-  <section class="dock" aria-label="Main controls">
-    <div class="ctl">
-      <label for="inc"><span>Viewing angle<span class="xl"> above the disk</span></span> <output id="incOut">8°</output></label>
-      <input type="range" id="inc" min="0" max="90" step="0.5" value="8">
-      <span class="hint">0° is edge-on; 90° is looking straight down.</span>
+  <section class="chapter" id="picture" aria-labelledby="picHead">
+    <div class="chead">
+      <span class="ckicker">Chapter 1 · The picture</span>
+      <h2 id="picHead">Why you can see the back of the disk</h2>
+      <p>The main picture traces light rays through the curved space around a black hole; the spin control below sets how fast it turns. The side view cuts the scene along the dashed line and shows the paths those rays take.</p>
     </div>
-    <div class="ctl">
-      <label for="k"><span><span class="xl">Strength of gravity</span><span class="sm">Gravity</span></span> <output id="kOut">100%</output></label>
-      <input type="range" id="k" min="0" max="100" step="1" value="100">
-      <span class="hint">Bends light and slows time. 0% switches it off.</span>
+
+    <div class="stage">
+      <figure>
+        <div class="cap"><span class="eyebrow">What you see</span><span class="readout" id="camReadout"></span></div>
+        <div class="view" id="glWrap"><canvas id="gl" aria-label="Ray-traced view of a black hole with an accretion disk"></canvas><div class="slice"><span>side-view slice</span></div><canvas id="labels" class="labels" aria-hidden="true"></canvas></div>
+        <figcaption>Every pixel is one light ray traced backwards from your eye until it hits the disk, falls into the hole, or escapes to the stars.</figcaption>
+        <p class="ship-key"><svg viewBox="-14 -14 28 28" aria-hidden="true"><use href="#sym-endurance" x="-14" y="-14" width="28" height="28"/></svg><span><b>Endurance</b>, the ring in the disk. It is drawn far larger than its real size so you can see it; its light bends around the hole like everything else, so it rides over the top when it passes behind.</span></p>
+      </figure>
+      <figure>
+        <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout" id="sideUnits">units: event-horizon radius</span></div>
+        <div class="view light-view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
+        <ul class="mini-key" aria-label="Key to the light paths">
+          <li><i style="background:var(--direct)"></i>Direct</li>
+          <li><i style="background:var(--over)"></i>Over the top</li>
+          <li><i style="background:var(--under)"></i>Underneath</li>
+          <li><i style="background:var(--ring)"></i>Wrapped around</li>
+          <li><i style="background:var(--fall)"></i>Falls in</li>
+        </ul>
+        <figcaption>Glowing dots are photons travelling from the disk to you. Each ray lands at the same height in the main picture as it has on the dashed line. Grey dots with tails are light going the other way: aimed at the shadow, it falls in and never comes back. You are farther out than drawn, 34 horizon radii away, so the rays fade before they reach your eye.</figcaption>
+      </figure>
     </div>
-    <div class="ctl spin-ctl">
-      <label for="spin"><span><span class="xl">Spin of the black hole</span><span class="sm">Spin</span></span> <output id="spinOut">none</output></label>
-      <div class="spin-track">
-        <input type="range" id="spin" min="0" max="1" step="0.001" value="0" aria-describedby="spinHint">
+
+    <section class="dock" aria-label="Main controls">
+      <div class="ctl hole-ctl">
+        <label for="hole">Black hole</label>
+        <select id="hole" class="hole-pick"></select>
+        <div class="preset" data-preset>
+          <span class="preset-state" aria-live="polite"></span>
+          <button type="button" class="restore" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.35-5.65"/><path d="M4 4.5V9h4.5"/></svg><span>Restore</span></button>
+        </div>
       </div>
-      <div class="hole-row"><label for="hole">Black hole</label><select id="hole" class="hole-pick"></select></div>
-      <span class="hint" id="spinHint"></span>
-    </div>
-    <div class="btns">
-      <button id="sweep" class="tbtn" type="button" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><span>Sweep the angle</span></button>
-      <button id="play" class="tbtn" type="button" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4" height="15" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="4.5" width="4" height="15" rx="1" fill="currentColor" stroke="none"/></svg><span>Pause animation</span></button>
+      <div class="ctl">
+        <label for="inc"><span>Viewing angle</span> <output id="incOut">8°</output></label>
+        <input type="range" id="inc" min="0" max="90" step="1" value="8">
+        <div class="ticks" aria-hidden="true" data-n="6" data-labels="0:0° edge-on|6:90° from above"></div>
+      </div>
+      <div class="ctl">
+        <label for="k"><span><span class="xl">Strength of gravity</span><span class="sm">Gravity</span></span> <output id="kOut">100%</output></label>
+        <input type="range" id="k" min="0" max="100" step="10" value="100">
+        <div class="ticks" aria-hidden="true" data-n="10" data-labels="0:off|5:50%|10:100%"></div>
+      </div>
+      <div class="ctl spin-ctl">
+        <label for="spin"><span><span class="xl">Spin of the black hole</span><span class="sm">Spin</span></span> <output id="spinOut">none</output></label>
+        <input type="range" id="spin" min="0" max="13" step="1" value="13" aria-describedby="spinHint">
+        <div class="ticks" aria-hidden="true" id="spinTicks"></div>
+        <span class="hint" id="spinHint"></span>
+      </div>
+      <div class="btns">
+        <button id="sweep" class="tbtn" type="button" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><span>Sweep the angle</span></button>
+        <button id="play" class="tbtn" type="button" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4" height="15" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="4.5" width="4" height="15" rx="1" fill="currentColor" stroke="none"/></svg><span>Pause animation</span></button>
+      </div>
+    </section>
+
+    <div class="extras">
+      <details class="options">
+        <summary>More options</summary>
+        <div class="opt-groups">
+        <fieldset>
+          <legend>Show on the pictures</legend>
+          <label><input type="checkbox" id="labelsOn" checked> Labels for the parts of the black hole</label>
+          <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
+          <label><input type="checkbox" id="shipOn" checked> The Endurance (ship in the disk)</label>
+        </fieldset>
+        <fieldset>
+          <legend>Physics</legend>
+          <label><input type="checkbox" id="dop"> Doppler brightening: the side coming towards you glows brighter</label>
+        </fieldset>
+      </div>
+    </details>
+      <details class="options">
+        <summary>Key to the light paths</summary>
+        <ul class="legend">
+          <li><i style="background:var(--direct)"></i><span><b>Direct.</b> Near side of the disk, almost a straight line to you.</span></li>
+          <li><i style="background:var(--over)"></i><span><b>Bent over the top.</b> Far side of the disk, top surface. This is the arch above the hole.</span></li>
+          <li><i style="background:var(--under)"></i><span><b>Bent underneath.</b> Far side of the disk, bottom surface. This is the thinner arch below.</span></li>
+          <li><i style="background:var(--ring)"></i><span><b>Wrapped around.</b> Light that circled the hole before escaping: the thin photon ring.</span></li>
+          <li><i style="background:var(--fall)"></i><span><b>Falls in.</b> Look in these directions and nothing comes back. That is the black shadow. The grey dots are light sent that way, falling in.</span></li>
+          <li><i style="background:transparent;border-top:1px dashed var(--fg);height:0"></i><span><b>Dashed circle.</b> The event horizon at its true size. Bending of light makes the black shadow around it about 2.6 times wider.</span></li>
+          <li><i style="background:var(--time)"></i><span><b>Time rings</b> (time map). How fast a clock hovering there ticks, compared with yours far away.</span></li>
+        </ul>
+      </details>
+      <details class="options">
+        <summary>Things to try</summary>
+        <ol class="try">
+          <li>Drag <b>gravity</b> to 0%, then slowly back up.</li>
+          <li>Press <b>Sweep the angle</b>.</li>
+          <li>Tick <b>Colour the picture by light path</b>.</li>
+          <li>Tick <b>Doppler brightening</b>.</li>
+          <li>Drag <b>spin</b> down to none at a low angle: the shadow rounds out and the disk&#8217;s inner edge moves away from the hole.</li>
+          <li>Pick <b>Sagittarius A*</b> or <b>M87*</b> as the black hole to see a real one at its own spin and size.</li>
+          <li>Drag the <b>Endurance</b> on the time map towards the hole, and watch the map zoom in.</li>
+            <li>Lower the <b>spin</b> and watch Miller&#8217;s planet get pushed out, and its clock speed up.</li>
+          <li>Press <b>Play the Miller&#8217;s planet scene</b>.</li>
+          <li>Pick <b>a black hole of 10 Suns</b> and look at the forces on the Endurance in chapter 2.</li>
+        </ol>
+      </details>
     </div>
   </section>
 
-  <details class="options">
-    <summary>More options</summary>
-    <div class="opt-groups">
-      <fieldset>
-        <legend>Show on the pictures</legend>
-        <label><input type="checkbox" id="labelsOn" checked> Labels for the parts of the black hole</label>
-        <label><input type="checkbox" id="mode"> Colour the picture by light path</label>
-        <label><input type="checkbox" id="shipOn" checked> The Endurance (ship in the disk)</label>
-      </fieldset>
-      <fieldset>
-        <legend>Physics</legend>
-        <label><input type="checkbox" id="dop"> Doppler brightening: the side coming towards you glows brighter</label>
-      </fieldset>
-    </div>
-  </details>
-
-  <section class="time" id="millers-planet" aria-labelledby="timeHead">
-    <div class="time-intro">
+  <section class="time chapter" id="millers-planet" aria-labelledby="timeHead">
+    <div class="chead">
+      <span class="ckicker">Chapter 2 · Time</span>
       <h2 id="timeHead">Time runs slower near the black hole</h2>
-      <p>Gravity slows time. The closer a clock is to the hole, the slower it ticks compared with yours.</p>
+      <p>Gravity slows time. The closer a clock is to the hole, the slower it ticks compared with yours. Pick a black hole, then move the Endurance and watch Miller&#8217;s planet.</p>
     </div>
-    <div class="time-actions">
-      <button id="miller" class="primary" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/></svg><span>Play the Miller&#8217;s planet scene</span></button>
+
+    <div class="time-grid">
+      <figure class="tmap-fig">
+        <div class="cap"><span class="eyebrow">Time map: how fast clocks run around the black hole, seen from above</span><span class="readout" id="tmapUnits">units: event-horizon radius</span></div>
+        <div class="view side-view"><canvas id="tmap" aria-label="Time map, seen from above the disk, around the black hole with rings showing how fast clocks run, and the Endurance, which you can drag"></canvas></div>
+        <ul class="mini-key tkey" aria-label="Key to the time map">
+          <li><i style="background:var(--time)"></i>Time rings: clock speed compared with yours</li>
+          <li><i style="background:var(--time);height:10px;width:10px;border-radius:50%"></i>Clocks: each hand turns at the speed time passes there. Yours, top right, sets the pace</li>
+          <li><svg viewBox="-14 -14 28 28" width="16" height="16" aria-hidden="true"><use href="#sym-endurance" x="-14" y="-14" width="28" height="28"/></svg>The Endurance: its ring turns as fast as time passes there. Drag it</li>
+          <li><svg viewBox="-10 -10 20 20" width="14" height="14" aria-hidden="true"><use href="#sym-miller" x="-10" y="-10" width="20" height="20"/></svg>Miller&#8217;s planet on its orbit, with its clock hand</li>
+          <li><i style="background:var(--scale)"></i>Real-world comparisons</li>
+        </ul>
+      </figure>
+
+      <aside class="inspector" aria-label="Time map settings and readouts">
+        <div class="card hole-card">
+          <div class="hole-row"><label for="scale">Black hole</label><select id="scale" class="hole-pick"></select></div>
+          <div class="preset" data-preset>
+            <span class="preset-state" aria-live="polite"></span>
+            <button type="button" class="restore" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.35-5.65"/><path d="M4 4.5V9h4.5"/></svg><span>Restore</span></button>
+          </div>
+          <p class="scale-info" id="scaleInfo"></p>
+        </div>
+        <div class="card miller-card">
+          <div class="mc-head"><svg viewBox="-10 -10 20 20" aria-hidden="true"><use href="#sym-miller" x="-10" y="-10" width="20" height="20"/></svg><h3>Miller&#8217;s planet</h3><span class="mc-rate" id="millerRate"></span></div>
+          <p class="mc-info" id="millerInfo"></p>
+          <button id="miller" class="primary" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/></svg><span>Play the Miller&#8217;s planet scene</span></button>
+        </div>
+        <div class="card">
+          <div class="ctl probe-ctl">
+            <label for="probeR"><span>The Endurance&#8217;s distance</span> <output id="probeOut">3.68 r<sub>s</sub></output></label>
+            <!-- finer near the horizon: distance = horizon + (16 - horizon) p^2 -->
+            <div class="probe-track">
+              <input type="range" id="probeR" min="0" max="1" step="0.0005" value="0.47" aria-describedby="probeHint">
+              <div class="probe-ticks" aria-hidden="true">
+                <span class="disk" id="tickDisk" style="left:18.75%;width:56.25%">accretion disk</span>
+                <span class="pt" id="tickHorizon" style="left:6.25%">horizon</span>
+                <span class="pt low" id="tickPhoton" style="left:9.375%">photon sphere</span>
+              </div>
+            </div>
+            <span class="hint" id="probeHint">Drag it on the map or here. The slider clicks onto Miller&#8217;s planet&#8217;s orbit, the disk&#8217;s edges and the photon sphere, and gets finer near the horizon. The map zooms to follow the ship.</span>
+          </div>
+        </div>
+      </aside>
     </div>
 
     <div class="story" id="story" hidden>
@@ -660,51 +828,47 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       </div>
     </div>
 
-    <figure class="tmap-fig">
-      <div class="cap"><span class="eyebrow">Time map: how fast clocks run around the black hole, seen from above</span><span class="readout" id="tmapUnits">units: event-horizon radius</span></div>
-      <div class="view side-view"><canvas id="tmap" aria-label="Time map, seen from above the disk, around the black hole with rings showing how fast clocks run, and the Endurance, which you can drag"></canvas></div>
-
-      <div class="ctl probe-ctl">
-        <label for="probeR">The Endurance&#8217;s distance from the centre <output id="probeOut">3.68 r<sub>s</sub></output></label>
-        <!-- finer near the horizon: distance = horizon + (16 - horizon) p^2 -->
-        <div class="probe-track">
-          <input type="range" id="probeR" min="0" max="1" step="0.0005" value="0.47" aria-describedby="probeHint">
-          <div class="probe-ticks" aria-hidden="true">
-            <span class="disk" id="tickDisk" style="left:18.75%;width:56.25%">accretion disk</span>
-            <span class="pt" id="tickHorizon" style="left:6.25%">horizon</span>
-            <span class="pt low" id="tickPhoton" style="left:9.375%">photon sphere</span>
-          </div>
-        </div>
-        <span class="hint" id="probeHint">Drag the Endurance on the map or with the slider, which gets finer near the horizon. The map zooms to follow it.</span>
-      </div>
-      <ul class="mini-key" aria-label="Key to the time map">
-        <li><i style="background:var(--time)"></i>Time rings: clock speed compared with yours</li>
-        <li><i style="background:var(--time);height:10px;width:10px;border-radius:50%"></i>Clocks: each hand turns at the speed time passes there. Yours, top right, sets the pace</li>
-        <li><svg viewBox="-14 -14 28 28" width="16" height="16" aria-hidden="true"><use href="#sym-endurance" x="-14" y="-14" width="28" height="28"/></svg>The Endurance: its ring turns at the speed time passes there. Drag it</li>
-        <li><i style="background:var(--scale)"></i>Real-world comparisons</li>
-      </ul>
-      <div class="scale-row">
-        <label for="scale">Black hole</label>
-        <select id="scale"></select>
-        <p class="scale-info" id="scaleInfo">Pick a real black hole to set its size, spin and full gravity, and compare it with familiar things on the time map.</p>
-      </div>
-    </figure>
-
+    <div class="clocks-head">
+      <h3>Clocks around this black hole</h3>
+      <p>Each row is a clock somewhere on the map, all started together. Speed time up to watch the slow ones fall behind.</p>
+    </div>
     <div class="clock-ctl">
-    <div class="lapse-ctl">
-      <label for="lapse">Time-lapse: 1 screen second = <output id="lapseOut">1 second</output></label>
-      <input type="range" id="lapse" min="0" max="6" step="1" value="0">
-      <div class="lapse-ticks" aria-hidden="true"><span>sec</span><span>min</span><span>hour</span><span>day</span><span>week</span><span>month</span><span>year</span></div>
-    </div>
-    <div class="btns">
-      <button id="clockPause" class="tbtn" type="button" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4" height="15" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="4.5" width="4" height="15" rx="1" fill="currentColor" stroke="none"/></svg><span>Pause clocks</span></button>
-      <button id="resetClocks" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.35-5.65"/><path d="M4 4.5V9h4.5"/></svg><span>Reset the clocks</span></button>
-    </div>
+      <div class="lapse-ctl">
+        <label for="lapse">Time-lapse: 1 screen second = <output id="lapseOut">1 second</output></label>
+        <input type="range" id="lapse" min="0" max="6" step="1" value="0">
+        <div class="lapse-ticks" aria-hidden="true"><span>sec</span><span>min</span><span>hour</span><span>day</span><span>week</span><span>month</span><span>year</span></div>
+      </div>
+      <div class="btns">
+        <button id="clockPause" class="tbtn" type="button" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4" height="15" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="4.5" width="4" height="15" rx="1" fill="currentColor" stroke="none"/></svg><span>Pause clocks</span></button>
+        <button id="resetClocks" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.35-5.65"/><path d="M4 4.5V9h4.5"/></svg><span>Reset the clocks</span></button>
+      </div>
     </div>
 
     <div class="ledger" id="ledger" role="table" aria-label="Clocks compared with yours"></div>
     <p class="ledger-cap">The timeline stretches as it goes: seconds on the left, decades on the right, and each band is a bigger unit. Every equal step is 10&#215; more time, so the gap between two clocks never changes: that gap is the slowdown. <span id="pauseHint"></span></p>
 
+    <div class="survive-live">
+      <div class="sl-head">
+        <h3>Forces on the Endurance right now</h3>
+        <p class="sl-where" id="slWhere"></p>
+      </div>
+      <div class="sl-meters">
+        <div class="meter">
+          <span class="m-label">Stretch from head to feet (2 m person)</span>
+          <span class="m-value" id="slTide"></span>
+          <span class="m-verdict" id="slTideV"></span>
+          <div class="gauge" aria-hidden="true"><span class="g-mark" style="left:44.4%">1 g</span><span class="g-mark" style="left:55.6%">100 g</span><span class="g-dot" id="slTideDot"></span></div>
+        </div>
+        <div class="meter">
+          <span class="m-label">Rocket thrust needed to hover there</span>
+          <span class="m-value" id="slHover"></span>
+          <span class="m-verdict" id="slHoverV"></span>
+          <div class="gauge" aria-hidden="true"><span class="g-mark" style="left:44.4%">1 g</span><span class="g-mark" style="left:55.6%">100 g</span><span class="g-dot" id="slHoverDot"></span></div>
+        </div>
+      </div>
+      <p class="sl-orbit" id="slOrbit"></p>
+      <p class="hint">Move the Endurance on the time map, or pick a black hole of 10 Suns to see what a small one does. Forces assume gravity at 100%. The gauges run from a hundred-millionth of a g on the left to ten billion g on the right.</p>
+    </div>
 
     <details class="maths">
       <summary>The maths behind the clocks</summary>
@@ -713,8 +877,11 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
     <div class="sr-only" id="timeLive" aria-live="polite"></div>
   </section>
 
-  <section class="film" aria-labelledby="filmHead">
-    <h2 id="filmHead">Interstellar, explained</h2>
+  <section class="film chapter" id="interstellar" aria-labelledby="filmHead">
+    <div class="chead">
+      <span class="ckicker">Chapter 3 · Interstellar</span>
+      <h2 id="filmHead">Interstellar, explained</h2>
+    </div>
     <div class="film-grid">
       <article>
         <h3>Why Gargantua looks like this</h3>
@@ -731,7 +898,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
     </div>
     <div class="film-spin" id="why-spin">
       <h3>Why Gargantua has to spin</h3>
-      <ol class="why wide" aria-label="Why">
+      <ol class="why two" aria-label="Why">
         <li>Around a black hole that doesn&#8217;t spin, nothing can orbit closer than 3 horizon radii; any closer and it spirals in. There, an hour costs only about 1 hour 25 minutes.</li>
         <li>To lose 7 years every hour without orbiting, you&#8217;d have to hover about 78 m above the horizon on rockets. A planet can&#8217;t hover. It can only orbit.</li>
         <li>A spinning black hole drags space around with it. Orbits going the same way as the spin are carried along, so they stay stable much closer in.</li>
@@ -739,10 +906,10 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       </ol>
       <p class="film-note">Spin changes the picture too: the shadow flattens on the side turning towards you. To keep the images easy to read, the film makers drew Gargantua with a gentler spin, 0.6 of the maximum, where that change is slight, and left out the Doppler brightening.</p>
     </div>
-    <p class="refs">Rendered for the film by Double Negative with physicist Kip Thorne. Further reading: Kip Thorne, <i>The Science of Interstellar</i> (W. W. Norton, 2014); O. James, E. von Tunzelmann, P. Franklin and K. S. Thorne, &#8220;<a href="https://doi.org/10.1088/0264-9381/32/6/065001">Gravitational lensing by spinning black holes in astrophysics, and in the movie Interstellar</a>&#8221;, <i>Classical and Quantum Gravity</i> 32, 065001 (2015). How spin lets orbits reach so deep: J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972). This site is an independent educational project and is not affiliated with the film or its makers.</p>
+    <details class="sources"><summary>Sources and further reading</summary><p class="refs">Rendered for the film by Double Negative with physicist Kip Thorne. Further reading: Kip Thorne, <i>The Science of Interstellar</i> (W. W. Norton, 2014); O. James, E. von Tunzelmann, P. Franklin and K. S. Thorne, &#8220;<a href="https://doi.org/10.1088/0264-9381/32/6/065001">Gravitational lensing by spinning black holes in astrophysics, and in the movie Interstellar</a>&#8221;, <i>Classical and Quantum Gravity</i> 32, 065001 (2015). How spin lets orbits reach so deep: J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972). This site is an independent educational project and is not affiliated with the film or its makers.</p></details>
   </section>
 
-  <section class="survive" id="survive" aria-labelledby="surviveHead">
+  <section class="survive chapter" id="survive" aria-labelledby="surviveHead">
     <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
       <defs>
         <symbol id="sym-endurance" viewBox="-14 -14 28 28"><line x1="0" y1="0" x2="7.07" y2="7.07" stroke="#8c94a8" stroke-width="0.8"/><line x1="0" y1="0" x2="-7.07" y2="7.07" stroke="#8c94a8" stroke-width="0.8"/><line x1="0" y1="0" x2="-7.07" y2="-7.07" stroke="#8c94a8" stroke-width="0.8"/><line x1="0" y1="0" x2="7.07" y2="-7.07" stroke="#8c94a8" stroke-width="0.8"/><circle r="10" fill="none" stroke="#e7e9f0" stroke-width="1.4"/><rect x="7.80" y="-2.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="6.46" y="2.80" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="2.80" y="6.46" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-2.20" y="7.80" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-7.20" y="6.46" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-10.86" y="2.80" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-12.20" y="-2.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-10.86" y="-7.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-7.20" y="-10.86" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="-2.20" y="-12.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="2.80" y="-10.86" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><rect x="6.46" y="-7.20" width="4.4" height="4.4" rx="1" fill="#e7e9f0"/><circle r="2.6" fill="#5fd4c4"/></symbol>
@@ -751,206 +918,233 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
         <symbol id="sym-miller" viewBox="-10 -10 20 20"><circle r="9" fill="#2f6fbf"/><path d="M-8.06 4 C-5.4 2.6 -4.8 -5.8 1 -5.8 C5.2 -5.8 7 -2.4 5.4 .6 C5 -1.6 3.4 -2.8 1.8 -2.1 C-.7 -1 -.4 4 4 4.4 C5.6 4.5 7 4.3 8.06 4 A9 9 0 0 1 -8.06 4 Z" fill="#d9ecff"/><circle r="9" fill="none" stroke="#9cc6ff" stroke-width="1"/></symbol>
       </defs>
     </svg>
-    <div class="survive-intro">
+    <div class="chead">
+      <span class="ckicker">Chapter 4 · The trip</span>
       <h2 id="surviveHead">Could you survive a trip to Miller&#8217;s planet?</h2>
-      <p>Follow the Endurance crew from arrival to the planet. Each leg of the trip has its own danger, and gravity itself is not the one you&#8217;d expect.</p>
+        <p>Follow the Endurance crew from arrival to the planet. Each leg of the trip has its own danger, and gravity itself is not the one you&#8217;d expect.</p>
     </div>
-    <div class="survive-grid">
-      <article>
+    <div class="legs">
+      <div class="leg-tabs" role="tablist" aria-label="Legs of the trip">
+      <button type="button" role="tab" id="legTab1" aria-controls="leg1" aria-selected="true"><span class="lnum">1</span><span class="lname2">Catch the planet</span></button>
+      <button type="button" role="tab" id="legTab2" aria-controls="leg2" aria-selected="false" tabindex="-1"><span class="lnum">2</span><span class="lname2">Cross the disk</span></button>
+      <button type="button" role="tab" id="legTab3" aria-controls="leg3" aria-selected="false" tabindex="-1"><span class="lnum">3</span><span class="lname2">Get close</span></button>
+      <button type="button" role="tab" id="legTab4" aria-controls="leg4" aria-selected="false" tabindex="-1"><span class="lnum">4</span><span class="lname2">Stay there</span></button>
+      </div>
+    <div class="leg-panel" role="tabpanel" id="leg1" aria-labelledby="legTab1">
+      <div class="leg-fig">
+          <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg1t">
+            <title id="lg1t">Animation: the Endurance arrives from far away, whips around a massive object in a gravitational slingshot, and drops into a fast orbit around Gargantua beside Miller's planet.</title>
+            <circle cx="262" cy="104" r="52" class="orbit"/>
+            <circle cx="262" cy="104" r="34" class="hole"/>
+            <text x="262" y="108" text-anchor="middle" class="mut small">Gargantua</text>
+            <use href="#sym-miller" x="296" y="128" width="20" height="20"/>
+            <text x="314" y="166" text-anchor="end" class="small" fill="#9cc6ff">Miller&#8217;s planet</text>
+            <circle cx="102" cy="122" r="7" class="mass a-glow"/>
+            <text x="102" y="152" text-anchor="middle" class="mut">slingshot</text>
+            <path id="slingPath" d="M14 34 C70 56 88 104 96 114 C104 124 116 138 132 128 C160 108 190 72 222 70 A52 52 0 1 1 302 138 A52 52 0 1 1 222 70" class="path-t"/>
+            <g><use href="#sym-endurance" x="-12" y="-12" width="24" height="24"/><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0.2;0.3;0.42;1" keyTimes="0;0.3;0.38;0.5;1"><mpath href="#slingPath"/></animateMotion></g>
+            <text x="10" y="18" class="teal">Endurance arrives</text>
+          </svg>
+      </div>
+      <div class="leg-text">
         <span class="leg">Leg 1 of 4</span>
-        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg1t">
-          <title id="lg1t">Animation: the Endurance arrives from far away, whips around a massive object in a gravitational slingshot, and drops into a fast orbit around Gargantua beside Miller's planet.</title>
-          <circle cx="262" cy="104" r="52" class="orbit"/>
-          <circle cx="262" cy="104" r="34" class="hole"/>
-          <text x="262" y="108" text-anchor="middle" class="mut small">Gargantua</text>
-          <use href="#sym-miller" x="296" y="128" width="20" height="20"/>
-          <text x="314" y="166" text-anchor="end" class="small" fill="#9cc6ff">Miller&#8217;s planet</text>
-          <circle cx="102" cy="122" r="7" class="mass a-glow"/>
-          <text x="102" y="152" text-anchor="middle" class="mut">slingshot</text>
-          <path id="slingPath" d="M14 34 C70 56 88 104 96 114 C104 124 116 138 132 128 C160 108 190 72 222 70 A52 52 0 1 1 302 138 A52 52 0 1 1 222 70" class="path-t"/>
-          <g><use href="#sym-endurance" x="-12" y="-12" width="24" height="24"/><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0.2;0.3;0.42;1" keyTimes="0;0.3;0.38;0.5;1"><mpath href="#slingPath"/></animateMotion></g>
-          <text x="10" y="18" class="teal">Endurance arrives</text>
-        </svg>
-        <h3>Catch the planet</h3>
-        <p>Miller&#8217;s planet races around Gargantua at a big fraction of light speed: far too fast to catch with rockets. So the Endurance borrows speed from gravity, swinging past a massive object to change speed without fuel.</p>
-        <ol class="why" aria-label="Why">
-          <li>The closer an orbit, the faster it must go. Miller&#8217;s planet orbits so close to Gargantua that it moves incredibly fast, and the Endurance has to match that speed to reach it.</li>
-          <li>Rockets can&#8217;t manage it. Every extra bit of speed needs fuel to push the ship <b>and</b> all the fuel not yet burnt, so the fuel needed grows exponentially.</li>
-          <li>A slingshot borrows speed instead. The ship falls towards a moving massive object and climbs away again. Measured from that object, it leaves as fast as it arrived, only in a new direction.</li>
-          <li>That object is itself moving around Gargantua, so the new direction adds to (or takes away from) the ship&#8217;s speed around Gargantua. Think of a tennis ball coming off a swinging racquet. In the film, Cooper plans to use a neutron star.</li>
-        </ol>
-      </article>
-      <article>
+          <h3>Catch the planet</h3>
+          <p>Miller&#8217;s planet races around Gargantua at a big fraction of light speed: far too fast to catch with rockets. So the Endurance borrows speed from gravity, swinging past a massive object to change speed without fuel.</p>
+          <ol class="why" aria-label="Why">
+            <li>The closer an orbit, the faster it must go. Miller&#8217;s planet orbits so close to Gargantua that it moves incredibly fast, and the Endurance has to match that speed to reach it.</li>
+            <li>Rockets can&#8217;t manage it. Every extra bit of speed needs fuel to push the ship <b>and</b> all the fuel not yet burnt, so the fuel needed grows exponentially.</li>
+            <li>A slingshot borrows speed instead. The ship falls towards a moving massive object and climbs away again. Measured from that object, it leaves as fast as it arrived, only in a new direction.</li>
+            <li>That object is itself moving around Gargantua, so the new direction adds to (or takes away from) the ship&#8217;s speed around Gargantua. Think of a tennis ball coming off a swinging racquet. In the film, Cooper plans to use a neutron star.</li>
+          </ol>
+      </div>
+    </div>
+    <div class="leg-panel" role="tabpanel" id="leg2" aria-labelledby="legTab2" hidden>
+      <div class="leg-fig">
+          <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg2t">
+            <title id="lg2t">Animation in two parts. First a busy disk: a clump of gas spirals in, heats from red to white to X-ray hot, and X-rays hit the Ranger diving over the disk. Then Gargantua's quiet disk: the gas only gets as hot as the Sun's surface, gives off ordinary light and no X-rays, and the Ranger is safe.</title>
+            <defs>
+              <radialGradient id="dkBusy"><stop offset="0" stop-color="#cfe6ff" stop-opacity="0"/><stop offset=".13" stop-color="#cfe6ff" stop-opacity="0"/><stop offset=".17" stop-color="#e8f2ff"/><stop offset=".36" stop-color="#fff1d6" stop-opacity=".85"/><stop offset=".62" stop-color="#ff8a3d" stop-opacity=".5"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient>
+              <radialGradient id="dkQuiet"><stop offset="0" stop-color="#fff1d6" stop-opacity="0"/><stop offset=".13" stop-color="#fff1d6" stop-opacity="0"/><stop offset=".17" stop-color="#ffe2b0" stop-opacity=".9"/><stop offset=".42" stop-color="#ffb25e" stop-opacity=".65"/><stop offset=".72" stop-color="#d2412f" stop-opacity=".35"/><stop offset="1" stop-color="#d2412f" stop-opacity="0"/></radialGradient>
+              <linearGradient id="thermoG" gradientUnits="userSpaceOnUse" x1="0" y1="170" x2="0" y2="40"><stop offset="0" stop-color="#8a1f1a"/><stop offset=".25" stop-color="#ff6a2a"/><stop offset=".53" stop-color="#fff1d6"/><stop offset=".75" stop-color="#cfe6ff"/><stop offset="1" stop-color="#b48cff"/></linearGradient>
+              <clipPath id="dkFront"><path d="M124 124 A16 16 0 0 0 156 124 Z"/></clipPath>
+            </defs>
+            <g id="dk2">
+              <ellipse cx="140" cy="124" rx="112" ry="30" fill="url(#dkBusy)"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.51;0.97;1"/></ellipse>
+              <ellipse cx="140" cy="124" rx="112" ry="30" fill="url(#dkQuiet)" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.51;0.97;1"/></ellipse>
+            </g>
+            <path d="M252.0 124.0 L250.8 126.6 L248.8 129.2 L246.0 131.7 L242.4 134.1 L238.0 136.3 L233.0 138.5 L227.4 140.5 L221.1 142.4 L214.3 144.1 L207.1 145.6 L199.4 146.9 L191.4 148.1 L183.2 149.0 L174.7 149.7 L166.0 150.2 L157.3 150.6 L148.6 150.7 L140.0 150.6 L131.5 150.3 L123.2 149.8 L115.1 149.1 L107.4 148.2 L100.0 147.2 L93.0 146.0 L86.5 144.6 L80.6 143.1 L75.1 141.5 L70.3 139.8 L66.0 138.0 L62.4 136.1 L59.5 134.1 L57.2 132.1 L55.6 130.1 L54.6 128.1 L54.4 126.0 L54.8 124.0 L55.8 122.0 L57.5 120.1 L59.7 118.2 L62.6 116.4 L66.0 114.7 L69.9 113.1 L74.2 111.6 L79.0 110.2 L84.2 108.9 L89.7 107.8 L95.6 106.9 L101.6 106.0 L107.8 105.4 L114.2 104.9 L120.7 104.5 L127.1 104.3 L133.6 104.3 L140.0 104.4 L146.3 104.6 L152.4 105.0 L158.3 105.6 L163.9 106.3 L169.3 107.0 L174.3 108.0 L179.0 109.0 L183.2 110.1 L187.1 111.3 L190.5 112.6 L193.5 113.9 L196.0 115.3 L198.0 116.7 L199.5 118.2 L200.5 119.6 L201.1 121.1 L201.1 122.6 L200.7 124.0 L199.8 125.4 L198.5 126.8 L196.8 128.1 L194.6 129.4 L192.1 130.6 L189.3 131.7 L186.1 132.7 L182.6 133.7 L178.9 134.5 L174.9 135.2 L170.8 135.9 L166.6 136.4 L162.2 136.8 L157.7 137.2 L153.3 137.4 L148.8 137.5 L144.4 137.5 L140.0 137.4 L135.7 137.1 L131.6 136.8 L127.7 136.4 L123.9 135.9 L120.4 135.4 L117.1 134.7 L114.0 134.0 L111.3 133.2 L108.8 132.4 L106.6 131.6 L104.8 130.7 L103.3 129.7 L102.1 128.8 L101.2 127.8 L100.7 126.8 L100.5 125.9 L100.6 124.9 L101.0 124.0 L101.7 123.1 L102.7 122.2 L103.9 121.4 L105.4 120.6 L107.1 119.9 L109.0 119.2 L111.2 118.5 L113.4 118.0 L115.8 117.5 L118.4 117.0 L121.0 116.7 L123.7 116.4 L126.4 116.1 L129.2 116.0 L132.0 115.9 L134.7 115.9 L137.4 115.9 L140.0 116.0 L142.5 116.2 L145.0 116.4 L147.3 116.7 L149.5 117.0 L151.5 117.3 L153.4 117.8 L155.1 118.2 L156.6 118.7 L157.9 119.2 L159.1 119.7 L160.0 120.2 L160.8 120.8 L161.4 121.3 L161.8 121.9 L162.0 122.4 L162.0 123.0 L161.8 123.5 L161.5 124.0 L161.0 124.5 L160.4 125.0 L159.7 125.4 L158.8 125.8 L157.8 126.2 L156.7 126.6 L155.5 126.9 L154.2 127.2 L152.9 127.5 L151.5 127.7 L150.1 127.9 L148.7 128.1 L147.2 128.2 L145.7 128.3 L144.3 128.3 L142.8 128.3 L141.4 128.3 L140.0 128.3" id="gasSpiral" fill="none" stroke="#ffb25e" stroke-opacity=".22" stroke-width="1" stroke-dasharray="2 3"/>
+            <g fill="#d2412f" opacity="0">
+              <circle r="7" fill-opacity=".35"/><circle r="3.4"/>
+              <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.04;0.40;1"><mpath href="#gasSpiral"/></animateMotion>
+              <animate attributeName="fill" dur="12s" repeatCount="indefinite" values="#d2412f;#d2412f;#ff8a3d;#fff1d6;#cfe6ff;#b48cff;#b48cff" keyTimes="0;0.04;0.16;0.27;0.34;0.40;1"/>
+              <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.03;0.05;0.40;0.42;1"/>
+            </g>
+            <g fill="#d2412f" opacity="0">
+              <circle r="7" fill-opacity=".35"/><circle r="3.4"/>
+              <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.54;0.90;1"><mpath href="#gasSpiral"/></animateMotion>
+              <animate attributeName="fill" dur="12s" repeatCount="indefinite" values="#d2412f;#d2412f;#ff8a3d;#ffd59a;#fff1d6;#fff1d6" keyTimes="0;0.54;0.68;0.80;0.90;1"/>
+              <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.53;0.55;0.90;0.92;1"/>
+            </g>
+            <circle cx="140" cy="124" r="15" class="hole"/>
+            <use href="#dk2" clip-path="url(#dkFront)"/>
+            <g opacity="0">
+              <path d="M126 100 l-5 -7 l6 -5 l-5 -7 l6 -5 l-5 -7" class="xray a-xray"/>
+              <path d="M156 100 l5 -7 l-6 -5 l5 -7 l-6 -5 l5 -7" class="xray a-xray"/>
+              <path d="M92 104 l-7 -4 l3 -6 l-7 -4 l3 -6" class="xray a-xray"/>
+              <path d="M190 104 l7 -4 l-3 -6 l7 -4 l-3 -6" class="xray a-xray"/>
+              <path d="M126 152 l-5 7 l6 5" class="xray a-xray"/>
+              <path d="M156 152 l5 7 l-6 5" class="xray a-xray"/>
+              <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.24;0.27;0.44;0.47;1"/>
+            </g>
+            <path id="divePath" d="M30 48 Q112 36 122 84" class="path-t" stroke-opacity=".55"/>
+            <g opacity="0">
+              <circle r="13" fill="none" stroke="#ff7a7a" stroke-width="2" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;.3;1;0;0" keyTimes="0;0.27;0.31;0.36;0.41;0.46;1"/></circle>
+              <use href="#sym-ranger" x="-12" y="-7" width="24" height="14"/>
+              <animateMotion dur="12s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;0;1;1;0;0;1;1" keyTimes="0;0.04;0.36;0.49;0.5;0.54;0.86;1"><mpath href="#divePath"/></animateMotion>
+              <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;1;1;0;0;1;1;0;0" keyTimes="0;0.03;0.45;0.48;0.51;0.54;0.95;0.98;1"/>
+            </g>
+            <g><text x="10" y="18" class="red">Busy disk: gas pours in</text><text x="10" y="32" class="small mut">millions of &#176;C &#8594; X-rays</text><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.51;0.97;1"/></g>
+            <g opacity="0"><text x="10" y="18" class="teal">Gargantua: a trickle of gas</text><text x="10" y="32" class="small mut">Sun-hot &#8594; ordinary light</text><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.51;0.97;1"/></g>
+            <text x="10" y="184" class="red" opacity="0">X-rays hit the Ranger: deadly<animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.29;0.32;0.45;0.48;1"/></text>
+            <text x="10" y="184" class="teal" opacity="0">No X-rays: the Ranger is safe<animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.80;0.83;0.95;0.98;1"/></text>
+            <text x="303" y="33" text-anchor="middle" class="small mut">heat</text>
+            <rect x="298" y="40" width="10" height="130" rx="4" fill="#161a26" stroke="#3a4152"/>
+            <rect x="299" y="169" width="8" height="0" rx="3" fill="url(#thermoG)">
+              <animate attributeName="y" dur="12s" repeatCount="indefinite" values="169;169;44;44;169;169;100;100;169" keyTimes="0;0.04;0.40;0.46;0.5;0.54;0.90;0.96;1"/>
+              <animate attributeName="height" dur="12s" repeatCount="indefinite" values="0;0;125;125;0;0;69;69;0" keyTimes="0;0.04;0.40;0.46;0.5;0.54;0.90;0.96;1"/>
+            </rect>
+            <line x1="292" y1="48" x2="297" y2="48" stroke="#8c94a8"/><text x="290" y="51" text-anchor="end" class="small" style="fill:#b48cff">X-rays</text>
+            <line x1="292" y1="100" x2="297" y2="100" stroke="#8c94a8"/><text x="290" y="103" text-anchor="end" class="small" style="fill:#fff1d6">Sun</text>
+            <line x1="292" y1="138" x2="297" y2="138" stroke="#8c94a8"/><text x="290" y="141" text-anchor="end" class="small" style="fill:#ff6a2a">red-hot</text>
+          </svg>
+      </div>
+      <div class="leg-text">
         <span class="leg">Leg 2 of 4</span>
-        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg2t">
-          <title id="lg2t">Animation in two parts. First a busy disk: a clump of gas spirals in, heats from red to white to X-ray hot, and X-rays hit the Ranger diving over the disk. Then Gargantua's quiet disk: the gas only gets as hot as the Sun's surface, gives off ordinary light and no X-rays, and the Ranger is safe.</title>
-          <defs>
-            <radialGradient id="dkBusy"><stop offset="0" stop-color="#cfe6ff" stop-opacity="0"/><stop offset=".13" stop-color="#cfe6ff" stop-opacity="0"/><stop offset=".17" stop-color="#e8f2ff"/><stop offset=".36" stop-color="#fff1d6" stop-opacity=".85"/><stop offset=".62" stop-color="#ff8a3d" stop-opacity=".5"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient>
-            <radialGradient id="dkQuiet"><stop offset="0" stop-color="#fff1d6" stop-opacity="0"/><stop offset=".13" stop-color="#fff1d6" stop-opacity="0"/><stop offset=".17" stop-color="#ffe2b0" stop-opacity=".9"/><stop offset=".42" stop-color="#ffb25e" stop-opacity=".65"/><stop offset=".72" stop-color="#d2412f" stop-opacity=".35"/><stop offset="1" stop-color="#d2412f" stop-opacity="0"/></radialGradient>
-            <linearGradient id="thermoG" gradientUnits="userSpaceOnUse" x1="0" y1="170" x2="0" y2="40"><stop offset="0" stop-color="#8a1f1a"/><stop offset=".25" stop-color="#ff6a2a"/><stop offset=".53" stop-color="#fff1d6"/><stop offset=".75" stop-color="#cfe6ff"/><stop offset="1" stop-color="#b48cff"/></linearGradient>
-            <clipPath id="dkFront"><path d="M124 124 A16 16 0 0 0 156 124 Z"/></clipPath>
-          </defs>
-          <g id="dk2">
-            <ellipse cx="140" cy="124" rx="112" ry="30" fill="url(#dkBusy)"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.51;0.97;1"/></ellipse>
-            <ellipse cx="140" cy="124" rx="112" ry="30" fill="url(#dkQuiet)" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.51;0.97;1"/></ellipse>
-          </g>
-          <path d="M252.0 124.0 L250.8 126.6 L248.8 129.2 L246.0 131.7 L242.4 134.1 L238.0 136.3 L233.0 138.5 L227.4 140.5 L221.1 142.4 L214.3 144.1 L207.1 145.6 L199.4 146.9 L191.4 148.1 L183.2 149.0 L174.7 149.7 L166.0 150.2 L157.3 150.6 L148.6 150.7 L140.0 150.6 L131.5 150.3 L123.2 149.8 L115.1 149.1 L107.4 148.2 L100.0 147.2 L93.0 146.0 L86.5 144.6 L80.6 143.1 L75.1 141.5 L70.3 139.8 L66.0 138.0 L62.4 136.1 L59.5 134.1 L57.2 132.1 L55.6 130.1 L54.6 128.1 L54.4 126.0 L54.8 124.0 L55.8 122.0 L57.5 120.1 L59.7 118.2 L62.6 116.4 L66.0 114.7 L69.9 113.1 L74.2 111.6 L79.0 110.2 L84.2 108.9 L89.7 107.8 L95.6 106.9 L101.6 106.0 L107.8 105.4 L114.2 104.9 L120.7 104.5 L127.1 104.3 L133.6 104.3 L140.0 104.4 L146.3 104.6 L152.4 105.0 L158.3 105.6 L163.9 106.3 L169.3 107.0 L174.3 108.0 L179.0 109.0 L183.2 110.1 L187.1 111.3 L190.5 112.6 L193.5 113.9 L196.0 115.3 L198.0 116.7 L199.5 118.2 L200.5 119.6 L201.1 121.1 L201.1 122.6 L200.7 124.0 L199.8 125.4 L198.5 126.8 L196.8 128.1 L194.6 129.4 L192.1 130.6 L189.3 131.7 L186.1 132.7 L182.6 133.7 L178.9 134.5 L174.9 135.2 L170.8 135.9 L166.6 136.4 L162.2 136.8 L157.7 137.2 L153.3 137.4 L148.8 137.5 L144.4 137.5 L140.0 137.4 L135.7 137.1 L131.6 136.8 L127.7 136.4 L123.9 135.9 L120.4 135.4 L117.1 134.7 L114.0 134.0 L111.3 133.2 L108.8 132.4 L106.6 131.6 L104.8 130.7 L103.3 129.7 L102.1 128.8 L101.2 127.8 L100.7 126.8 L100.5 125.9 L100.6 124.9 L101.0 124.0 L101.7 123.1 L102.7 122.2 L103.9 121.4 L105.4 120.6 L107.1 119.9 L109.0 119.2 L111.2 118.5 L113.4 118.0 L115.8 117.5 L118.4 117.0 L121.0 116.7 L123.7 116.4 L126.4 116.1 L129.2 116.0 L132.0 115.9 L134.7 115.9 L137.4 115.9 L140.0 116.0 L142.5 116.2 L145.0 116.4 L147.3 116.7 L149.5 117.0 L151.5 117.3 L153.4 117.8 L155.1 118.2 L156.6 118.7 L157.9 119.2 L159.1 119.7 L160.0 120.2 L160.8 120.8 L161.4 121.3 L161.8 121.9 L162.0 122.4 L162.0 123.0 L161.8 123.5 L161.5 124.0 L161.0 124.5 L160.4 125.0 L159.7 125.4 L158.8 125.8 L157.8 126.2 L156.7 126.6 L155.5 126.9 L154.2 127.2 L152.9 127.5 L151.5 127.7 L150.1 127.9 L148.7 128.1 L147.2 128.2 L145.7 128.3 L144.3 128.3 L142.8 128.3 L141.4 128.3 L140.0 128.3" id="gasSpiral" fill="none" stroke="#ffb25e" stroke-opacity=".22" stroke-width="1" stroke-dasharray="2 3"/>
-          <g fill="#d2412f" opacity="0">
-            <circle r="7" fill-opacity=".35"/><circle r="3.4"/>
-            <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.04;0.40;1"><mpath href="#gasSpiral"/></animateMotion>
-            <animate attributeName="fill" dur="12s" repeatCount="indefinite" values="#d2412f;#d2412f;#ff8a3d;#fff1d6;#cfe6ff;#b48cff;#b48cff" keyTimes="0;0.04;0.16;0.27;0.34;0.40;1"/>
-            <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.03;0.05;0.40;0.42;1"/>
-          </g>
-          <g fill="#d2412f" opacity="0">
-            <circle r="7" fill-opacity=".35"/><circle r="3.4"/>
-            <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.54;0.90;1"><mpath href="#gasSpiral"/></animateMotion>
-            <animate attributeName="fill" dur="12s" repeatCount="indefinite" values="#d2412f;#d2412f;#ff8a3d;#ffd59a;#fff1d6;#fff1d6" keyTimes="0;0.54;0.68;0.80;0.90;1"/>
-            <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.53;0.55;0.90;0.92;1"/>
-          </g>
-          <circle cx="140" cy="124" r="15" class="hole"/>
-          <use href="#dk2" clip-path="url(#dkFront)"/>
-          <g opacity="0">
-            <path d="M126 100 l-5 -7 l6 -5 l-5 -7 l6 -5 l-5 -7" class="xray a-xray"/>
-            <path d="M156 100 l5 -7 l-6 -5 l5 -7 l-6 -5 l5 -7" class="xray a-xray"/>
-            <path d="M92 104 l-7 -4 l3 -6 l-7 -4 l3 -6" class="xray a-xray"/>
-            <path d="M190 104 l7 -4 l-3 -6 l7 -4 l-3 -6" class="xray a-xray"/>
-            <path d="M126 152 l-5 7 l6 5" class="xray a-xray"/>
-            <path d="M156 152 l5 7 l-6 5" class="xray a-xray"/>
-            <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.24;0.27;0.44;0.47;1"/>
-          </g>
-          <path id="divePath" d="M30 48 Q112 36 122 84" class="path-t" stroke-opacity=".55"/>
-          <g opacity="0">
-            <circle r="13" fill="none" stroke="#ff7a7a" stroke-width="2" opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;.3;1;0;0" keyTimes="0;0.27;0.31;0.36;0.41;0.46;1"/></circle>
-            <use href="#sym-ranger" x="-12" y="-7" width="24" height="14"/>
-            <animateMotion dur="12s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;0;1;1;0;0;1;1" keyTimes="0;0.04;0.36;0.49;0.5;0.54;0.86;1"><mpath href="#divePath"/></animateMotion>
-            <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;1;1;0;0;1;1;0;0" keyTimes="0;0.03;0.45;0.48;0.51;0.54;0.95;0.98;1"/>
-          </g>
-          <g><text x="10" y="18" class="red">Busy disk: gas pours in</text><text x="10" y="32" class="small mut">millions of &#176;C &#8594; X-rays</text><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.51;0.97;1"/></g>
-          <g opacity="0"><text x="10" y="18" class="teal">Gargantua: a trickle of gas</text><text x="10" y="32" class="small mut">Sun-hot &#8594; ordinary light</text><animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.51;0.97;1"/></g>
-          <text x="10" y="184" class="red" opacity="0">X-rays hit the Ranger: deadly<animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.29;0.32;0.45;0.48;1"/></text>
-          <text x="10" y="184" class="teal" opacity="0">No X-rays: the Ranger is safe<animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.80;0.83;0.95;0.98;1"/></text>
-          <text x="303" y="33" text-anchor="middle" class="small mut">heat</text>
-          <rect x="298" y="40" width="10" height="130" rx="4" fill="#161a26" stroke="#3a4152"/>
-          <rect x="299" y="169" width="8" height="0" rx="3" fill="url(#thermoG)">
-            <animate attributeName="y" dur="12s" repeatCount="indefinite" values="169;169;44;44;169;169;100;100;169" keyTimes="0;0.04;0.40;0.46;0.5;0.54;0.90;0.96;1"/>
-            <animate attributeName="height" dur="12s" repeatCount="indefinite" values="0;0;125;125;0;0;69;69;0" keyTimes="0;0.04;0.40;0.46;0.5;0.54;0.90;0.96;1"/>
-          </rect>
-          <line x1="292" y1="48" x2="297" y2="48" stroke="#8c94a8"/><text x="290" y="51" text-anchor="end" class="small" style="fill:#b48cff">X-rays</text>
-          <line x1="292" y1="100" x2="297" y2="100" stroke="#8c94a8"/><text x="290" y="103" text-anchor="end" class="small" style="fill:#fff1d6">Sun</text>
-          <line x1="292" y1="138" x2="297" y2="138" stroke="#8c94a8"/><text x="290" y="141" text-anchor="end" class="small" style="fill:#ff6a2a">red-hot</text>
-        </svg>
-        <h3>Cross the disk: could its glow kill you?</h3>
-        <p>Gargantua is wrapped in a disk of gas spiralling into it. A busy disk would cook you with X-rays; the film&#8217;s disk is deliberately quiet, and the Ranger dives in over it, never through it.</p>
-        <ol class="why" aria-label="Why">
-          <li>The gas orbits as it spirals in. Inner rings race faster than outer ones, so they rub, and that friction turns the energy of the fall into heat. Falling into a black hole releases many times more energy than nuclear fusion does.</li>
-          <li>Hot things glow, and the hotter they are, the more energy each particle of light (photon) carries. A stove ring glows red, the Sun&#8217;s surface white, and gas at millions of degrees shines in X-rays: watch the heat bar.</li>
-          <li>How hot the disk gets depends on how much gas is pouring in. A busy disk reaches millions of degrees and floods the space around it with X-rays, enough to kill the crew and fry the ship&#8217;s electronics, even through the hull.</li>
-          <li>Kip Thorne, the film&#8217;s science adviser, gave Gargantua an &#8220;anemic&#8221; disk: only a trickle of gas, about as hot as the Sun&#8217;s surface. It shines in ordinary light rather than X-rays, so the crew can survive close to it.</li>
-        </ol>
-      </article>
-      <article>
+          <h3>Cross the disk: could its glow kill you?</h3>
+          <p>Gargantua is wrapped in a disk of gas spiralling into it. A busy disk would cook you with X-rays; the film&#8217;s disk is deliberately quiet, and the Ranger dives in over it, never through it.</p>
+          <ol class="why" aria-label="Why">
+            <li>The gas orbits as it spirals in. Inner rings race faster than outer ones, so they rub, and that friction turns the energy of the fall into heat. Falling into a black hole releases many times more energy than nuclear fusion does.</li>
+            <li>Hot things glow, and the hotter they are, the more energy each particle of light (photon) carries. A stove ring glows red, the Sun&#8217;s surface white, and gas at millions of degrees shines in X-rays: watch the heat bar.</li>
+            <li>How hot the disk gets depends on how much gas is pouring in. A busy disk reaches millions of degrees and floods the space around it with X-rays, enough to kill the crew and fry the ship&#8217;s electronics, even through the hull.</li>
+            <li>Kip Thorne, the film&#8217;s science adviser, gave Gargantua an &#8220;anemic&#8221; disk: only a trickle of gas, about as hot as the Sun&#8217;s surface. It shines in ordinary light rather than X-rays, so the crew can survive close to it.</li>
+          </ol>
+      </div>
+    </div>
+    <div class="leg-panel" role="tabpanel" id="leg3" aria-labelledby="legTab3" hidden>
+      <div class="leg-fig">
+          <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg3t">
+            <title id="lg3t">Animation: an astronaut falling feet-first into a 10-Sun black hole is stretched like a noodle. Cooper and TARS falling towards Gargantua stay unharmed.</title>
+            <defs><marker id="ar-r3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker><marker id="ar-t3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker></defs>
+            <clipPath id="clipL"><rect x="0" y="0" width="158" height="190"/></clipPath>
+            <clipPath id="clipR"><rect x="162" y="0" width="158" height="190"/></clipPath>
+            <line x1="160" y1="12" x2="160" y2="178" class="sep"/>
+            <text x="80" y="24" class="hd" text-anchor="middle">10 Suns</text>
+            <circle cx="34" cy="92" r="12" class="hole"/>
+            <g clip-path="url(#clipL)"><g class="person a-stretch">
+              <line x1="60" y1="92" x2="90" y2="92" class="body"/>
+              <circle cx="97" cy="92" r="6" class="helmet"/><circle cx="97" cy="92" r="3.2" class="head"/>
+              <line x1="60" y1="92" x2="52" y2="87" class="limb"/><line x1="60" y1="92" x2="52" y2="97" class="limb"/>
+              <line x1="84" y1="92" x2="91" y2="83" class="limb"/><line x1="84" y1="92" x2="91" y2="101" class="limb"/>
+            </g></g>
+            <line x1="72" y1="118" x2="48" y2="118" class="arr-r a-pulse" marker-end="url(#ar-r3)"/>
+            <line x1="124" y1="118" x2="116" y2="118" class="arr-r" marker-end="url(#ar-r3)"/>
+            <text x="80" y="152" text-anchor="middle" class="red">stretched</text>
+            <text x="80" y="170" text-anchor="middle" class="red">&#8776; 20 million g</text>
+            <text x="240" y="24" class="hd" text-anchor="middle">Gargantua</text>
+            <circle cx="332" cy="92" r="62" class="hole"/>
+            <g clip-path="url(#clipR)"><g class="person a-drift">
+              <use href="#sym-tars" x="214" y="40" width="14" height="22"/>
+              <text x="234" y="54" class="small mut">TARS</text>
+              <circle cx="206" cy="92" r="6" class="helmet"/><circle cx="206" cy="92" r="3.2" class="head"/>
+              <line x1="213" y1="92" x2="240" y2="92" class="body"/>
+              <line x1="240" y1="92" x2="248" y2="87" class="limb"/><line x1="240" y1="92" x2="248" y2="97" class="limb"/>
+              <line x1="218" y1="92" x2="211" y2="83" class="limb"/><line x1="218" y1="92" x2="211" y2="101" class="limb"/>
+              <text x="210" y="80" class="small mut">Cooper</text>
+            </g></g>
+            <line x1="200" y1="118" x2="216" y2="118" class="arr-t" marker-end="url(#ar-t3)"/>
+            <line x1="232" y1="118" x2="248" y2="118" class="arr-t" marker-end="url(#ar-t3)"/>
+            <text x="226" y="152" text-anchor="middle" class="teal">unharmed</text>
+            <text x="226" y="170" text-anchor="middle" class="teal">&#8776; 0.0000002 g</text>
+          </svg>
+      </div>
+      <div class="leg-text">
         <span class="leg">Leg 3 of 4</span>
-        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg3t">
-          <title id="lg3t">Animation: an astronaut falling feet-first into a 10-Sun black hole is stretched like a noodle. Cooper and TARS falling towards Gargantua stay unharmed.</title>
-          <defs><marker id="ar-r3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff7a7a"/></marker><marker id="ar-t3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5fd4c4"/></marker></defs>
-          <clipPath id="clipL"><rect x="0" y="0" width="158" height="190"/></clipPath>
-          <clipPath id="clipR"><rect x="162" y="0" width="158" height="190"/></clipPath>
-          <line x1="160" y1="12" x2="160" y2="178" class="sep"/>
-          <text x="80" y="24" class="hd" text-anchor="middle">10 Suns</text>
-          <circle cx="34" cy="92" r="12" class="hole"/>
-          <g clip-path="url(#clipL)"><g class="person a-stretch">
-            <line x1="60" y1="92" x2="90" y2="92" class="body"/>
-            <circle cx="97" cy="92" r="6" class="helmet"/><circle cx="97" cy="92" r="3.2" class="head"/>
-            <line x1="60" y1="92" x2="52" y2="87" class="limb"/><line x1="60" y1="92" x2="52" y2="97" class="limb"/>
-            <line x1="84" y1="92" x2="91" y2="83" class="limb"/><line x1="84" y1="92" x2="91" y2="101" class="limb"/>
-          </g></g>
-          <line x1="72" y1="118" x2="48" y2="118" class="arr-r a-pulse" marker-end="url(#ar-r3)"/>
-          <line x1="124" y1="118" x2="116" y2="118" class="arr-r" marker-end="url(#ar-r3)"/>
-          <text x="80" y="152" text-anchor="middle" class="red">stretched</text>
-          <text x="80" y="170" text-anchor="middle" class="red">&#8776; 20 million g</text>
-          <text x="240" y="24" class="hd" text-anchor="middle">Gargantua</text>
-          <circle cx="332" cy="92" r="62" class="hole"/>
-          <g clip-path="url(#clipR)"><g class="person a-drift">
-            <use href="#sym-tars" x="214" y="40" width="14" height="22"/>
-            <text x="234" y="54" class="small mut">TARS</text>
-            <circle cx="206" cy="92" r="6" class="helmet"/><circle cx="206" cy="92" r="3.2" class="head"/>
-            <line x1="213" y1="92" x2="240" y2="92" class="body"/>
-            <line x1="240" y1="92" x2="248" y2="87" class="limb"/><line x1="240" y1="92" x2="248" y2="97" class="limb"/>
-            <line x1="218" y1="92" x2="211" y2="83" class="limb"/><line x1="218" y1="92" x2="211" y2="101" class="limb"/>
-            <text x="210" y="80" class="small mut">Cooper</text>
-          </g></g>
-          <line x1="200" y1="118" x2="216" y2="118" class="arr-t" marker-end="url(#ar-t3)"/>
-          <line x1="232" y1="118" x2="248" y2="118" class="arr-t" marker-end="url(#ar-t3)"/>
-          <text x="226" y="152" text-anchor="middle" class="teal">unharmed</text>
-          <text x="226" y="170" text-anchor="middle" class="teal">&#8776; 0.0000002 g</text>
-        </svg>
-        <h3>Get close: would gravity tear you apart?</h3>
-        <p>What hurts is the <b>difference</b> in pull between your head and feet. Small black holes stretch you; giant ones barely notice you.</p>
-        <ol class="why" aria-label="Why">
-          <li>Gravity weakens with distance, so your feet, being closer, are pulled a bit harder than your head.</li>
-          <li>Falling, you don&#8217;t feel the pull itself: every part of you falls together. You only feel that <b>difference</b>, as a stretch.</li>
-          <li>The difference depends on how big you are compared with your distance from the centre. At a 10-Sun black hole the edge is 30 km out, so your 2 m is a big slice of it: huge stretch.</li>
-          <li>Gargantua&#8217;s edge is 300 million km out. Your 2 m is nothing by comparison, so head and feet feel the same pull.</li>
-        </ol>
-      </article>
-      <article>
+          <h3>Get close: would gravity tear you apart?</h3>
+          <p>What hurts is the <b>difference</b> in pull between your head and feet. Small black holes stretch you; giant ones barely notice you.</p>
+          <ol class="why" aria-label="Why">
+            <li>Gravity weakens with distance, so your feet, being closer, are pulled a bit harder than your head.</li>
+            <li>Falling, you don&#8217;t feel the pull itself: every part of you falls together. You only feel that <b>difference</b>, as a stretch.</li>
+            <li>The difference depends on how big you are compared with your distance from the centre. At a 10-Sun black hole the edge is 30 km out, so your 2 m is a big slice of it: huge stretch.</li>
+            <li>Gargantua&#8217;s edge is 300 million km out. Your 2 m is nothing by comparison, so head and feet feel the same pull.</li>
+          </ol>
+      </div>
+    </div>
+    <div class="leg-panel" role="tabpanel" id="leg4" aria-labelledby="legTab4" hidden>
+      <div class="leg-fig">
+          <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg4t">
+            <title id="lg4t">Animation in two parts. First, Miller's planet's orbit split into steps: it coasts sideways in a straight line and drifts farther from Gargantua, then falls back in by exactly the same amount, so it ends each step at the same distance. A gauge shows the distance rising and returning. Then the steps shrink until both happen at once: a smooth circular orbit at a constant distance.</title>
+            <circle cx="112" cy="110" r="60" class="orbit"/>
+            <circle cx="112" cy="110" r="26" class="hole"/>
+            <text x="112" y="113.5" text-anchor="middle" class="mut small">Gargantua</text>
+            <g>
+              <path d="M112.0 50.0 L146.6 50.0 M142.0 58.0 L172.0 75.4 M164.0 80.0 L181.3 110.0 M172.0 110.0 L172.0 144.6 M164.0 140.0 L146.6 170.0 M142.0 162.0 L112.0 179.3 M112.0 170.0 L77.4 170.0 M82.0 162.0 L52.0 144.6 M60.0 140.0 L42.7 110.0 M52.0 110.0 L52.0 75.4 M60.0 80.0 L77.4 50.0 M82.0 58.0 L112.0 40.7" fill="none" stroke="#5fd4c4" stroke-opacity=".45" stroke-width="1.4"/>
+              <path d="M146.6 50.0 L142.0 58.0 M172.0 75.4 L164.0 80.0 M181.3 110.0 L172.0 110.0 M172.0 144.6 L164.0 140.0 M146.6 170.0 L142.0 162.0 M112.0 179.3 L112.0 170.0 M77.4 170.0 L82.0 162.0 M52.0 144.6 L60.0 140.0 M42.7 110.0 L52.0 110.0 M52.0 75.4 L60.0 80.0 M77.4 50.0 L82.0 58.0 M112.0 40.7 L112.0 50.0" fill="none" stroke="#ffb25e" stroke-opacity=".7" stroke-width="1.6"/>
+              <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/>
+            </g>
+            <path d="M112.0 50.0 L119.9 50.0 L119.8 50.5 L127.7 51.5 L127.5 52.0 L135.2 54.1 L135.0 54.6 L142.3 57.6 L142.0 58.0 L148.8 62.0 L148.5 62.4 L154.8 67.2 L154.4 67.6 L160.0 73.2 L159.6 73.5 L164.4 79.7 L164.0 80.0 L167.9 86.8 L167.4 87.0 L170.5 94.3 L170.0 94.5 L172.0 102.1 L171.5 102.2 L172.5 110.0 L172.0 110.0 L172.0 117.9 L171.5 117.8 L170.5 125.7 L170.0 125.5 L167.9 133.2 L167.4 133.0 L164.4 140.3 L164.0 140.0 L160.0 146.8 L159.6 146.5 L154.8 152.8 L154.4 152.4 L148.8 158.0 L148.5 157.6 L142.3 162.4 L142.0 162.0 L135.2 165.9 L135.0 165.4 L127.7 168.5 L127.5 168.0 L119.9 170.0 L119.8 169.5 L112.0 170.5 L112.0 170.0 L104.1 170.0 L104.2 169.5 L96.3 168.5 L96.5 168.0 L88.8 165.9 L89.0 165.4 L81.7 162.4 L82.0 162.0 L75.2 158.0 L75.5 157.6 L69.2 152.8 L69.6 152.4 L64.0 146.8 L64.4 146.5 L59.6 140.3 L60.0 140.0 L56.1 133.2 L56.6 133.0 L53.5 125.7 L54.0 125.5 L52.0 117.9 L52.5 117.8 L51.5 110.0 L52.0 110.0 L52.0 102.1 L52.5 102.2 L53.5 94.3 L54.0 94.5 L56.1 86.8 L56.6 87.0 L59.6 79.7 L60.0 80.0 L64.0 73.2 L64.4 73.5 L69.2 67.2 L69.6 67.6 L75.2 62.0 L75.5 62.4 L81.7 57.6 L82.0 58.0 L88.8 54.1 L89.0 54.6 L96.3 51.5 L96.5 52.0 L104.1 50.0 L104.2 50.5 L112.0 49.5 L112.0 50.0" fill="none" stroke="#5fd4c4" stroke-opacity=".35" stroke-width="1" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/></path>
+            <path id="stairA" d="M112.0 50.0 L146.6 50.0 L142.0 58.0 L172.0 75.4 L164.0 80.0 L181.3 110.0 L172.0 110.0 L172.0 144.6 L164.0 140.0 L146.6 170.0 L142.0 162.0 L112.0 179.3 L112.0 170.0 L77.4 170.0 L82.0 162.0 L52.0 144.6 L60.0 140.0 L42.7 110.0 L52.0 110.0 L52.0 75.4 L60.0 80.0 L77.4 50.0 L82.0 58.0 L112.0 40.7 L112.0 50.0" fill="none" stroke="none"/>
+            <path id="orbitB" d="M112 50 A60 60 0 1 1 112 170 A60 60 0 1 1 112 50" fill="none" stroke="none"/>
+            <g>
+              <path d="M11 0 H24 M19.5 -4 L24.5 0 L19.5 4" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#5fd4c4"><animate attributeName="stroke" dur="18s" repeatCount="indefinite" calcMode="discrete" values="#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#5fd4c4" keyTimes="0.0000;0.0329;0.0417;0.0745;0.0833;0.1162;0.1250;0.1579;0.1667;0.1995;0.2083;0.2412;0.2500;0.2829;0.2917;0.3245;0.3333;0.3662;0.3750;0.4079;0.4167;0.4495;0.4583;0.4912;0.5000;1.0000"/></path>
+              <animateMotion dur="18s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#stairA"/></animateMotion>
+              <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/>
+            </g>
+            <g><use href="#sym-miller" x="-9" y="-9" width="18" height="18"/>
+              <animateMotion dur="18s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#stairA"/></animateMotion>
+              <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/>
+            </g>
+            <g opacity="0">
+              <path d="M11 0 H26 M21.5 -4 L26.5 0 L21.5 4" fill="none" stroke="#5fd4c4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M0 11 V22 M-4 17.5 L0 22.5 L4 17.5" fill="none" stroke="#ffb25e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <animateMotion dur="18s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#orbitB"/></animateMotion>
+              <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/>
+            </g>
+            <g opacity="0"><use href="#sym-miller" x="-9" y="-9" width="18" height="18"/>
+              <animateMotion dur="18s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#orbitB"/></animateMotion>
+              <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/>
+            </g>
+            <g><text x="10" y="18" class="teal">&#8594; coast sideways: drift out</text><text x="10" y="32" class="orange">&#8595; fall: drop back the same amount</text><animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/></g>
+            <g opacity="0"><text x="10" y="18">Both at once, every instant:</text><text x="10" y="32" class="mut">falls forever, never gets closer</text><animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/></g>
+            <use href="#sym-miller" x="8" y="170" width="13" height="13"/><text x="25" y="180" class="small" style="fill:#9cc6ff">Miller&#8217;s planet</text>
+            <text x="314" y="52" text-anchor="end" class="small mut">distance from</text>
+            <text x="314" y="64" text-anchor="end" class="small mut">Gargantua</text>
+            <rect x="290" y="72" width="12" height="88" rx="4" fill="#161a26" stroke="#3a4152"/>
+            <rect x="291" y="130" width="10" height="30" rx="3" fill="#9cc6ff">
+              <animate attributeName="y" dur="18s" repeatCount="indefinite" values="130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;130.0" keyTimes="0.0000;0.0052;0.0104;0.0156;0.0208;0.0260;0.0312;0.0365;0.0417;0.0469;0.0521;0.0573;0.0625;0.0677;0.0729;0.0781;0.0833;0.0885;0.0938;0.0990;0.1042;0.1094;0.1146;0.1198;0.1250;0.1302;0.1354;0.1406;0.1458;0.1510;0.1562;0.1615;0.1667;0.1719;0.1771;0.1823;0.1875;0.1927;0.1979;0.2031;0.2083;0.2135;0.2188;0.2240;0.2292;0.2344;0.2396;0.2448;0.2500;0.2552;0.2604;0.2656;0.2708;0.2760;0.2812;0.2865;0.2917;0.2969;0.3021;0.3073;0.3125;0.3177;0.3229;0.3281;0.3333;0.3385;0.3438;0.3490;0.3542;0.3594;0.3646;0.3698;0.3750;0.3802;0.3854;0.3906;0.3958;0.4010;0.4062;0.4115;0.4167;0.4219;0.4271;0.4323;0.4375;0.4427;0.4479;0.4531;0.4583;0.4635;0.4688;0.4740;0.4792;0.4844;0.4896;0.4948;0.5000;1.0000"/>
+              <animate attributeName="height" dur="18s" repeatCount="indefinite" values="30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;30.0" keyTimes="0.0000;0.0052;0.0104;0.0156;0.0208;0.0260;0.0312;0.0365;0.0417;0.0469;0.0521;0.0573;0.0625;0.0677;0.0729;0.0781;0.0833;0.0885;0.0938;0.0990;0.1042;0.1094;0.1146;0.1198;0.1250;0.1302;0.1354;0.1406;0.1458;0.1510;0.1562;0.1615;0.1667;0.1719;0.1771;0.1823;0.1875;0.1927;0.1979;0.2031;0.2083;0.2135;0.2188;0.2240;0.2292;0.2344;0.2396;0.2448;0.2500;0.2552;0.2604;0.2656;0.2708;0.2760;0.2812;0.2865;0.2917;0.2969;0.3021;0.3073;0.3125;0.3177;0.3229;0.3281;0.3333;0.3385;0.3438;0.3490;0.3542;0.3594;0.3646;0.3698;0.3750;0.3802;0.3854;0.3906;0.3958;0.4010;0.4062;0.4115;0.4167;0.4219;0.4271;0.4323;0.4375;0.4427;0.4479;0.4531;0.4583;0.4635;0.4688;0.4740;0.4792;0.4844;0.4896;0.4948;0.5000;1.0000"/>
+            </rect>
+            <line x1="284" y1="130" x2="308" y2="130" stroke="#ffb25e" stroke-dasharray="3 2"/>
+            <text x="281" y="133" text-anchor="end" class="small orange">orbit</text>
+            <text x="281" y="86" text-anchor="end" class="small mut">farther</text>
+          </svg>
+      </div>
+      <div class="leg-text">
         <span class="leg">Leg 4 of 4</span>
-        <svg class="dg" viewBox="0 0 320 190" role="img" aria-labelledby="lg4t">
-          <title id="lg4t">Animation in two parts. First, Miller's planet's orbit split into steps: it coasts sideways in a straight line and drifts farther from Gargantua, then falls back in by exactly the same amount, so it ends each step at the same distance. A gauge shows the distance rising and returning. Then the steps shrink until both happen at once: a smooth circular orbit at a constant distance.</title>
-          <circle cx="112" cy="110" r="60" class="orbit"/>
-          <circle cx="112" cy="110" r="26" class="hole"/>
-          <text x="112" y="113.5" text-anchor="middle" class="mut small">Gargantua</text>
-          <g>
-            <path d="M112.0 50.0 L146.6 50.0 M142.0 58.0 L172.0 75.4 M164.0 80.0 L181.3 110.0 M172.0 110.0 L172.0 144.6 M164.0 140.0 L146.6 170.0 M142.0 162.0 L112.0 179.3 M112.0 170.0 L77.4 170.0 M82.0 162.0 L52.0 144.6 M60.0 140.0 L42.7 110.0 M52.0 110.0 L52.0 75.4 M60.0 80.0 L77.4 50.0 M82.0 58.0 L112.0 40.7" fill="none" stroke="#5fd4c4" stroke-opacity=".45" stroke-width="1.4"/>
-            <path d="M146.6 50.0 L142.0 58.0 M172.0 75.4 L164.0 80.0 M181.3 110.0 L172.0 110.0 M172.0 144.6 L164.0 140.0 M146.6 170.0 L142.0 162.0 M112.0 179.3 L112.0 170.0 M77.4 170.0 L82.0 162.0 M52.0 144.6 L60.0 140.0 M42.7 110.0 L52.0 110.0 M52.0 75.4 L60.0 80.0 M77.4 50.0 L82.0 58.0 M112.0 40.7 L112.0 50.0" fill="none" stroke="#ffb25e" stroke-opacity=".7" stroke-width="1.6"/>
-            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/>
-          </g>
-          <path d="M112.0 50.0 L119.9 50.0 L119.8 50.5 L127.7 51.5 L127.5 52.0 L135.2 54.1 L135.0 54.6 L142.3 57.6 L142.0 58.0 L148.8 62.0 L148.5 62.4 L154.8 67.2 L154.4 67.6 L160.0 73.2 L159.6 73.5 L164.4 79.7 L164.0 80.0 L167.9 86.8 L167.4 87.0 L170.5 94.3 L170.0 94.5 L172.0 102.1 L171.5 102.2 L172.5 110.0 L172.0 110.0 L172.0 117.9 L171.5 117.8 L170.5 125.7 L170.0 125.5 L167.9 133.2 L167.4 133.0 L164.4 140.3 L164.0 140.0 L160.0 146.8 L159.6 146.5 L154.8 152.8 L154.4 152.4 L148.8 158.0 L148.5 157.6 L142.3 162.4 L142.0 162.0 L135.2 165.9 L135.0 165.4 L127.7 168.5 L127.5 168.0 L119.9 170.0 L119.8 169.5 L112.0 170.5 L112.0 170.0 L104.1 170.0 L104.2 169.5 L96.3 168.5 L96.5 168.0 L88.8 165.9 L89.0 165.4 L81.7 162.4 L82.0 162.0 L75.2 158.0 L75.5 157.6 L69.2 152.8 L69.6 152.4 L64.0 146.8 L64.4 146.5 L59.6 140.3 L60.0 140.0 L56.1 133.2 L56.6 133.0 L53.5 125.7 L54.0 125.5 L52.0 117.9 L52.5 117.8 L51.5 110.0 L52.0 110.0 L52.0 102.1 L52.5 102.2 L53.5 94.3 L54.0 94.5 L56.1 86.8 L56.6 87.0 L59.6 79.7 L60.0 80.0 L64.0 73.2 L64.4 73.5 L69.2 67.2 L69.6 67.6 L75.2 62.0 L75.5 62.4 L81.7 57.6 L82.0 58.0 L88.8 54.1 L89.0 54.6 L96.3 51.5 L96.5 52.0 L104.1 50.0 L104.2 50.5 L112.0 49.5 L112.0 50.0" fill="none" stroke="#5fd4c4" stroke-opacity=".35" stroke-width="1" opacity="0"><animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/></path>
-          <path id="stairA" d="M112.0 50.0 L146.6 50.0 L142.0 58.0 L172.0 75.4 L164.0 80.0 L181.3 110.0 L172.0 110.0 L172.0 144.6 L164.0 140.0 L146.6 170.0 L142.0 162.0 L112.0 179.3 L112.0 170.0 L77.4 170.0 L82.0 162.0 L52.0 144.6 L60.0 140.0 L42.7 110.0 L52.0 110.0 L52.0 75.4 L60.0 80.0 L77.4 50.0 L82.0 58.0 L112.0 40.7 L112.0 50.0" fill="none" stroke="none"/>
-          <path id="orbitB" d="M112 50 A60 60 0 1 1 112 170 A60 60 0 1 1 112 50" fill="none" stroke="none"/>
-          <g>
-            <path d="M11 0 H24 M19.5 -4 L24.5 0 L19.5 4" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#5fd4c4"><animate attributeName="stroke" dur="18s" repeatCount="indefinite" calcMode="discrete" values="#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#ffb25e;#5fd4c4;#5fd4c4" keyTimes="0.0000;0.0329;0.0417;0.0745;0.0833;0.1162;0.1250;0.1579;0.1667;0.1995;0.2083;0.2412;0.2500;0.2829;0.2917;0.3245;0.3333;0.3662;0.3750;0.4079;0.4167;0.4495;0.4583;0.4912;0.5000;1.0000"/></path>
-            <animateMotion dur="18s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#stairA"/></animateMotion>
-            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/>
-          </g>
-          <g><use href="#sym-miller" x="-9" y="-9" width="18" height="18"/>
-            <animateMotion dur="18s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.5;1"><mpath href="#stairA"/></animateMotion>
-            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/>
-          </g>
-          <g opacity="0">
-            <path d="M11 0 H26 M21.5 -4 L26.5 0 L21.5 4" fill="none" stroke="#5fd4c4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M0 11 V22 M-4 17.5 L0 22.5 L4 17.5" fill="none" stroke="#ffb25e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <animateMotion dur="18s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#orbitB"/></animateMotion>
-            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/>
-          </g>
-          <g opacity="0"><use href="#sym-miller" x="-9" y="-9" width="18" height="18"/>
-            <animateMotion dur="18s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1" keyTimes="0;0.5;1"><mpath href="#orbitB"/></animateMotion>
-            <animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/>
-          </g>
-          <g><text x="10" y="18" class="teal">&#8594; coast sideways: drift out</text><text x="10" y="32" class="orange">&#8595; fall: drop back the same amount</text><animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="1;1;0;0;1" keyTimes="0;0.47;0.5;0.97;1"/></g>
-          <g opacity="0"><text x="10" y="18">Both at once, every instant:</text><text x="10" y="32" class="mut">falls forever, never gets closer</text><animate attributeName="opacity" dur="18s" repeatCount="indefinite" values="0;0;1;1;0" keyTimes="0;0.47;0.5;0.97;1"/></g>
-          <use href="#sym-miller" x="8" y="170" width="13" height="13"/><text x="25" y="180" class="small" style="fill:#9cc6ff">Miller&#8217;s planet</text>
-          <text x="314" y="52" text-anchor="end" class="small mut">distance from</text>
-          <text x="314" y="64" text-anchor="end" class="small mut">Gargantua</text>
-          <rect x="290" y="72" width="12" height="88" rx="4" fill="#161a26" stroke="#3a4152"/>
-          <rect x="291" y="130" width="10" height="30" rx="3" fill="#9cc6ff">
-            <animate attributeName="y" dur="18s" repeatCount="indefinite" values="130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;128.5;124.0;116.7;106.6;94.1;79.3;97.1;130.0;130.0" keyTimes="0.0000;0.0052;0.0104;0.0156;0.0208;0.0260;0.0312;0.0365;0.0417;0.0469;0.0521;0.0573;0.0625;0.0677;0.0729;0.0781;0.0833;0.0885;0.0938;0.0990;0.1042;0.1094;0.1146;0.1198;0.1250;0.1302;0.1354;0.1406;0.1458;0.1510;0.1562;0.1615;0.1667;0.1719;0.1771;0.1823;0.1875;0.1927;0.1979;0.2031;0.2083;0.2135;0.2188;0.2240;0.2292;0.2344;0.2396;0.2448;0.2500;0.2552;0.2604;0.2656;0.2708;0.2760;0.2812;0.2865;0.2917;0.2969;0.3021;0.3073;0.3125;0.3177;0.3229;0.3281;0.3333;0.3385;0.3438;0.3490;0.3542;0.3594;0.3646;0.3698;0.3750;0.3802;0.3854;0.3906;0.3958;0.4010;0.4062;0.4115;0.4167;0.4219;0.4271;0.4323;0.4375;0.4427;0.4479;0.4531;0.4583;0.4635;0.4688;0.4740;0.4792;0.4844;0.4896;0.4948;0.5000;1.0000"/>
-            <animate attributeName="height" dur="18s" repeatCount="indefinite" values="30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;31.5;36.0;43.3;53.4;65.9;80.7;62.9;30.0;30.0" keyTimes="0.0000;0.0052;0.0104;0.0156;0.0208;0.0260;0.0312;0.0365;0.0417;0.0469;0.0521;0.0573;0.0625;0.0677;0.0729;0.0781;0.0833;0.0885;0.0938;0.0990;0.1042;0.1094;0.1146;0.1198;0.1250;0.1302;0.1354;0.1406;0.1458;0.1510;0.1562;0.1615;0.1667;0.1719;0.1771;0.1823;0.1875;0.1927;0.1979;0.2031;0.2083;0.2135;0.2188;0.2240;0.2292;0.2344;0.2396;0.2448;0.2500;0.2552;0.2604;0.2656;0.2708;0.2760;0.2812;0.2865;0.2917;0.2969;0.3021;0.3073;0.3125;0.3177;0.3229;0.3281;0.3333;0.3385;0.3438;0.3490;0.3542;0.3594;0.3646;0.3698;0.3750;0.3802;0.3854;0.3906;0.3958;0.4010;0.4062;0.4115;0.4167;0.4219;0.4271;0.4323;0.4375;0.4427;0.4479;0.4531;0.4583;0.4635;0.4688;0.4740;0.4792;0.4844;0.4896;0.4948;0.5000;1.0000"/>
-          </rect>
-          <line x1="284" y1="130" x2="308" y2="130" stroke="#ffb25e" stroke-dasharray="3 2"/>
-          <text x="281" y="133" text-anchor="end" class="small orange">orbit</text>
-          <text x="281" y="86" text-anchor="end" class="small mut">farther</text>
-        </svg>
-        <h3>Stay there: why the planet never falls in</h3>
-        <p>An orbit is a fall that never ends. Miller&#8217;s planet, and the Endurance parked in a higher orbit, stay up with no engines running.</p>
-        <ol class="why" aria-label="Why">
-          <li>Gravity pulls the planet straight towards Gargantua all the time, so it is <b>always falling</b> (orange). Nothing holds it up.</li>
-          <li>It is also racing <b>sideways</b> (teal). Without gravity it would carry on in a straight line, and a straight line drifts away from a circle: watch the distance gauge rise.</li>
-          <li>Gargantua is round, so as the planet moves sideways the &#8220;ground&#8221; beneath it curves away. At just the right sideways speed, the planet falls exactly as far as the ground has curved away, and the gauge drops back to the same height.</li>
-          <li>The animation splits this into steps so you can see it. In reality both happen at every instant, the steps shrink to nothing, and the path becomes a smooth circle: falling forever, always missing. Any slower and it would dip closer; any faster and it would swing out farther.</li>
-          <li>Because everything falls together, nobody aboard feels a thing, just as astronauts float on the Space Station. That&#8217;s how the Endurance can wait in orbit while Romilly ages 23 years, without burning any fuel.</li>
-        </ol>
-      </article>
+          <h3>Stay there: why the planet never falls in</h3>
+          <p>An orbit is a fall that never ends. Miller&#8217;s planet, and the Endurance parked in a higher orbit, stay up with no engines running.</p>
+          <ol class="why" aria-label="Why">
+            <li>Gravity pulls the planet straight towards Gargantua all the time, so it is <b>always falling</b> (orange). Nothing holds it up.</li>
+            <li>It is also racing <b>sideways</b> (teal). Without gravity it would carry on in a straight line, and a straight line drifts away from a circle: watch the distance gauge rise.</li>
+            <li>Gargantua is round, so as the planet moves sideways the &#8220;ground&#8221; beneath it curves away. At just the right sideways speed, the planet falls exactly as far as the ground has curved away, and the gauge drops back to the same height.</li>
+            <li>The animation splits this into steps so you can see it. In reality both happen at every instant, the steps shrink to nothing, and the path becomes a smooth circle: falling forever, always missing. Any slower and it would dip closer; any faster and it would swing out farther.</li>
+            <li>Because everything falls together, nobody aboard feels a thing, just as astronauts float on the Space Station. That&#8217;s how the Endurance can wait in orbit while Romilly ages 23 years, without burning any fuel.</li>
+          </ol>
+      </div>
+    </div>
+      <div class="leg-nav">
+        <button type="button" id="legPrev"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span>Previous leg</span></button>
+        <button type="button" id="legNext" class="primary"><span>Next leg</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
     </div>
 
     <figure class="gravity-fig" aria-labelledby="gfHead">
@@ -1031,72 +1225,18 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
         </svg>
       </div>
       <figcaption>Far away, a black hole pulls exactly like a star of the same mass. Only up close, where the star&#8217;s surface would be, does it get extreme.</figcaption>
-      <ol class="why wide" aria-label="Why">
+      <ol class="why two" aria-label="Why">
         <li>Gravity depends only on two things: how much mass there is, and how far you are from its centre.</li>
         <li>Squeezing the Sun into a black hole doesn&#8217;t change its mass, so at Earth&#8217;s distance the pull is exactly the same.</li>
         <li>What changes is how close you can get. The Sun&#8217;s surface stops you 700,000 km from its centre; the black hole is only 6 km across.</li>
         <li>Each time you halve your distance, the pull goes up 4 times. Getting 100,000 times closer than the Sun&#8217;s surface makes it 10 billion times stronger.</li>
       </ol>
     </figure>
-
-    <div class="survive-live">
-      <div class="sl-head">
-        <h3>Forces on the Endurance right now</h3>
-        <p class="sl-where" id="slWhere"></p>
-      </div>
-      <div class="sl-meters">
-        <div class="meter">
-          <span class="m-label">Stretch from head to feet (2 m person)</span>
-          <span class="m-value" id="slTide"></span>
-          <span class="m-verdict" id="slTideV"></span>
-          <div class="gauge" aria-hidden="true"><span class="g-mark" style="left:44.4%">1 g</span><span class="g-mark" style="left:55.6%">100 g</span><span class="g-dot" id="slTideDot"></span></div>
-        </div>
-        <div class="meter">
-          <span class="m-label">Rocket thrust needed to hover there</span>
-          <span class="m-value" id="slHover"></span>
-          <span class="m-verdict" id="slHoverV"></span>
-          <div class="gauge" aria-hidden="true"><span class="g-mark" style="left:44.4%">1 g</span><span class="g-mark" style="left:55.6%">100 g</span><span class="g-dot" id="slHoverDot"></span></div>
-        </div>
-      </div>
-      <p class="sl-orbit" id="slOrbit"></p>
-      <div class="btns">
-        <button type="button" id="slStellar">Try a black hole of 10 Suns</button>
-        <button type="button" id="slGarg">Try Gargantua</button>
-      </div>
-      <p class="hint">Move the Endurance on the time map or with its slider. Forces assume gravity at 100%. The gauges run from a hundred-millionth of a g on the left to ten billion g on the right.</p>
-    </div>
   </section>
 
-  <section class="lower">
-    <div>
-      <h2>Key to the light paths</h2>
-      <ul class="legend">
-        <li><i style="background:var(--direct)"></i><span><b>Direct.</b> Near side of the disk, almost a straight line to you.</span></li>
-        <li><i style="background:var(--over)"></i><span><b>Bent over the top.</b> Far side of the disk, top surface. This is the arch above the hole.</span></li>
-        <li><i style="background:var(--under)"></i><span><b>Bent underneath.</b> Far side of the disk, bottom surface. This is the thinner arch below.</span></li>
-        <li><i style="background:var(--ring)"></i><span><b>Wrapped around.</b> Light that circled the hole before escaping: the thin photon ring.</span></li>
-        <li><i style="background:var(--fall)"></i><span><b>Falls in.</b> Look in these directions and nothing comes back. That is the black shadow. The grey dots are light sent that way, falling in.</span></li>
-        <li><i style="background:transparent;border-top:1px dashed var(--fg);height:0"></i><span><b>Dashed circle.</b> The event horizon at its true size. Bending of light makes the black shadow around it about 2.6 times wider.</span></li>
-        <li><i style="background:var(--time)"></i><span><b>Time rings</b> (time map). How fast a clock hovering there ticks, compared with yours far away.</span></li>
-      </ul>
-    </div>
-    <div>
-      <h2>Things to try</h2>
-      <ol class="try">
-        <li>Drag <b>gravity</b> to 0%, then slowly back up.</li>
-        <li>Press <b>Sweep the angle</b>.</li>
-        <li>Tick <b>Colour the picture by light path</b>.</li>
-        <li>Tick <b>Doppler brightening</b>.</li>
-        <li>Drag <b>spin</b> to the maximum at a low angle: the shadow flattens on the right and the disk creeps in.</li>
-        <li>Pick <b>Sagittarius A*</b> or <b>M87*</b> under the spin slider to see a real black hole at its own spin and size.</li>
-        <li>Drag the <b>Endurance</b> on the time map towards the hole, and watch the map zoom in.</li>
-        <li>Press <b>Play the Miller&#8217;s planet scene</b>.</li>
-        <li>Try a <b>10-Sun black hole</b> in the survival section.</li>
-      </ol>
-    </div>
-  </section>
-  <section class="eqs" id="maths" aria-labelledby="mathsHead">
-    <div class="eqs-head">
+  <section class="eqs chapter" id="maths" aria-labelledby="mathsHead">
+    <div class="eqs-head chead">
+      <span class="ckicker">Chapter 5 · The maths</span>
       <h2 id="mathsHead">The maths behind this</h2>
       <p>Everything that moves on this page follows from a few standard results of general relativity. The page uses a spinning black hole, which becomes the non-spinning one when the spin is set to none. r<sub>s</sub> is the event horizon&#8217;s radius without spin, r is the distance from the centre, M is the mass and c is the speed of light.</p>
     </div>
@@ -1148,11 +1288,11 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
         <li>The disk has no thickness, and each frame of the main picture is a snapshot that ignores the time light takes to travel.</li>
       </ul>
     </div>
-    <p class="refs">Sources: K. Schwarzschild, &#8220;<a href="https://arxiv.org/abs/physics/9905030">On the gravitational field of a mass point according to Einstein&#8217;s theory</a>&#8221;, <i>Sitzungsberichte der K&#246;niglich Preussischen Akademie der Wissenschaften</i> (1916), 189 (English translation); R. P. Kerr, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.11.237">Gravitational field of a spinning mass as an example of algebraically special metrics</a>&#8221;, <i>Physical Review Letters</i> 11, 237 (1963), whose coordinates both views use; C. W. Misner, K. S. Thorne and J. A. Wheeler, <i>Gravitation</i> (W. H. Freeman, 1973); J. B. Hartle, <i>Gravity: An Introduction to Einstein&#8217;s General Relativity</i> (Addison-Wesley, 2003); G. B. Rybicki and A. P. Lightman, <i>Radiative Processes in Astrophysics</i> (Wiley, 1979); I. I. Shapiro, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.13.789">Fourth test of general relativity</a>&#8221;, <i>Physical Review Letters</i> 13, 789 (1964); J.-P. Luminet, &#8220;<a href="https://ui.adsabs.harvard.edu/abs/1979A%26A....75..228L/abstract">Image of a spherical black hole with thin accretion disk</a>&#8221;, <i>Astronomy and Astrophysics</i> 75, 228 (1979), the first computed picture of a black hole and its disk; J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972), for orbits around spinning black holes. Spins of the black holes you can pick: GW150914, B. P. Abbott et al. (LIGO and Virgo), &#8220;<a href="https://doi.org/10.1103/PhysRevLett.116.241102">Properties of the binary black hole merger GW150914</a>&#8221;, <i>Physical Review Letters</i> 116, 241102 (2016); M87*, M. Drew et al., &#8220;<a href="https://doi.org/10.3847/2041-8213/adc90e">New estimates of the spin and accretion rate of the black hole M87*</a>&#8221;, <i>The Astrophysical Journal Letters</i> 984, L31 (2025), which reads its value as probably a lower limit; Sagittarius A*, R. A. Daly et al., &#8220;<a href="https://doi.org/10.1093/mnras/stad3228">New black hole spin values for Sagittarius A* obtained with the outflow method</a>&#8221;, <i>Monthly Notices of the Royal Astronomical Society</i> 527, 428 (2024), 0.90 &#177; 0.06; Cygnus X-1, X. Zhao et al., &#8220;<a href="https://doi.org/10.3847/1538-4357/abbcd6">Re-estimating the spin parameter of the black hole in Cygnus X-1</a>&#8221;, <i>The Astrophysical Journal</i> 908, 117 (2021), above 0.9985, with its mass of 21 Suns from J. C. A. Miller-Jones et al., &#8220;<a href="https://doi.org/10.1126/science.abb3363">Cygnus X-1 contains a 21&#8211;solar mass black hole</a>&#8221;, <i>Science</i> 371, 1046 (2021).</p>
+    <details class="sources"><summary>Sources</summary><p class="refs">Sources: K. Schwarzschild, &#8220;<a href="https://arxiv.org/abs/physics/9905030">On the gravitational field of a mass point according to Einstein&#8217;s theory</a>&#8221;, <i>Sitzungsberichte der K&#246;niglich Preussischen Akademie der Wissenschaften</i> (1916), 189 (English translation); R. P. Kerr, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.11.237">Gravitational field of a spinning mass as an example of algebraically special metrics</a>&#8221;, <i>Physical Review Letters</i> 11, 237 (1963), whose coordinates both views use; C. W. Misner, K. S. Thorne and J. A. Wheeler, <i>Gravitation</i> (W. H. Freeman, 1973); J. B. Hartle, <i>Gravity: An Introduction to Einstein&#8217;s General Relativity</i> (Addison-Wesley, 2003); G. B. Rybicki and A. P. Lightman, <i>Radiative Processes in Astrophysics</i> (Wiley, 1979); I. I. Shapiro, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.13.789">Fourth test of general relativity</a>&#8221;, <i>Physical Review Letters</i> 13, 789 (1964); J.-P. Luminet, &#8220;<a href="https://ui.adsabs.harvard.edu/abs/1979A%26A....75..228L/abstract">Image of a spherical black hole with thin accretion disk</a>&#8221;, <i>Astronomy and Astrophysics</i> 75, 228 (1979), the first computed picture of a black hole and its disk; J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972), for orbits around spinning black holes. Spins of the black holes you can pick: GW150914, B. P. Abbott et al. (LIGO and Virgo), &#8220;<a href="https://doi.org/10.1103/PhysRevLett.116.241102">Properties of the binary black hole merger GW150914</a>&#8221;, <i>Physical Review Letters</i> 116, 241102 (2016); M87*, M. Drew et al., &#8220;<a href="https://doi.org/10.3847/2041-8213/adc90e">New estimates of the spin and accretion rate of the black hole M87*</a>&#8221;, <i>The Astrophysical Journal Letters</i> 984, L31 (2025), which reads its value as probably a lower limit; Sagittarius A*, R. A. Daly et al., &#8220;<a href="https://doi.org/10.1093/mnras/stad3228">New black hole spin values for Sagittarius A* obtained with the outflow method</a>&#8221;, <i>Monthly Notices of the Royal Astronomical Society</i> 527, 428 (2024), 0.90 &#177; 0.06; Cygnus X-1, X. Zhao et al., &#8220;<a href="https://doi.org/10.3847/1538-4357/abbcd6">Re-estimating the spin parameter of the black hole in Cygnus X-1</a>&#8221;, <i>The Astrophysical Journal</i> 908, 117 (2021), above 0.9985, with its mass of 21 Suns from J. C. A. Miller-Jones et al., &#8220;<a href="https://doi.org/10.1126/science.abb3363">Cygnus X-1 contains a 21&#8211;solar mass black hole</a>&#8221;, <i>Science</i> 371, 1046 (2021).</p></details>
   </section>
   <footer class="site-foot">
     <p>Created by Nader Eloshaiker · <a href="https://www.linkedin.com/in/nadereloshaiker" rel="author">LinkedIn</a> · <a href="https://github.com/nader-eloshaiker">GitHub</a></p>
-    <p>Built with WebGL. Light paths follow the Schwarzschild solution of general relativity; disk colours are artistic. <a href="#maths">The maths behind this</a></p>
+    <p>Built with WebGL. Light paths follow the Kerr solution of general relativity, for a spinning black hole; disk colours are artistic. <a href="#maths">The maths behind this</a></p>
     <p>Visits are counted with <a href="https://www.goatcounter.com/">GoatCounter</a>, which uses no cookies and collects no personal data. <a href="privacy.html">Privacy</a></p>
     <p><a href="https://github.com/nader-eloshaiker/black-hole-light-paths">Source code on GitHub</a> · <a href="https://github.com/nader-eloshaiker/black-hole-light-paths/blob/main/LICENSE">MIT licence</a> · <a href="https://github.com/nader-eloshaiker/black-hole-light-paths/issues">Report a problem</a></p>
   </footer>
@@ -1170,17 +1310,18 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   const sweepBtn = $('sweep'), playBtn = $('play');
 
   const state = {
-    inc: 8, k: 1, spin: 0, mode: false, dop: false, sweeping: false,
+    inc: 8, k: 1, spin: 1 - 1e-14, mode: false, dop: false, sweeping: false,
     playing: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     time: 0, sweepPhase: 0,
-    timeOn: true, labelsOn: true, shipOn: true, scale: '', probe: { x: 2.6, y: 2.6 }
+    timeOn: true, labelsOn: true, shipOn: true, scale: 'gargantua', probe: { x: 2.6, y: 2.6 }
   };
   const COL_TIME = '#9cc6ff';
   // The time map zooms to follow the Endurance: in close when it is near the hole, out to the whole disk when it is far.
   // While the ship is dragged on the map the zoom holds still (tHold), so the map doesn't slide under the finger.
   let tHalf = 16, tHalfAt = 0, tHold = null;
   const zoomFor = d => Math.min(16, Math.max(1.6 * d + 0.8, 1.6, 3.2 * tHorizon()));
-  const tTarget = () => tHold ?? zoomFor(Math.hypot(state.probe.x, state.probe.y));
+  // it also keeps Miller's planet in view, and during the scene it frames the planet alone
+  const tTarget = () => tHold ?? (scene ? zoomFor(millerR()) : zoomFor(Math.max(Math.hypot(state.probe.x, state.probe.y), millerR())));
   const gridStep = () => [0.25, 0.5, 1, 2].find(g => g >= tTarget() / 10) ?? 2;
   // Spin s (0 to just under 1) is the fraction of the fastest possible spin; a = s M, with M = 1/2 so rs = 2M = 1.
   // Like the horizon the page has always drawn at 1 rs, these sizes don't shrink with the gravity slider.
@@ -1196,22 +1337,22 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   const photonOrbitR = s => 2 * SM * (1 + Math.cos(2 / 3 * Math.acos(-s)));
   // Gargantua: Miller's planet needs a spin this close to the maximum, far beyond the slider (see the Miller's planet scene)
   const GARGANTUA_SPIN = 1 - 1e-14;
-  // The spin slider is finer at high spin, where the picture changes most and real black holes cluster:
-  // slider position p (0 to 1) gives spin = 0.998 (1 - (1 - p)^2). 0.998 is as fast as infalling gas can spin a hole.
+  // The spin slider clicks between fixed stops. They are closer together at high spin, where the picture changes most
+  // and real black holes cluster, and every black hole you can pick sits on one. 0.998 is as fast as infalling gas
+  // can spin a hole; the last stop is Gargantua's, within 10^-14 of the maximum.
   const SPIN_MAX = 0.998;
-  const spinOfP = p => SPIN_MAX * (1 - (1 - p) ** 2);
-  const pOfSpin = s => s >= SPIN_MAX ? 1 : 1 - Math.sqrt(1 - s / SPIN_MAX);
-  // Real black holes to pick from (sources in the maths section). Picking one sets its spin, gravity to full strength and
-  // its real size. Cygnus X-1 is measured above 0.9985: the end of the slider. The last two are made-up sizes with no spin of their own.
+  const SPIN_STOPS = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.67, 0.8, 0.9, 0.95, 0.99, SPIN_MAX, GARGANTUA_SPIN];
+  const stopOf = s => SPIN_STOPS.reduce((b, v, i) => Math.abs(v - s) < Math.abs(SPIN_STOPS[b] - s) ? i : b, 0);
+  // Black holes to pick from (sources in the maths section). Picking one sets its spin, gravity to full strength and its
+  // real size. Cygnus X-1 is measured above 0.9985. The last two are made-up examples, taken not to spin.
   const HOLES = [
-    { id: '', label: 'Any black hole, in horizon radii', spin: null },
-    { id: 'gargantua', label: 'Gargantua, from Interstellar', spin: GARGANTUA_SPIN, text: 'Gargantua: within 10⁻¹⁴ of the maximum, past the slider.' },
+    { id: 'gargantua', label: 'Gargantua, from Interstellar', spin: GARGANTUA_SPIN, text: 'Gargantua: within 10⁻¹⁴ of the fastest spin possible.' },
     { id: 'sgra', label: 'Sagittarius A*, our galaxy’s centre', spin: 0.9, text: 'Sagittarius A*: about 0.9, estimated from its outflows.' },
     { id: 'm87', label: 'M87*, the first one photographed', spin: 0.8, text: 'M87*: 0.8 or more, from how fast its disk turns.' },
     { id: 'cygx1', label: 'Cygnus X-1, the first one found', spin: SPIN_MAX, text: 'Cygnus X-1: measured above 0.998, the slider’s top.' },
     { id: 'gw150914', label: 'GW150914, the first merger heard', spin: 0.67, text: 'GW150914’s black hole: 0.67, from its gravitational waves.' },
-    { id: 'stellar', label: 'A black hole of 10 Suns', spin: null },
-    { id: 'earth', label: 'Earth squeezed into a black hole', spin: null }
+    { id: 'stellar', label: 'A black hole of 10 Suns', spin: 0, text: 'A black hole of 10 Suns, taken not to spin.' },
+    { id: 'earth', label: 'Earth squeezed into a black hole', spin: 0, text: 'Earth squeezed into a black hole, taken not to spin.' }
   ];
   const holeOf = id => HOLES.find(h => h.id === id);
   const fmtNum = v => String(+v.toFixed(2));
@@ -1230,9 +1371,13 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
     $('kOut').textContent = Math.round(state.k * 100) + '%';
     const sp = state.spin, garg = sp > SPIN_MAX, hole = holeOf(state.scale), mark = hole && hole.spin === sp ? hole : null;
     $('spinOut').innerHTML = sp === 0 ? 'none' : garg ? 'Gargantua&#8217;s' : (sp >= 0.99 ? sp.toFixed(3) : sp.toFixed(2)) + '<span class="xl"> of maximum</span>';
-    $('spinHint').textContent = sp === 0 ? 'Spin drags space round the hole. Pick a real black hole below.'
-      : mark ? mark.text
+    $('spinHint').textContent = mark ? mark.text
+      : sp === 0 ? 'No spin. Spin drags space round the hole.'
+      : sp === 0.6 ? '0.6: the spin the film’s pictures were drawn with.'
       : `Horizon ${fmtR(horizonR(sp))} rₛ; the disk reaches in to ${fmtR(diskIn())} rₛ.`;
+    spinEl.value = stopOf(sp);
+    for (const b of document.querySelectorAll('#spinTicks b')) b.classList.toggle('on', +b.dataset.i === stopOf(sp));
+    syncPreset();
     spinEl.setAttribute('aria-valuetext', sp === 0 ? 'no spin' : garg ? 'Gargantua’s spin' : `${sp.toFixed(3)} of maximum`);
     // the probe slider's markers follow the spin and gravity
     const pct = v => `${(pOfProbe(v) * 100).toFixed(3)}%`;
@@ -1243,18 +1388,44 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       : state.inc > 89.5 ? 'looking straight down' : state.inc > 70 ? 'looking down from above' : 'tilted view';
     $('camReadout').textContent = (+state.inc).toFixed(0) + '° above the disk, ' + where;
   }
-  incEl.addEventListener('input', () => { state.inc = +incEl.value; if (state.sweeping) toggleSweep(); syncReadouts(); });
-  kEl.addEventListener('input', () => { state.k = +kEl.value / 100; syncReadouts(); });
-  function setSpin(s) {
-    state.spin = s; spinEl.value = pOfSpin(s).toFixed(3);
-    if (state.probeOrbit) { state.probeOrbit = false; if (scene) closeScene(); }
-    syncReadouts();
+  // Preset or your own settings: each black hole chooser says when the sliders no longer match the one picked,
+  // labels it "changed" in the list, and offers to restore its real spin and gravity.
+  function syncPreset() {
+    const h = holeOf(state.scale); if (!h) return;
+    const diffs = [h.spin !== state.spin && 'spin', state.k !== 1 && 'gravity'].filter(Boolean);
+    const short = h.label.split(',')[0];
+    const txt = diffs.length ? `<span class="mod">You changed its ${diffs.join(' and ')}</span>` : 'Real spin and gravity';
+    for (const el of document.querySelectorAll('[data-preset]')) {
+      const st = el.querySelector('.preset-state');
+      if (st.innerHTML !== txt) st.innerHTML = txt;
+      el.querySelector('.restore').hidden = !diffs.length;
+      el.querySelector('.restore').setAttribute('aria-label', `Restore the real spin and gravity of ${short.replace(/^A /, 'a ')}`);
+    }
+    for (const sel of document.querySelectorAll('select.hole-pick')) {
+      for (const o of sel.options) {
+        const want = holeOf(o.value).label + (o.value === state.scale && diffs.length ? ' (changed)' : '');
+        if (o.text !== want) o.text = want;
+      }
+      if (sel.value !== state.scale && sel.options.length) sel.value = state.scale;
+    }
   }
+  incEl.addEventListener('input', () => { state.inc = +incEl.value; if (state.sweeping) toggleSweep(); syncReadouts(); });
+  kEl.addEventListener('input', () => { state.k = +kEl.value / 100; if (scene) closeScene(); syncReadouts(); });
   spinEl.addEventListener('input', () => {
-    state.spin = spinOfP(+spinEl.value);
-    if (state.probeOrbit) { state.probeOrbit = false; if (scene) closeScene(); }   // the planet's orbit only exists at Gargantua's spin
+    state.spin = SPIN_STOPS[+spinEl.value];
+    if (scene) closeScene();                 // the scene needs Gargantua's spin
     syncReadouts();
   });
+  // tick marks under the sliders: data-n intervals, labels as "index:text|..."
+  function buildTicks(el, n, labels) {
+    let h = '';
+    for (let i = 0; i <= n; i++) h += `<i class="${labels[i] ? 'major' : ''}" style="left:${(i / n * 100).toFixed(3)}%"></i>`;
+    for (const i in labels) h += `<b data-i="${i}" class="${+i === 0 ? 'first' : +i === n ? 'last' : ''}" style="left:${(i / n * 100).toFixed(3)}%">${labels[i]}</b>`;
+    el.innerHTML = h;
+  }
+  for (const el of document.querySelectorAll('.ticks[data-n]'))
+    buildTicks(el, +el.dataset.n, Object.fromEntries(el.dataset.labels.split('|').map(t => t.split(/:(.*)/s).slice(0, 2))));
+  buildTicks($('spinTicks'), SPIN_STOPS.length - 1, { 0: 'none', 6: '0.6', [SPIN_STOPS.length - 1]: 'Gargantua' });
   // horizon used by the clocks, time map and forces: like their time rings, it shrinks with the gravity slider
   const tHorizon = () => state.k * horizonR(state.spin);
   // the Endurance's slider: finer near the horizon, so it can reach a few thousand km above Gargantua's
@@ -1875,12 +2046,8 @@ void main(){
     if (kind === 'time') {
       const pr = Math.hypot(state.probe.x, state.probe.y);
       ctx.save();
-      if (state.probeOrbit) {                                  // Miller's planet: its orbit, drawn solid
-        ctx.strokeStyle = COL_TIME; ctx.lineWidth = 2 * dpr;
-        ctx.beginPath(); ctx.arc(X(0), Y(0), pr * sc, 0, Math.PI * 2); ctx.stroke();
-      }
       ctx.strokeStyle = 'rgba(156,198,255,0.5)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([3 * dpr, 4 * dpr]);
-      if (!state.probeOrbit) { ctx.beginPath(); ctx.arc(X(0), Y(0), pr * sc, 0, Math.PI * 2); ctx.stroke(); }
+      ctx.beginPath(); ctx.arc(X(0), Y(0), pr * sc, 0, Math.PI * 2); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(X(Math.min(pr, tHalf)), Y(0)); ctx.lineTo(X(Math.min(pr, tHalf)), H - 10 * dpr); ctx.stroke();
       ctx.setLineDash([]);
       ctx.strokeStyle = 'rgba(231,233,240,0.35)'; ctx.beginPath(); ctx.moveTo(X(0), H - 1 * dpr); ctx.lineTo(W, H - 1 * dpr);
@@ -1931,13 +2098,19 @@ void main(){
         ctx.fillStyle = 'rgba(5,6,10,0.85)'; ctx.fillRect(c < 0 ? tx - w + 4 * dpr : tx - 4 * dpr, top - 8 * dpr, w, lines.length * lh + 2 * dpr);
         ctx.fillStyle = col; lines.forEach((l, i) => ctx.fillText(l, tx, top + i * lh));
       };
-      const garg = scene || state.scale === 'gargantua';
+      const garg = state.scale === 'gargantua';
       if (rH * sc > 1) callout(rH, 203, [garg ? 'Gargantua’s event horizon' : 'event horizon', 'the black hole’s edge'], '#ffc98a');
-      if (state.probeOrbit) {
-        const pr = Math.hypot(state.probe.x, state.probe.y), gap = pr - rH, SCo = SCALES[state.scale];
-        const high = SCo ? fmtLen(gap * SCo.rs) : `${fmtHeight(gap)} rₛ`;
-        callout(pr, 318, ['Miller’s planet’s orbit', `${high} above the horizon:`, (gap * sc < 3 ? 'too close to draw apart' : 'just outside it')], COL_TIME);
-      }
+      // Miller's planet on its orbit, with a clock hand that turns as fast as time passes there
+      const mr = millerR(), mRate = millerRate(), mDeg = -40, ma = mDeg * Math.PI / 180;
+      ctx.strokeStyle = 'rgba(106,165,239,0.85)'; ctx.lineWidth = 1.5 * dpr;
+      ctx.beginPath(); ctx.arc(X(0), Y(0), mr * sc, 0, Math.PI * 2); ctx.stroke();
+      const mx = X(mr * Math.cos(ma)), my = Y(mr * Math.sin(ma)), MR = 8 * dpr, mt = state.time * mRate / 4 * Math.PI * 2;
+      callout(mr, mDeg, ['Miller’s planet', mRate > 0 ? `1 hour = ${fmtWords(3600 / mRate)}` : 'clock stopped'].concat(millerMoved() ? ['pushed out to the', 'closest stable orbit'] : []), '#9cc6ff');
+      ctx.fillStyle = 'rgba(5,6,10,0.9)'; ctx.beginPath(); ctx.arc(mx, my, MR + 2.5 * dpr, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#2f6fbf'; ctx.strokeStyle = COL_TIME; ctx.lineWidth = 1.4 * dpr;
+      ctx.beginPath(); ctx.arc(mx, my, MR, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.6 * dpr; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(mx + Math.sin(mt) * MR * 0.7, my - Math.cos(mt) * MR * 0.7); ctx.stroke();
     }
     // probe clock
     if (kind === 'time') {
@@ -1946,13 +2119,7 @@ void main(){
       // it turns at the speed time passes there: one turn every 4 seconds of yours at full speed, like the clocks
       const ang = state.time * rate / 4 * Math.PI * 2;
       ctx.fillStyle = 'rgba(5,6,10,0.9)'; ctx.beginPath(); ctx.arc(px, py, R + 3 * dpr, 0, Math.PI * 2); ctx.fill();
-      if (state.probeOrbit) {
-        // Miller's planet (the Endurance waits far out, with Romilly): a blue world with a clock hand
-        ctx.fillStyle = '#2f6fbf'; ctx.strokeStyle = COL_TIME; ctx.lineWidth = 1.4 * dpr;
-        ctx.beginPath(); ctx.arc(px, py, R * 0.85, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8 * dpr; ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + Math.sin(ang) * R * 0.65, py - Math.cos(ang) * R * 0.65); ctx.stroke();
-      } else {
+      {
         // the Endurance: a ring of modules on four spokes around a hub
         ctx.save(); ctx.translate(px, py); ctx.rotate(ang);
         ctx.strokeStyle = '#8c94a8'; ctx.lineWidth = 1 * dpr;
@@ -1968,11 +2135,11 @@ void main(){
       ctx.beginPath(); ctx.arc(px, py, R + 7 * dpr, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       ctx.font = `500 ${11 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
       ctx.textBaseline = 'middle';
-      let txt = scene ? 'Miller\u2019s planet: 1 hour here = 7 years for you' : (rate <= 0 ? 'Endurance: inside the horizon' : `Endurance: time runs at ${fmtPct(rate)}`) + '  · drag me';
+      let txt = (rate <= 0 ? 'Endurance: inside the horizon' : `Endurance: time runs at ${fmtPct(rate)}`) + '  · drag me';
       // the side with room for the label; a shorter one when neither side has room
       const room = t => { const w = ctx.measureText(t).width + 8 * dpr; return { r: px + R + 12 * dpr + w <= W, l: px - R - 12 * dpr - w >= 0 }; };
       let fit = room(txt);
-      if (!fit.r && !fit.l && scene) { txt = 'Miller\u2019s planet: 1 h = 7 years'; fit = room(txt); }
+      if (!fit.r && !fit.l) { txt = rate <= 0 ? 'inside the horizon' : `Endurance: ${fmtPct(rate)}`; fit = room(txt); }
       const leftSide = fit.r && fit.l ? px > W * 0.62 : fit.l;
       ctx.textAlign = leftSide ? 'right' : 'left';
       const tx = leftSide ? px - R - 14 * dpr : px + R + 14 * dpr;
@@ -2031,21 +2198,21 @@ void main(){
   const scaleEl = $('scale');
   const holeEls = [scaleEl, $('hole')];
   for (const el of holeEls) el.innerHTML = HOLES.map(h => `<option value="${h.id}">${h.label}</option>`).join('');
+  // one source of truth: picking a black hole sets its spin, full gravity and its size, in every chooser at once
   function setHole(id) {
     const h = holeOf(id) || HOLES[0];
-    if (h.id) { state.k = 1; kEl.value = 100; }               // a real black hole: gravity at full strength
-    if (h.spin !== null) { state.spin = h.spin; spinEl.value = pOfSpin(h.spin).toFixed(3); }
-    if (state.probeOrbit && h.id !== 'gargantua') { state.probeOrbit = false; if (scene) closeScene(); }
+    state.k = 1; kEl.value = 100;
+    state.spin = h.spin;
+    if (scene && h.id !== 'gargantua') closeScene();
     setScale(h.id);
     syncReadouts();
   }
   function setScale(id) {
-    state.scale = id || '';
+    state.scale = id;
     for (const el of holeEls) el.value = state.scale;
     const sc = SCALES[state.scale];
     const info = $('scaleInfo');
-    if (!sc) { info.textContent = 'Pick a real black hole to set its size, spin and full gravity, and compare it with familiar things on the time map.'; }
-    else {
+    {
       const usesAU = 3 * sc.rs >= AU;   // the grid or scale bar is measured in AU
       info.innerHTML = `<b>${sc.name}</b>, ${sc.mass}. Event horizon radius ${fmtLen(sc.rs)}; light crosses it in ${fmtSpan(sc.rs / C)}. ${sc.fact}`
         + (usesAU ? ' <span class="au-note"><b>AU</b> (astronomical unit) is the distance from Earth to the Sun: about 150 million km, which sunlight takes 8 minutes 20 seconds to cross.</span>' : '');
@@ -2055,12 +2222,12 @@ void main(){
     for (const c of clocks) c.lastText = '';
   }
   for (const el of holeEls) el.addEventListener('change', () => setHole(el.value));
+  for (const b of document.querySelectorAll('[data-preset] .restore')) b.addEventListener('click', () => setHole(state.scale));
   // the units line: what one grid square is, which changes as the map zooms
   let lastUnits = '';
   function syncUnits() {
     const sc = SCALES[state.scale];
-    const t = !sc ? `1 grid square = ${fmtNum(gridStep())} rₛ (event-horizon radius without spin)`
-      : `1 grid square = ${fmtLen(gridStep() * sc.rs)}` + (3 * sc.rs >= AU ? ' (1 AU = Earth to Sun)' : '');
+    const t = `1 grid square = ${fmtLen(gridStep() * sc.rs)}` + (3 * sc.rs >= AU ? ' (1 AU = Earth to Sun)' : '');
     if (t !== lastUnits) { $('tmapUnits').textContent = t; lastUnits = t; }
   }
 
@@ -2159,21 +2326,48 @@ void main(){
     return Math.sqrt(D * r * r / A);
   }
   // Orbiting with the spin on a circle. Without spin: sqrt(1 - 3rs/2r).
-  function orbitRate(r) {
-    const M = state.k / 2, a = state.spin * M, sm = Math.sqrt(M), r15 = r * Math.sqrt(r);
+  const orbitRate = r => orbitRateAt(r, state.k, state.spin);
+  function orbitRateAt(r, k, s) {
+    const M = k / 2, a = s * M, sm = Math.sqrt(M), r15 = r * Math.sqrt(r);
     const q = r15 - 3 * M * Math.sqrt(r) + 2 * a * sm;
     return q > 0 ? Math.pow(r, 0.75) * Math.sqrt(q) / (r15 + a * sm) : 0;
+  }
+  // Miller's planet. In the film an hour there costs 7 years: a clock rate of 1/61,362. Around Gargantua that is the
+  // circular orbit (with the spin) just outside the innermost stable orbit, MILLER_R. For the black hole you set, the
+  // planet stays at that distance if a stable orbit still exists there; if not (less spin), it is pushed out to the
+  // closest stable orbit. Gravity weaker than 100% leaves it where it is and its clock speeds up.
+  const MILLER_F = 1 / (7 * 365.25 * 24);
+  const MILLER_R = (() => {
+    let lo = iscoR(GARGANTUA_SPIN), hi = 12;
+    for (let i = 0; i < 90; i++) { const m = (lo + hi) / 2; if (orbitRateAt(m, 1, GARGANTUA_SPIN) < MILLER_F) lo = m; else hi = m; }
+    return hi;
+  })();
+  const millerMoved = () => state.k * iscoR(state.spin) > MILLER_R;
+  const millerR = () => millerMoved() ? state.k * iscoR(state.spin) * (1 + 1e-12) : MILLER_R;
+  const millerRate = () => orbitRate(millerR());
+  const millerWhere = () => `${millerMoved() ? 'pushed out: ' : ''}orbiting ${fmtLen((millerR() - tHorizon()) * SCALES[state.scale].rs)} above the horizon`;
+  // the Miller's planet card beside the map
+  let lastMiller = '';
+  function syncMiller() {
+    const rate = millerRate(), h = millerR() - tHorizon(), sc = SCALES[state.scale];
+    const key = [rate, h, state.scale].join('|'); if (key === lastMiller) return; lastMiller = key;
+    $('millerRate').textContent = fmtPct(rate);
+    const where = `${fmtLen(h * sc.rs)} above the horizon`, hour = rate > 0 ? `1 hour there = ${fmtWords(3600 / rate)} for you.` : '';
+    $('millerInfo').innerHTML = state.k < 0.001 ? 'With gravity switched off, its clock keeps pace with yours.'
+      : millerMoved() ? `<span class="moved">Pushed out.</span> At this spin no stable orbit comes as close as the film&#8217;s, so the planet orbits at the closest one, ${where}. ${hour}`
+      : `On the orbit from the film, ${where}. ${hour}`;
   }
   // distance where a hovering clock runs at fraction f of yours (a time ring)
   function ringR(f) { let lo = tHorizon(), hi = 1e4; for (let i = 0; i < 90; i++) { const m = (lo + hi) / 2; if (hoverRate(m) < f) lo = m; else hi = m; } return hi; }
   const probeDist = () => Math.hypot(state.probe.x, state.probe.y);
-  const probeRate = () => state.probeOrbit ? orbitRate(probeDist()) : hoverRate(probeDist());
+  const probeRate = () => hoverRate(probeDist());
 
   const clockDefs = [
     { name: 'You', where: 'far away: the reference', rate: () => 1, you: true },
     { name: 'Outer edge of disk', where: 'orbiting at 12 rₛ', rate: () => orbitRate(12) },
     { name: 'Inner edge of disk', where: () => `orbiting at ${fmtNum(diskIn())} rₛ`, rate: () => orbitRate(diskIn()) },
     { name: 'Photon sphere', where: () => `hovering at ${fmtNum(photonR(state.spin))} rₛ`, rate: () => hoverRate(photonR(state.spin)) },
+    { name: 'Miller’s planet', where: () => millerWhere(), rate: millerRate, miller: true },
     { name: 'The Endurance', where: '', rate: probeRate, probe: true }
   ];
   const U = { y: 31557600, mo: 2629800, w: 604800, d: 86400, h: 3600, m: 60 };
@@ -2219,7 +2413,7 @@ void main(){
   const clocks = [];
   for (const d of clockDefs) {
     const el = document.createElement('div');
-    el.className = 'lrow' + (d.you ? ' you' : '') + (d.probe ? ' probe' : '');
+    el.className = 'lrow' + (d.you ? ' you' : '') + (d.probe ? ' probe' : '') + (d.miller ? ' miller' : '');
     el.setAttribute('role', 'row');
     let ticks = '';
     for (let i = 0; i < 12; i++) {
@@ -2230,7 +2424,7 @@ void main(){
       <svg viewBox="0 0 84 84" aria-hidden="true">
         <circle cx="42" cy="42" r="40" fill="#06070b" stroke="${d.probe ? COL_TIME : '#1d2330'}" stroke-width="2"/>
         ${ticks}
-        <line class="hand" x1="42" y1="42" x2="42" y2="10" stroke="${d.probe ? COL_TIME : '#ffb25e'}" stroke-width="3" stroke-linecap="round"/>
+        <line class="hand" x1="42" y1="42" x2="42" y2="10" stroke="${d.probe ? COL_TIME : d.miller ? '#6aa5ef' : '#ffb25e'}" stroke-width="3" stroke-linecap="round"/>
         <circle cx="42" cy="42" r="3.5" fill="#e7e9f0"/>
       </svg>
       <div class="lname" role="cell"><b>${d.name}</b><span class="lwhere"></span><span class="lhour"></span></div>
@@ -2306,14 +2500,12 @@ void main(){
       if (!reduceMotion) c.hand.setAttribute('transform', `rotate(${((c.e / (12 * S)) * 360) % 360} 42 42)`);
       // static text: only rewritten when the rate or probe position changes
       const ph = pd - tHorizon();
-      const where = c.def.probe ? (ph <= 0 ? 'inside the event horizon' : (state.probeOrbit ? 'orbiting ' : '') + (SCc ? `${fmtLen(ph * SCc.rs)} above the horizon` : `${fmtHeight(ph)} rₛ above the horizon`))
+      const where = c.def.probe ? (ph <= 0 ? 'inside the event horizon' : `hovering ${fmtLen(ph * SCc.rs)} above the horizon`)
         : typeof c.def.where === 'function' ? c.def.where() : c.def.where;
       const hourTxt = c.def.you ? 'Every clock is compared with this one.' : rate > 0 ? `1 hour there = ${fmtWords(3600 / rate)} for you` : 'Its signals never reach you.';
       const rateTxt = fmtPct(rate);
-      const name = c.def.probe && state.probeOrbit ? 'Miller’s planet' : c.def.name;
-      const txt = name + where + hourTxt + rateTxt;
+      const txt = where + hourTxt + rateTxt;
       if (txt !== c.lastText) {
-        if (c.def.probe) c.el.querySelector('.lname b').textContent = name;
         c.whereEl.textContent = where; c.hourEl.textContent = hourTxt; c.rateEl.textContent = rateTxt; c.lastText = txt;
         if (c.gap) c.gapLabel.textContent = rate > 0 && rate < 0.99 ? `${fmtRatio(1 / rate)}× slower` : '';
       }
@@ -2350,17 +2542,9 @@ void main(){
     $('timeLive').textContent = text;
     if (scene) scene.cap = i;
   }
-  const MILLER_F = 1 / (7 * 365.25 * 24);
-  function millerOrbitR() {
-    let lo = state.k * iscoR(state.spin), hi = 12;
-    if (orbitRate(lo) > MILLER_F) return null;               // not spinning fast enough for any stable orbit to be that slow
-    for (let i = 0; i < 90; i++) { const m = (lo + hi) / 2; if (orbitRate(m) < MILLER_F) lo = m; else hi = m; }
-    return hi;
-  }
+  const millerClock = () => clocks.find(c => c.def.miller);
   function startScene() {
     setHole('gargantua');
-    setProbeDist(millerOrbitR()); state.probeOrbit = true;
-    syncProbe();
     setLapse(6); resetClocks(); setClocksRunning(true);
     scene = { phase: 'run', cap: 0 };
     $('story').hidden = false; $('storyReplay').hidden = true; $('storySkip').hidden = false;
@@ -2373,12 +2557,12 @@ void main(){
     setClocksRunning(false);
     scene.phase = 'end';
     $('storyReplay').hidden = false; $('storySkip').hidden = true;
-    setCap(2, `Back on board. Romilly has waited 23 years, 4 months and 8 days. The crew has aged about ${fmtWords(clocks[clocks.length - 1].e)}.`);
+    setCap(2, `Back on board. Romilly has waited 23 years, 4 months and 8 days. The crew has aged about ${fmtWords(millerClock().e)}.`);
     updateStory();
   }
   function closeScene() { scene = null; $('story').hidden = true; }
   function updateStory() {
-    const ship = clocks[0].e, planet = clocks[clocks.length - 1].e;
+    const ship = clocks[0].e, planet = millerClock().e;
     $('sFillShip').style.width = `${Math.min(100, ship / ROMILLY * 100).toFixed(2)}%`;
     $('sFillPlanet').style.width = `${Math.min(100, planet / (ROMILLY * MILLER_F) * 100).toFixed(2)}%`;
     const ts = fmtQuant(ship, scene.phase === 'end' ? 1 : U.y), tp = fmtQuant(planet, scene.phase === 'end' ? U.m : 10 * U.m);
@@ -2413,7 +2597,19 @@ void main(){
     const a = Math.atan2(state.probe.y, state.probe.x);
     state.probe = { x: d * Math.cos(a), y: d * Math.sin(a) };
   }
-  probeEl.addEventListener('input', () => { state.probeOrbit = false; setProbeDist(probeOfP(+probeEl.value)); if (scene) closeScene(); syncProbe(); });
+  // the slider clicks onto Miller's planet's orbit, the disk's inner and outer edges and the photon sphere when it passes close
+  const SNAP = 0.012;
+  probeEl.addEventListener('input', () => {
+    const p = +probeEl.value;
+    let best = null;
+    for (const r of [millerR(), diskIn(), ROUT, photonR(state.spin)]) {
+      const d = Math.abs(pOfProbe(r) - p);
+      if (r > tHorizon() && d < SNAP && (!best || d < best.d)) best = { r, d };
+    }
+    setProbeDist(best ? best.r : probeOfP(p));
+    if (scene) closeScene();
+    syncProbe();
+  });
 
   tmap.classList.add('probe-on');
   // Drag starts only on the probe itself (44px target), so swiping over the diagram still scrolls the page.
@@ -2432,7 +2628,7 @@ void main(){
     const m = 0.5 * tHalf / VIEW_HALF_W;
     x = Math.max(-tHalf + m, Math.min(tHalf - m, x)); y = Math.max(-halfH + m, Math.min(halfH - m, y));
     if (Math.hypot(x, y) < 0.3) { x = 0.3; y = 0; }
-    state.probe = { x, y }; state.probeOrbit = false; syncProbe();
+    state.probe = { x, y }; syncProbe();
     if (scene) closeScene();
   }
   tmap.addEventListener('pointerdown', ev => {
@@ -2447,7 +2643,7 @@ void main(){
   tmap.addEventListener('pointerup', endDrag); tmap.addEventListener('pointercancel', endDrag);
   syncProbe();
   setLapse(0);
-  setScale('');
+  setScale(state.scale);
 
   /* ---------------- survival: live forces on the probe ---------------- */
   // Hovering observer in the disk's plane (carried round by the spin, as in hoverRate), at radius r:
@@ -2479,9 +2675,9 @@ void main(){
     const dlnAlpha = 0.5 * ((2 * r - 2 * M) / D + 2 / r - (4 * r * (r * r + a * a) - a * a * (2 * r - 2 * M)) / A);
     const hover = inside ? Infinity : C * C * Math.sqrt(D) / r * dlnAlpha / G0;
     const tide = inside ? Infinity : C * C * rsE * BODY / (r * r * r) / G0;
-    const key = [state.scale, rr.toPrecision(12), k, sp, state.probeOrbit].join('|');
+    const key = [state.scale, rr.toPrecision(12), k, sp].join('|');
     if (key === lastSurvive) return; lastSurvive = key;
-    $('slWhere').textContent = `${SCs.name}${state.scale ? '' : ' (pick a black hole to change this)'} · ${state.probeOrbit ? 'Miller’s planet' : 'the Endurance'} ${inside ? 'inside the event horizon' : `${fmtLen(x)} above the horizon`}`;
+    $('slWhere').textContent = `${SCs.name} · the Endurance ${inside ? 'inside the event horizon' : `${fmtLen(x)} above the horizon`}`;
     $('slTide').textContent = fmtG(tide); $('slHover').textContent = fmtG(hover);
     const [tv, tc] = verdict(tide, 'tide'), [hv, hc] = verdict(hover, 'hover');
     $('slTideV').textContent = tv; $('slTideV').className = 'm-verdict ' + tc;
@@ -2490,13 +2686,57 @@ void main(){
     $('slHoverDot').style.left = `${isFinite(hover) ? gpos(hover) : 100}%`;
     const dragged = sp > 0 && rr < k ? ' Here the spin drags space round so fast that nothing can stay still: even on rockets, you are swept around the hole.' : '';
     $('slOrbit').textContent = inside ? 'Inside the event horizon nothing can hover or orbit: everything moves inward.'
-      : (state.probeOrbit ? 'Miller’s planet orbits here, in free fall: the crew would float, weightless, with only the stretch to feel. The thrust above is what hovering here would take.'
-      : rr >= k * iscoR(sp) ? 'A stable orbit is possible here. In orbit you are in free fall, so you would float, weightless, with only the stretch to feel.'
+      : (rr >= k * iscoR(sp) ? 'A stable orbit is possible here. In orbit you are in free fall, so you would float, weightless, with only the stretch to feel.'
       : rr >= k * photonOrbitR(sp) ? 'Only unstable orbits exist here: the slightest nudge and you fall in or fly away. Staying put means hovering on rockets.'
       : 'No orbit is possible this close: you can only hover on rockets, or fall in.') + dragged;
   }
-  $('slStellar').addEventListener('click', () => setHole('stellar'));
-  $('slGarg').addEventListener('click', () => setHole('gargantua'));
+
+  /* ---------------- chapter navigation ---------------- */
+  // The current chapter is highlighted. The bar slides away while you scroll down to read and comes back when you scroll up.
+  const toc = document.querySelector('.toc'), tocLinks = [...toc.querySelectorAll('a')];
+  const chapters = tocLinks.map(a => document.querySelector(a.getAttribute('href')));
+  if ('IntersectionObserver' in window) {
+    const inView = new Map();
+    const tocWatch = new IntersectionObserver(entries => {
+      for (const en of entries) inView.set(en.target, en.isIntersecting);
+      const cur = chapters.find(c => inView.get(c));
+      tocLinks.forEach((a, i) => chapters[i] === cur ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current'));
+    }, { rootMargin: '-30% 0px -65% 0px' });
+    chapters.forEach(c => tocWatch.observe(c));
+  }
+  let lastY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y > lastY + 6 && y > 240 && !toc.contains(document.activeElement)) toc.classList.add('away');
+    else if (y < lastY - 6 || y < 240) toc.classList.remove('away');
+    lastY = y;
+  }, { passive: true });
+  toc.addEventListener('focusin', () => toc.classList.remove('away'));
+
+  /* ---------------- the trip, one leg at a time ---------------- */
+  const legTabs = [...document.querySelectorAll('.leg-tabs [role="tab"]')];
+  let legI = 0;
+  function showLeg(i, focus) {
+    legI = i;
+    legTabs.forEach((t, j) => {
+      t.setAttribute('aria-selected', String(i === j)); t.tabIndex = i === j ? 0 : -1;
+      $(t.getAttribute('aria-controls')).hidden = i !== j;
+    });
+    $('legPrev').disabled = i === 0; $('legNext').disabled = i === legTabs.length - 1;
+    if (focus) legTabs[i].focus();
+  }
+  legTabs.forEach((t, i) => {
+    t.addEventListener('click', () => showLeg(i));
+    t.addEventListener('keydown', ev => {
+      const n = legTabs.length, k = { ArrowRight: 1, ArrowLeft: -1 }[ev.key];
+      if (k) { ev.preventDefault(); showLeg((i + k + n) % n, true); }
+      else if (ev.key === 'Home' || ev.key === 'End') { ev.preventDefault(); showLeg(ev.key === 'Home' ? 0 : n - 1, true); }
+    });
+  });
+  const legStep = d => { showLeg(legI + d); const box = document.querySelector('.legs'); if (box.getBoundingClientRect().top < 0) box.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' }); };
+  $('legPrev').addEventListener('click', () => legStep(-1));
+  $('legNext').addEventListener('click', () => legStep(1));
+  showLeg(0);
 
   /* ---------------- sizing + loop ---------------- */
   function resize() {
@@ -2549,6 +2789,7 @@ void main(){
     if (glVisible) drawLabels();
     updateClocks(clockDt, isOn($('ledger')));            // clocks keep counting even when not drawn
     if (isOn(document.querySelector('.survive-live'))) updateSurvival();
+    syncMiller();
     if (isOn(side)) drawSide();
     if (isOn(tmap)) drawTimeMap();
     requestAnimationFrame(frame);
