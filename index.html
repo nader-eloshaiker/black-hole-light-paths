@@ -229,18 +229,20 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 /* ---- controls: a compact dock that stays at the bottom of the screen while the diagrams are in view ---- */
 .dock {
   position: sticky; bottom: 0; z-index: 15;
-  display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px 28px; align-items: end;
+  display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px 28px; align-items: end;
   background: rgba(13,16,23,0.96); border: 1px solid var(--line); border-radius: var(--sq-panel); corner-shape: squircle;
   padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -8px 24px rgba(0,0,0,0.45);
 }
 @media (min-width: 1600px) { .dock { position: static; box-shadow: none; } }
-@media (max-width: 880px) { .dock { grid-template-columns: 1fr 1fr; } .dock .btns { grid-column: 1 / -1; } }
+@media (max-width: 1240px) { .dock { grid-template-columns: 1fr 1fr 1fr; } .dock .btns { grid-column: 1 / -1; } }
 @media (max-width: 599px) {
   .dock { grid-template-columns: 1fr; gap: 4px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); }
   .dock .hint { display: none; }
-  .dock .ctl { gap: 0; }
+  .dock .ctl { gap: 0 12px; grid-template-columns: 7.6em minmax(0, 1fr); align-items: center; }
   .dock .ctl label { font-size: 13px; }
+  .dock .ctl .xl { display: none; }
+  .dock .ctl .sm { display: inline; }
   .dock .btns { flex-wrap: nowrap; gap: 6px; }
   .dock .btns button { flex: 1 1 0; width: auto; min-height: 36px; padding: 6px 10px; font-size: 13px; }
 }
@@ -248,6 +250,7 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 .ctl label { display: flex; justify-content: space-between; gap: 10px; font-weight: 500; font-size: 14px; }
 .ctl label output { font-family: var(--mono); font-size: 13px; color: var(--accent); font-variant-numeric: tabular-nums; }
 .ctl .hint { font-size: 12px; color: var(--muted); }
+.dock .sm { display: none; }
 input[type=range] { width: 100%; accent-color: var(--accent); min-height: 24px; }
 .btns { display: flex; flex-wrap: wrap; gap: 8px; }
 button, select {
@@ -561,7 +564,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 
   <div class="stage-intro">
     <h2>Why you can see the back of the disk</h2>
-    <p>The main picture traces light rays through the curved space around a non-spinning black hole. The side view cuts the scene along the dashed line and shows the paths those rays take.</p>
+    <p>The main picture traces light rays through the curved space around a black hole; the spin control below sets how fast it turns. The side view cuts the scene along the dashed line and shows the paths those rays take.</p>
   </div>
 
   <section class="stage">
@@ -572,7 +575,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       <p class="ship-key"><svg viewBox="-14 -14 28 28" aria-hidden="true"><use href="#sym-endurance" x="-14" y="-14" width="28" height="28"/></svg><span><b>Endurance</b>, the ring in the disk. It is drawn far larger than its real size so you can see it; its light bends around the hole like everything else, so it rides over the top when it passes behind.</span></p>
     </figure>
     <figure>
-      <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout">units: event-horizon radius</span></div>
+      <div class="cap"><span class="eyebrow">Side view: the light paths</span><span class="readout" id="sideUnits">units: event-horizon radius</span></div>
       <div class="view light-view"><canvas id="side" aria-label="Cross-section showing curved light paths from the disk to the observer"></canvas></div>
       <ul class="mini-key" aria-label="Key to the light paths">
         <li><i style="background:var(--direct)"></i>Direct</li>
@@ -587,14 +590,19 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 
   <section class="dock" aria-label="Main controls">
     <div class="ctl">
-      <label for="inc">Viewing angle above the disk <output id="incOut">8°</output></label>
+      <label for="inc"><span>Viewing angle<span class="xl"> above the disk</span></span> <output id="incOut">8°</output></label>
       <input type="range" id="inc" min="0" max="90" step="0.5" value="8">
       <span class="hint">0° is edge-on; 90° is looking straight down.</span>
     </div>
     <div class="ctl">
-      <label for="k">Strength of gravity <output id="kOut">100%</output></label>
+      <label for="k"><span><span class="xl">Strength of gravity</span><span class="sm">Gravity</span></span> <output id="kOut">100%</output></label>
       <input type="range" id="k" min="0" max="100" step="1" value="100">
       <span class="hint">Bends light and slows time. 0% switches it off.</span>
+    </div>
+    <div class="ctl">
+      <label for="spin"><span><span class="xl">Spin of the black hole</span><span class="sm">Spin</span></span> <output id="spinOut">none</output></label>
+      <input type="range" id="spin" min="0" max="0.998" step="0.002" value="0" aria-describedby="spinHint">
+      <span class="hint" id="spinHint"></span>
     </div>
     <div class="btns">
       <button id="sweep" class="tbtn" type="button" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><span>Sweep the angle</span></button>
@@ -1071,6 +1079,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
         <li>Press <b>Sweep the angle</b>.</li>
         <li>Tick <b>Colour the picture by light path</b>.</li>
         <li>Tick <b>Doppler brightening</b>.</li>
+        <li>Drag <b>spin</b> to the maximum at a low angle: the shadow flattens on the right and the disk creeps in.</li>
         <li>Drag the <b>probe</b> on the time map towards the hole.</li>
         <li>Press <b>Play the Miller&#8217;s planet scene</b>.</li>
         <li>Try a <b>10-Sun black hole</b> in the survival section.</li>
@@ -1080,26 +1089,26 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   <section class="eqs" id="maths" aria-labelledby="mathsHead">
     <div class="eqs-head">
       <h2 id="mathsHead">The maths behind this</h2>
-      <p>Everything that moves on this page follows from a few standard results of general relativity for a black hole that doesn&#8217;t spin. r<sub>s</sub> is the event horizon&#8217;s radius, r is the distance from the centre, M is the mass and c is the speed of light.</p>
+      <p>Everything that moves on this page follows from a few standard results of general relativity. The pictures use a spinning black hole, which becomes the non-spinning one when the spin is set to none; the clocks and forces use the non-spinning results. r<sub>s</sub> is the event horizon&#8217;s radius without spin, r is the distance from the centre, M is the mass and c is the speed of light.</p>
     </div>
     <div class="eqs-grid">
       <div class="eqcard">
         <h3>Size of the horizon</h3>
-        <code class="eq"><span>r<sub>s</sub> = 2GM / c&#178;</span></code>
-        <p>The mass sets the size. This gives every real-world size, from a 10-Sun black hole to Gargantua.</p>
-        <p class="src">Schwarzschild (1916)</p>
+        <code class="eq"><span>r<sub>s</sub> = 2GM / c&#178;</span><span>spinning: r<sub>+</sub> = &#189;r<sub>s</sub><span class="nb">(1 + &#8730;(1 &#8722; &#967;&#178;))</span></span></code>
+        <p>The mass sets the size. This gives every real-world size, from a 10-Sun black hole to Gargantua. &#967; is the spin as a fraction of the maximum: at full spin the horizon halves, and the disk&#8217;s inner edge, the closest gas can orbit, moves in from 3 r<sub>s</sub> to almost &#189; r<sub>s</sub>.</p>
+        <p class="src">Schwarzschild (1916); Kerr (1963); Bardeen, Press and Teukolsky (1972)</p>
       </div>
       <div class="eqcard">
         <h3>How light bends</h3>
-        <code class="eq"><span>d&#178;u/d&#966;&#178; + u = (3/2) r<sub>s</sub> u&#178;</span><span>u = 1/r</span></code>
-        <p>The path of light, where &#966; is the angle around the hole. The main picture follows every pixel&#8217;s ray through the same curved space, written in Kerr&#8211;Schild coordinates: short steps near the hole, where light bends hard, and longer ones far out. The side view pushes each ray by a = &#8722;(3/2) r<sub>s</sub> h&#178; x / r&#8309;, which traces exactly the same path (x is the ray&#8217;s position, h = |x &#215; v| is fixed for each ray).</p>
+        <code class="eq"><span>d&#178;u/d&#966;&#178; + u = (3/2) r<sub>s</sub> u&#178;</span><span>u = 1/r, no spin</span></code>
+        <p>The path of light around a hole without spin, where &#966; is the angle around the hole. With spin there is no equation this simple, so both views follow each ray step by step through the curved space of a spinning black hole, written in Kerr&#8211;Schild coordinates: short steps near the hole, where light bends hard, and longer ones far out. Spin drags rays slightly out of the side view&#8217;s slice, so it shows each path flattened onto it.</p>
         <p class="src">Schwarzschild (1916); Kerr (1963); Misner, Thorne and Wheeler; Hartle</p>
       </div>
       <div class="eqcard">
         <h3>Doppler brightening</h3>
-        <code class="eq"><span>g = <span class="nb">&#8730;(1 &#8722; r<sub>s</sub>/r)</span> / <span class="nb">(&#947;(1 &#8722; v&#183;n/c))</span></span><span>v = c&#8730;(r<sub>s</sub> / 2(r &#8722; r<sub>s</sub>))</span></code>
-        <p>Light from gas orbiting at speed v is shifted by g. Climbing out of the hole&#8217;s gravity weakens it; gas moving towards you (direction n) strengthens it. <span class="nb">&#947; = 1/&#8730;(1 &#8722; v&#178;/c&#178;)</span>. Brightness scales with g&#179;, colour with g.</p>
-        <p class="src">Rybicki and Lightman; Misner, Thorne and Wheeler</p>
+        <code class="eq"><span>g = 1 / <span class="nb">(u<sup>t</sup>(1 &#8722; &#937;L))</span></span><span>&#937; = &#8730;M / <span class="nb">(r<sup>3/2</sup> + a&#8730;M)</span></span></code>
+        <p>Light from gas orbiting at angular speed &#937; is shifted by g. u<sup>t</sup> is how much slower the gas&#8217;s clock runs, which weakens the light; L is the light&#8217;s angular momentum around the spin axis, which makes gas coming towards you brighter. a is the spin, in units where G = c = 1. Brightness scales with g&#179;, colour with g.</p>
+        <p class="src">Bardeen, Press and Teukolsky (1972); Rybicki and Lightman; Misner, Thorne and Wheeler</p>
       </div>
       <div class="eqcard">
         <h3>How fast clocks run</h3>
@@ -1123,9 +1132,9 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
     <div class="eqs-limits">
       <h3>Where this page simplifies</h3>
       <ul>
-        <li>The black hole doesn&#8217;t spin. Gargantua does, which flattens one side of its shadow and is what gives Miller&#8217;s planet its 7 years.</li>
+        <li>Spin changes only the pictures. The clocks, time map, Miller&#8217;s planet scene and forces use the non-spinning results; with spin, a planet could orbit where today&#8217;s probe has to hover.</li>
         <li>The disk&#8217;s brightness, colours, texture and rotation speed are artistic, chosen so the light paths are easy to see.</li>
-        <li>Doppler brightening uses an approximate light direction and hand-tuned brightness.</li>
+        <li>Doppler brightening has hand-tuned brightness. Inside 3 r<sub>s</sub>, where only a spinning hole keeps gas, the disk is dimmed so its extra heat shows as colour rather than glare.</li>
         <li>Gravity settings between 0% and 100% aren&#8217;t a real black hole. They show how the bending grows.</li>
         <li>The disk has no thickness, and each frame of the main picture is a snapshot that ignores the time light takes to travel.</li>
       </ul>
@@ -1148,16 +1157,30 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   const $ = id => document.getElementById(id);
   const ICON = {"play": "<path d=\"M7 4.5v15l12-7.5z\" fill=\"currentColor\" stroke=\"none\"/>", "pause": "<rect x=\"6\" y=\"4.5\" width=\"4\" height=\"15\" rx=\"1\" fill=\"currentColor\" stroke=\"none\"/><rect x=\"14\" y=\"4.5\" width=\"4\" height=\"15\" rx=\"1\" fill=\"currentColor\" stroke=\"none\"/>", "stop": "<rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\" fill=\"currentColor\" stroke=\"none\"/>", "sweep": "<path d=\"M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4\"/>", "reset": "<path d=\"M4 12a8 8 0 1 0 2.35-5.65\"/><path d=\"M4 4.5V9h4.5\"/>", "skip": "<path d=\"M5 5v14l10-7z\" fill=\"currentColor\" stroke=\"none\"/><rect x=\"16.5\" y=\"5\" width=\"2.5\" height=\"14\" rx=\"1\" fill=\"currentColor\" stroke=\"none\"/>", "back": "<path d=\"M19 12H5M11 6l-6 6 6 6\"/>", "down": "<path d=\"M12 4v15M6 13l6 6 6-6\"/>"};
   const setBtn = (b, icon, text) => { b.innerHTML = `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICON[icon]}</svg><span>${text}</span>`; };
-  const incEl = $('inc'), kEl = $('k'), modeEl = $('mode'), dopEl = $('dop');
+  const incEl = $('inc'), kEl = $('k'), modeEl = $('mode'), dopEl = $('dop'), spinEl = $('spin');
   const sweepBtn = $('sweep'), playBtn = $('play');
 
   const state = {
-    inc: 8, k: 1, mode: false, dop: false, sweeping: false,
+    inc: 8, k: 1, spin: 0, mode: false, dop: false, sweeping: false,
     playing: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     time: 0, sweepPhase: 0,
     timeOn: true, labelsOn: true, shipOn: true, scale: '', probe: { x: 2.6, y: 2.6 }
   };
   const COL_TIME = '#9cc6ff';
+  // Spin s (0 to just under 1) is the fraction of the fastest possible spin; a = s M, with M = 1/2 so rs = 2M = 1.
+  // Like the horizon the page has always drawn at 1 rs, these sizes don't shrink with the gravity slider.
+  const SM = 0.5;
+  const horizonR = s => SM + SM * Math.sqrt(1 - s * s);
+  // innermost stable orbit for gas turning with the hole (Bardeen, Press & Teukolsky 1972): the disk's inner edge
+  function iscoR(s) {
+    const z1 = 1 + Math.cbrt(1 - s * s) * (Math.cbrt(1 + s) + Math.cbrt(1 - s));
+    const z2 = Math.sqrt(3 * s * s + z1 * z1);
+    return (3 + z2 - Math.sqrt((3 - z1) * (3 + z1 + 2 * z2))) * SM;
+  }
+  // light can circle the hole over its poles at this radius: the photon sphere in the side view's slice
+  const photonR = s => { const q = 1 - s * s / 3; return SM * (1 + 2 * Math.sqrt(q) * Math.cos(Math.acos((1 - s * s) / Math.pow(q, 1.5)) / 3)); };
+  const diskIn = () => iscoR(state.spin);
+  const fmtR = v => v.toFixed(2);
   function syncPlayBtn() {
     playBtn.setAttribute('aria-pressed', String(!state.playing));
     setBtn(playBtn, state.playing ? 'pause' : 'play', state.playing ? 'Pause animation' : 'Play animation');
@@ -1167,12 +1190,18 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   function syncReadouts() {
     $('incOut').textContent = (+state.inc).toFixed(0) + '°';
     $('kOut').textContent = Math.round(state.k * 100) + '%';
+    const sp = state.spin;
+    $('spinOut').innerHTML = sp === 0 ? 'none' : (sp >= 0.99 ? sp.toFixed(3) : sp.toFixed(2)) + '<span class="xl"> of maximum</span>';
+    $('spinHint').textContent = sp === 0 ? 'Spin drags space around the hole. Gargantua spins almost as fast as possible.'
+      : `Horizon shrinks to ${fmtR(horizonR(sp))} rₛ; the disk reaches in to ${fmtR(diskIn())} rₛ.`;
+    $('sideUnits').textContent = sp === 0 ? 'units: event-horizon radius' : 'units: horizon radius without spin';
     const where = state.inc < 0.5 ? 'exactly edge-on' : state.inc < 15 ? 'nearly edge-on'
       : state.inc > 89.5 ? 'looking straight down' : state.inc > 70 ? 'looking down from above' : 'tilted view';
     $('camReadout').textContent = (+state.inc).toFixed(0) + '° above the disk, ' + where;
   }
   incEl.addEventListener('input', () => { state.inc = +incEl.value; if (state.sweeping) toggleSweep(); syncReadouts(); });
   kEl.addEventListener('input', () => { state.k = +kEl.value / 100; syncReadouts(); });
+  spinEl.addEventListener('input', () => { state.spin = +spinEl.value; syncReadouts(); });
   modeEl.addEventListener('change', () => { state.mode = modeEl.checked; });
   dopEl.addEventListener('change', () => { state.dop = dopEl.checked; });
   function toggleSweep() {
@@ -1226,7 +1255,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   const FS = `
 precision highp float;
 uniform vec2 uRes; uniform float uInc; uniform float uK; uniform float uTime; uniform float uMode; uniform float uDop;
-uniform vec3 uShip; uniform vec3 uShipN; uniform float uA;
+uniform vec3 uShip; uniform vec3 uShipN; uniform float uA; uniform float uRin; uniform float uRp;
 const float RIN=${RIN.toFixed(1)}; const float ROUT=${ROUT.toFixed(1)}; const float DIST=${DIST.toFixed(1)}; const float TH=${TH};
 const float SWIRL=16.;   // seconds of winding before a disk texture is replaced
 float M;   // the hole's mass, in units where the horizon radius is 2M = 1 at full gravity
@@ -1272,8 +1301,9 @@ vec3 stars(vec3 d){
   vec2 id=floor(sc); vec2 f=fract(sc)-.5; float h=hash(id); float s=0.;
   if(h>.965){ vec2 o=vec2(hash(id+3.1),hash(id+7.7))-.5; s=smoothstep(.13,0.,length(f-o*.6))*(h-.965)/.035; }
   return vec3(s)*vec3(.85,.92,1.)+vec3(.02,.025,.05)*fbm(sc*.03); }
-vec3 shade(vec3 hit, vec3 dir, int n, bool fromAbove){
-  float rh=length(hit.xz); float phi=atan(hit.z,hit.x);
+// rh: distance from the centre in the disk; kh, kp: where the ray crossed and its momentum, in Kerr-Schild coordinates
+vec3 shade(vec3 hit, float rh, int n, bool fromAbove, vec3 kh, vec3 kp){
+  float phi=atan(hit.z,hit.x);
   // Keplerian rotation (angular speed ~ r^-1.5), sped up so the motion is easy to see
   float om=4.0*pow(rh,-1.5);
   // Inner gas laps outer gas, so one texture would wind ever tighter until it is finer than a pixel and
@@ -1289,20 +1319,25 @@ vec3 shade(vec3 hit, vec3 dir, int n, bool fromAbove){
   gas+=.469;
   float tex=.45+.8*gas.x;
   float rings=.85+.15*sin(rh*7.+gas.y*4.);
-  float I=pow(RIN/rh,2.)*tex*rings;
+  // full brightness is reached at 3 rs; closer in, where only a spinning hole keeps gas, the extra heat shows as
+  // a hotter colour instead of glare, and the brightness eases down so the gas keeps its texture
+  float I=pow(RIN/max(rh,RIN),2.)*mix(.5,1.,smoothstep(2.,3.,rh))*tex*rings;
   // bright clumps of gas orbiting at their own Keplerian speed: inner ones lap the outer ones
   for(int i=0;i<5;i++){
     float fi=float(i); float rs_=3.8+fi*1.7; float sa=fi*2.4+4.0*pow(rs_,-1.5)*uTime;
     vec2 d2=hit.xz-vec2(cos(sa),sin(sa))*rs_;
     I+=0.9*pow(RIN/rs_,1.2)*exp(-dot(d2,d2)*1.4);
   }
-  I*=smoothstep(ROUT,ROUT-3.,rh)*smoothstep(RIN,RIN+.35,rh);
+  I*=smoothstep(ROUT,ROUT-3.,rh)*smoothstep(uRin,uRin*(1.+.35/RIN),rh);
   float temp=pow(RIN/rh,.8);
   if(uDop>.5){
-    float vk=sqrt(.5/(rh-1.));
-    vec3 vel=vk*vec3(-hit.z,0.,hit.x)/rh;
-    float gam=1./sqrt(1.-vk*vk);
-    float g=1./(gam*(1.-dot(vel,-dir)))*sqrt(1.-1./rh);
+    // gas on a circular orbit turning with the hole: g = 1 / (u^t (1 - Omega L)), L = the photon's angular momentum
+    float a=-uA, sm=sqrt(M);                         // the real hole spins opposite to the integrator's (see main)
+    float Om=-sm/(pow(rh,1.5)+abs(a)*sm);
+    float gtt=-(1.-2.*M/rh), gtp=-2.*M*a/rh, gpp=rh*rh+a*a+2.*M*a*a/rh;
+    float ut=1./sqrt(max(-gtt-2.*Om*gtp-Om*Om*gpp,1e-6));
+    float L=-(kh.x*kp.y-kh.y*kp.x);                  // the real photon travels the other way
+    float g=1./(ut*(1.-Om*L));
     I*=pow(g,3.)*1.8; temp*=g*1.2;
   }
   vec3 c=ramp(temp)*I*2.2;
@@ -1363,7 +1398,7 @@ void main(){
   vec3 p=mu*dir+(fk*(1.+mu*ld)/(1.-fk))*l;
   vec3 col=vec3(0.); int n=0; bool ended=false; float rr=r;
   for(int i=0;i<560;i++){
-    float h=clamp(min(mix(STEPK,STEPF,smoothstep(STEPR0,STEPR1,rr))*rr,.6*(rr-1.)+.004),.004,3.);
+    float h=clamp(min(mix(STEPK,STEPF,smoothstep(STEPR0,STEPR1,rr))*rr,.6*(rr-uRp)+.004),.004,3.);
     vec3 k1x,k1p,k2x,k2p,k3x,k3p,k4x,k4p;
     deriv(x,p,k1x,k1p);
     deriv(x+.5*h*k1x,p+.5*h*k1p,k2x,k2p);
@@ -1382,11 +1417,11 @@ void main(){
       if(ended) break;
     }
     if(P.y*PN.y<0.){
-      n++; float t=P.y/(P.y-PN.y); vec3 hit=mix(P,PN,t); float rh=length(hit.xz);
-      if(rh>RIN && rh<ROUT){ col=shade(hit,sdir,n,P.y>0.); ended=true; break; }
+      n++; float t=P.y/(P.y-PN.y); vec3 hit=mix(P,PN,t); float rh=sqrt(max(dot(hit.xz,hit.xz)-a2,0.));
+      if(rh>uRin && rh<ROUT){ col=shade(hit,rh,n,P.y>0.,mix(x,xn,t),mix(p,pn,t)); ended=true; break; }
     }
     float rn=kerrR(xn);
-    if(rn<1.){ ended=true; break; }
+    if(rn<uRp+.004){ ended=true; break; }
     if(rn>DIST+3. && dot(xn,xn-x)>0.){ col=stars(sdir); ended=true; break; }
     x=xn; p=pn; rr=rn;
   }
@@ -1407,7 +1442,7 @@ void main(){
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    ['uRes', 'uInc', 'uK', 'uTime', 'uMode', 'uDop', 'uShip', 'uShipN', 'uA'].forEach(n => uni[n] = gl.getUniformLocation(prog, n));
+    ['uRes', 'uInc', 'uK', 'uTime', 'uMode', 'uDop', 'uShip', 'uShipN', 'uA', 'uRin', 'uRp'].forEach(n => uni[n] = gl.getUniformLocation(prog, n));
     return true;
   }
   const glOK = initGL();
@@ -1443,42 +1478,74 @@ void main(){
     return sideCam = to;
   }
 
-  function traceRay(inc, K, s) {
+  // One ray of the slice under the dashed line, traced with the same Kerr-Schild equations as the main picture (see the
+  // shader), in finer steps so the drawn curves stay smooth. Spin drags rays a little out of the slice; the side view
+  // draws each path flattened onto it. Side-view (x, y) is Kerr-Schild (x, z): z runs along the spin axis.
+  function traceRay(inc, K, s, spin) {
+    const M = SM * K, a = spin * M, a2 = a * a, rp = horizonR(spin), rin = iscoR(spin);
+    const kerrR = (x, y, z) => { const b = x * x + y * y + z * z - a2; return Math.sqrt(0.5 * (b + Math.sqrt(b * b + 4 * a2 * z * z))); };
+    function deriv(X, P, o) {
+      const x = X[0], y = X[1], z = X[2], px = P[0], py = P[1], pz = P[2];
+      const r = Math.max(kerrR(x, y, z), 1e-4), r2 = r * r, D = r2 * r2 + a2 * z * z, B = r2 + a2;
+      const f = 2 * M * r2 * r / D;
+      const lx = (r * x + a * y) / B, ly = (r * y - a * x) / B, lz = z / r;
+      const sd = 1 + lx * px + ly * py + lz * pz;
+      const gx = x * r2 * r / D, gy = y * r2 * r / D, gz = z * r * B / D;          // gradient of r
+      const w = x * px + y * py, A = r * w + a * (y * px - x * py), c = A / B * 2 * r, e = z * pz / r2;
+      const qx = (r * px - a * py + w * gx - c * gx) / B - e * gx;                  // gradient of l.p
+      const qy = (r * py + a * px + w * gy - c * gy) / B - e * gy;
+      const qz = (w * gz - c * gz) / B + pz / r - e * gz;
+      const D2 = D * D, k1 = 2 * M * r2 * (3 * a2 * z * z - r2 * r2) / D2, k2 = -4 * M * a2 * z * r2 * r / D2;
+      o[0] = px - f * sd * lx; o[1] = py - f * sd * ly; o[2] = pz - f * sd * lz;
+      o[3] = 0.5 * sd * sd * k1 * gx + f * sd * qx;
+      o[4] = 0.5 * sd * sd * k1 * gy + f * sd * qy;
+      o[5] = 0.5 * sd * sd * (k1 * gz + k2) + f * sd * qz;
+    }
     const ci = Math.cos(inc), si = Math.sin(inc);
-    let px = DIST * ci, py = DIST * si;
-    let vx = -ci + s * 2 * TH * -si, vy = -si + s * 2 * TH * ci;
-    const vl = Math.hypot(vx, vy); vx /= vl; vy /= vl;
-    const h2 = (px * vy - py * vx) ** 2;
-    const acc = (x, y) => { const r2 = x * x + y * y; const f = -1.5 * K * h2 / (r2 * r2 * Math.sqrt(r2)); return [f * x, f * y]; };
-    let [ax, ay] = acc(px, py);
-    const pts = [px, py];
+    let X = [DIST * ci, 0, DIST * si];
+    let dx = -ci + s * 2 * TH * -si, dz = -si + s * 2 * TH * ci;
+    const dl = Math.hypot(dx, dz); dx /= dl; dz /= dl;
+    // start moving along (dx, 0, dz) with energy 1, as the shader does
+    let r = kerrR(X[0], X[1], X[2]); const r2 = r * r;
+    const fk = 2 * M * r2 * r / (r2 * r2 + a2 * X[2] * X[2]);
+    const L = [(r * X[0] + a * X[1]) / (r2 + a2), (r * X[1] - a * X[0]) / (r2 + a2), X[2] / r];
+    const ld = L[0] * dx + L[2] * dz, mu = 1 / Math.sqrt(1 - fk * (1 - ld * ld)), cl = fk * (1 + mu * ld) / (1 - fk);
+    let P = [mu * dx + cl * L[0], cl * L[1], mu * dz + cl * L[2]];
+    const k1 = new Float64Array(6), k2 = new Float64Array(6), k3 = new Float64Array(6), k4 = new Float64Array(6);
+    const Xt = [0, 0, 0], Pt = [0, 0, 0];
+    const stage = (src, h) => { for (let q = 0; q < 3; q++) { Xt[q] = X[q] + h * src[q]; Pt[q] = P[q] + h * src[q + 3]; } };
+    const pts = [X[0], X[2]];
     let n = 0;
-    for (let i = 0; i < 6000; i++) {
-      const r = Math.hypot(px, py);
-      const dt = Math.min(Math.max(0.02 * r, 0.004), 1.0);
-      const nx = px + vx * dt + 0.5 * ax * dt * dt, ny = py + vy * dt + 0.5 * ay * dt * dt;
-      const [bx, by] = acc(nx, ny);
-      const nvx = vx + 0.5 * (ax + bx) * dt, nvy = vy + 0.5 * (ay + by) * dt;
-      if (py * ny < 0) {
+    for (let i = 0; i < 4000; i++) {
+      const sm = Math.min(1, Math.max(0, (r - 3) / 8)), ease = sm * sm * (3 - 2 * sm);
+      const h = Math.min(Math.max(Math.min((0.03 + 0.09 * ease) * r, 0.6 * (r - rp) + 0.004), 0.004), 1.5);
+      deriv(X, P, k1); stage(k1, h / 2); deriv(Xt, Pt, k2); stage(k2, h / 2); deriv(Xt, Pt, k3); stage(k3, h); deriv(Xt, Pt, k4);
+      const XN = [0, 0, 0], PN = [0, 0, 0];
+      for (let q = 0; q < 3; q++) {
+        XN[q] = X[q] + h / 6 * (k1[q] + 2 * k2[q] + 2 * k3[q] + k4[q]);
+        PN[q] = P[q] + h / 6 * (k1[q + 3] + 2 * k2[q + 3] + 2 * k3[q + 3] + k4[q + 3]);
+      }
+      if (X[2] * XN[2] < 0) {
         n++;
-        const t = py / (py - ny); const hx = px + (nx - px) * t;
-        if (Math.abs(hx) > RIN && Math.abs(hx) < ROUT) {
+        const t = X[2] / (X[2] - XN[2]), hx = X[0] + (XN[0] - X[0]) * t, hy = X[1] + (XN[1] - X[1]) * t;
+        const rh = Math.sqrt(Math.max(hx * hx + hy * hy - a2, 0));
+        if (rh > rin && rh < ROUT) {
           pts.push(hx, 0);
-          const cls = (n >= 3 || (hx > 0 && n > 1)) ? 'ring' : hx > 0 ? 'direct' : py > 0 ? 'over' : 'under';
+          const cls = (n >= 3 || (hx > 0 && n > 1)) ? 'ring' : hx > 0 ? 'direct' : X[2] > 0 ? 'over' : 'under';
           return { pts, cls };
         }
       }
-      const rn = Math.hypot(nx, ny);
-      if (rn < 1) { pts.push(nx, ny); return { pts, cls: 'captured' }; }
-      if (rn > DIST + 4 && nx * nvx + ny * nvy > 0) return { pts, cls: 'escaped' };
-      px = nx; py = ny; vx = nvx; vy = nvy; ax = bx; ay = by;
-      pts.push(px, py);
+      const rn = kerrR(XN[0], XN[1], XN[2]);
+      if (rn < rp + 0.004) { pts.push(XN[0], XN[2]); return { pts, cls: 'captured' }; }
+      if (rn > DIST + 4 && XN[0] * (XN[0] - X[0]) + XN[1] * (XN[1] - X[1]) + XN[2] * (XN[2] - X[2]) > 0) return { pts, cls: 'escaped' };
+      X = XN; P = PN; r = rn;
+      pts.push(X[0], X[2]);
     }
     return { pts, cls: 'escaped' };
   }
 
   function rebuildRays() {
-    const key = state.inc.toFixed(2) + '|' + state.k.toFixed(3);
+    const key = state.inc.toFixed(2) + '|' + state.k.toFixed(3) + '|' + state.spin.toFixed(3);
     if (key === rayKey) return;
     rayKey = key;
     const inc = state.inc * Math.PI / 180;
@@ -1486,7 +1553,7 @@ void main(){
     const N = 150;
     for (let j = 0; j < N; j++) {
       const s = -0.5 + (j + 0.5) / N;
-      const r = traceRay(inc, state.k, s);
+      const r = traceRay(inc, state.k, s, state.spin);
       slice.push({ s, cls: r.cls });
       if (r.cls === 'escaped') continue;
       // reverse so photons travel from the disk towards the observer
@@ -1604,18 +1671,20 @@ void main(){
 
     // disk (seen edge-on in this slice)
     const th = Math.max(3 * dpr, 0.22 * sc);
+    const rin = diskIn(), rp = horizonR(state.spin), rph = photonR(state.spin);
     if (kind === 'light') for (const sgn of [1, -1]) {
-      const g = ctx.createLinearGradient(X(sgn * RIN), 0, X(sgn * ROUT), 0);
+      const g = ctx.createLinearGradient(X(sgn * rin), 0, X(sgn * ROUT), 0);
       g.addColorStop(0, '#fff1d6'); g.addColorStop(0.35, '#ffb25e'); g.addColorStop(1, 'rgba(160,40,10,0.35)');
       ctx.fillStyle = g;
-      const x0 = Math.min(X(sgn * RIN), X(sgn * ROUT));
-      ctx.fillRect(x0, Y(0) - th / 2, Math.abs(X(ROUT) - X(RIN)), th);
+      const x0 = Math.min(X(sgn * rin), X(sgn * ROUT));
+      ctx.fillRect(x0, Y(0) - th / 2, Math.abs(X(ROUT) - X(rin)), th);
     }
 
     // photon sphere and horizon
     ctx.setLineDash([4 * dpr, 4 * dpr]); ctx.strokeStyle = 'rgba(231,233,240,0.35)'; ctx.lineWidth = 1 * dpr;
-    ctx.beginPath(); ctx.arc(X(0), Y(0), 1.5 * sc, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(X(0), Y(0), 1 * sc, 0, Math.PI * 2); ctx.fill();
+    const rS = kind === 'light' ? rph : 1.5, rH = kind === 'light' ? rp : 1;
+    ctx.beginPath(); ctx.arc(X(0), Y(0), rS * sc, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(X(0), Y(0), rH * sc, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = 'rgba(255,178,94,0.5)'; ctx.lineWidth = 1 * dpr; ctx.stroke();
 
     // photons
@@ -1663,7 +1732,7 @@ void main(){
       ctx.fillText('accretion disk, seen from above', X(-7.4), Y(7.9));
     }
     ctx.textAlign = 'left';
-    ctx.fillText('photon sphere', X(1.1), kind === 'light' ? Math.max(Y(-1.6), Y(0) + th + 20 * dpr) : Y(-1.6));
+    ctx.fillText('photon sphere', X(1.1), kind === 'light' ? Math.max(Y(-rph - 0.1), Y(0) + th + 20 * dpr) : Y(-1.6));
 
     // real-world comparisons, drawn to the same scale as the side view
     const SC = SCALES[state.scale];
@@ -1879,7 +1948,7 @@ void main(){
     const cx = W / 2, cy = H / 2;
     const yOf = sv => cy - sv * H;
     // event horizon drawn to scale: angular radius rs/D, mapped like the shader (2*TH spans the height)
-    const rH = (state.k / DIST) / (2 * TH) * H;
+    const rH = (state.k * horizonR(state.spin) / DIST) / (2 * TH) * H;
     const items = [];
     if (over) items.push({ side: 'left', ax: cx, ay: yOf(over.mean), text: faceOn || !bent ? 'Far side of the disk' : short ? 'Far side, bent over the top' : 'Far side of the disk, bent over the top' });
     if (under) items.push({ side: 'left', ax: cx, ay: yOf(under.mean), text: short ? 'Underside, bent below' : 'Underside of the far side, bent below' });
@@ -2295,7 +2364,11 @@ void main(){
       gl.uniform1f(uni.uTime, state.time);
       gl.uniform1f(uni.uMode, state.mode ? 1 : 0);
       gl.uniform1f(uni.uDop, state.dop ? 1 : 0);
-      gl.uniform1f(uni.uA, 0);
+      // the disk turns clockwise seen from above and the hole turns with it (spin -sM). Rays are traced from your eye,
+      // backwards in time, which is the same as forwards in time around a hole spinning the other way: so +sM
+      gl.uniform1f(uni.uA, state.spin * SM * state.k);
+      gl.uniform1f(uni.uRin, diskIn());
+      gl.uniform1f(uni.uRp, horizonR(state.spin));
       const sh = shipPose();
       gl.uniform3f(uni.uShip, sh.p[0], sh.p[1], sh.p[2]); gl.uniform3f(uni.uShipN, sh.n[0], sh.n[1], sh.n[2]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);

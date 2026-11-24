@@ -12,7 +12,7 @@ An interactive, ray-traced black hole simulator. It answers why you can see the 
 
 ## What it shows
 
-- **What you see (left).** Every pixel is a light ray traced backwards from your eye through the curved space around a non-spinning (Schwarzschild) black hole. It runs live on your GPU with WebGL.
+- **What you see (left).** Every pixel is a light ray traced backwards from your eye through the curved space around a black hole whose spin you can set, from none (Schwarzschild) to almost the maximum (Kerr). It runs live on your GPU with WebGL.
 - **Side view (right).** A cross-section along the centre line of the picture, showing the real paths light takes from the disk to you, with animated photons.
 
 The light paths are colour-coded:
@@ -39,17 +39,13 @@ The light paths are colour-coded:
 
 ## The physics
 
-Photon paths follow the Schwarzschild orbit equation, integrated numerically as
+Photon paths are traced through the Kerr metric in Kerr–Schild coordinates, integrating Hamilton's equations for each ray with fourth-order Runge–Kutta steps that are short near the hole and long far out. Units are the non-spinning event-horizon radius. Rays are traced from the eye, which is the same as tracing light forwards in time around a hole spinning the other way; those coordinates stay smooth where such rays cross the horizon.
 
-```
-x'' = -1.5 · h² · x / r⁵
-```
-
-in units of the event-horizon radius, where `h` is the photon's specific angular momentum. This reproduces the photon sphere at 1.5 horizon radii and a shadow of about 2.6 horizon radii.
+With no spin this is the Schwarzschild case: a photon sphere at 1.5 horizon radii and a shadow of about 2.6 horizon radii. At high spin the shadow flattens on the side turning towards you, the horizon shrinks towards half size, and the disk's inner edge (the innermost stable orbit, Bardeen, Press & Teukolsky 1972) moves in from 3 towards 0.5 horizon radii. The side view traces the same rays in 3D and draws them flattened onto its slice.
 
 Time dilation uses the same geometry. A clock hovering at distance `r` runs at `√(1 − rₛ/r)` of the distant observer's rate, and a clock orbiting with the disk at `√(1 − 3rₛ/2r)`. Photons in the side view are timed by the distant observer's clock, using the exact Schwarzschild coordinate speed of light, so they visibly slow near the hole (the Shapiro delay).
 
-Simplifications: the black hole does not spin, the disk spans 3 to 12 horizon radii and is infinitely thin, the disk colours and texture are artistic, and the Doppler option is an approximation.
+Simplifications: spin changes the pictures only (the clocks, time map, Miller's planet and forces use non-spinning formulas), the disk is infinitely thin and reaches out to 12 horizon radii, the disk colours and texture are artistic, and the Doppler option has hand-tuned brightness.
 
 ## Interstellar
 
