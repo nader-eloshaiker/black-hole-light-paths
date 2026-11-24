@@ -1079,8 +1079,8 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       <div class="eqcard">
         <h3>How light bends</h3>
         <code class="eq"><span>d&#178;u/d&#966;&#178; + u = (3/2) r<sub>s</sub> u&#178;</span><span>u = 1/r</span></code>
-        <p>The path of light, where &#966; is the angle around the hole. Each ray is pushed by a = &#8722;(3/2) r<sub>s</sub> h&#178; x / r&#8309;, which traces exactly the same path (x is the ray&#8217;s position, h = |x &#215; v| is fixed for each ray). Both views use it: about 560 steps for every pixel, every frame.</p>
-        <p class="src">Schwarzschild (1916); Misner, Thorne and Wheeler; Hartle</p>
+        <p>The path of light, where &#966; is the angle around the hole. The main picture follows every pixel&#8217;s ray through the same curved space, written in Kerr&#8211;Schild coordinates: short steps near the hole, where light bends hard, and longer ones far out. The side view pushes each ray by a = &#8722;(3/2) r<sub>s</sub> h&#178; x / r&#8309;, which traces exactly the same path (x is the ray&#8217;s position, h = |x &#215; v| is fixed for each ray).</p>
+        <p class="src">Schwarzschild (1916); Kerr (1963); Misner, Thorne and Wheeler; Hartle</p>
       </div>
       <div class="eqcard">
         <h3>Doppler brightening</h3>
@@ -1117,7 +1117,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
         <li>The disk has no thickness, and each frame of the main picture is a snapshot that ignores the time light takes to travel.</li>
       </ul>
     </div>
-    <p class="refs">Sources: K. Schwarzschild, &#8220;<a href="https://arxiv.org/abs/physics/9905030">On the gravitational field of a mass point according to Einstein&#8217;s theory</a>&#8221;, <i>Sitzungsberichte der K&#246;niglich Preussischen Akademie der Wissenschaften</i> (1916), 189 (English translation); C. W. Misner, K. S. Thorne and J. A. Wheeler, <i>Gravitation</i> (W. H. Freeman, 1973); J. B. Hartle, <i>Gravity: An Introduction to Einstein&#8217;s General Relativity</i> (Addison-Wesley, 2003); G. B. Rybicki and A. P. Lightman, <i>Radiative Processes in Astrophysics</i> (Wiley, 1979); I. I. Shapiro, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.13.789">Fourth test of general relativity</a>&#8221;, <i>Physical Review Letters</i> 13, 789 (1964); J.-P. Luminet, &#8220;<a href="https://ui.adsabs.harvard.edu/abs/1979A%26A....75..228L/abstract">Image of a spherical black hole with thin accretion disk</a>&#8221;, <i>Astronomy and Astrophysics</i> 75, 228 (1979), the first computed picture of a black hole and its disk; J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972), for orbits around spinning black holes.</p>
+    <p class="refs">Sources: K. Schwarzschild, &#8220;<a href="https://arxiv.org/abs/physics/9905030">On the gravitational field of a mass point according to Einstein&#8217;s theory</a>&#8221;, <i>Sitzungsberichte der K&#246;niglich Preussischen Akademie der Wissenschaften</i> (1916), 189 (English translation); R. P. Kerr, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.11.237">Gravitational field of a spinning mass as an example of algebraically special metrics</a>&#8221;, <i>Physical Review Letters</i> 11, 237 (1963), whose coordinates the main picture uses; C. W. Misner, K. S. Thorne and J. A. Wheeler, <i>Gravitation</i> (W. H. Freeman, 1973); J. B. Hartle, <i>Gravity: An Introduction to Einstein&#8217;s General Relativity</i> (Addison-Wesley, 2003); G. B. Rybicki and A. P. Lightman, <i>Radiative Processes in Astrophysics</i> (Wiley, 1979); I. I. Shapiro, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.13.789">Fourth test of general relativity</a>&#8221;, <i>Physical Review Letters</i> 13, 789 (1964); J.-P. Luminet, &#8220;<a href="https://ui.adsabs.harvard.edu/abs/1979A%26A....75..228L/abstract">Image of a spherical black hole with thin accretion disk</a>&#8221;, <i>Astronomy and Astrophysics</i> 75, 228 (1979), the first computed picture of a black hole and its disk; J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972), for orbits around spinning black holes.</p>
   </section>
   <footer class="site-foot">
     <p>Created by Nader Eloshaiker · <a href="https://www.linkedin.com/in/nadereloshaiker" rel="author">LinkedIn</a> · <a href="https://github.com/nader-eloshaiker">GitHub</a></p>
@@ -1213,17 +1213,42 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   const FS = `
 precision highp float;
 uniform vec2 uRes; uniform float uInc; uniform float uK; uniform float uTime; uniform float uMode; uniform float uDop;
-uniform vec3 uShip; uniform vec3 uShipN;
+uniform vec3 uShip; uniform vec3 uShipN; uniform float uA;
 const float RIN=${RIN.toFixed(1)}; const float ROUT=${ROUT.toFixed(1)}; const float DIST=${DIST.toFixed(1)}; const float TH=${TH};
 const float SWIRL=16.;   // seconds of winding before a disk texture is replaced
-float h2;
+float M;   // the hole's mass, in units where the horizon radius is 2M = 1 at full gravity
 float hash(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
 float noise(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
   float a=hash(i), b=hash(i+vec2(1.,0.)), c=hash(i+vec2(0.,1.)), d=hash(i+vec2(1.,1.));
   return mix(mix(a,b,f.x),mix(c,d,f.x),f.y); }
 float fbm(vec2 p){ float s=0., a=.5; for(int i=0;i<4;i++){ s+=a*noise(p); p=p*2.03+17.1; a*=.5; } return s; }
-// Schwarzschild photon orbit (units: event-horizon radius = 1): x'' = -1.5 h^2 x / r^5
-vec3 accel(vec3 q){ float r2=dot(q,q); return -1.5*uK*h2*q/(r2*r2*sqrt(r2)); }
+// Light paths. The ray tracer works in Kerr-Schild coordinates with the spin axis along z, so a point
+// (x, y, z) here is (x, -z, y) in the scene's coordinates. A photon with energy 1 has
+//   H = 1/2 g^{uv} p_u p_v,  g^{uv} = eta^{uv} - f l^u l^v,  f = 2M r^3 / (r^4 + a^2 z^2),
+//   l = ((r x + a y)/(r^2+a^2), (r y - a x)/(r^2+a^2), z/r),  s = 1 + l.p,
+//   dx/dl = p - f s l,  dp/dl = 1/2 s^2 grad f + f s grad(l.p).
+// With no spin (a = 0) this is the Schwarzschild solution: the same light paths as before, in other coordinates.
+// Rays are traced from the camera outwards, forwards in time, with fourth-order Runge-Kutta steps:
+// short near the hole, where paths bend hard, and longer far out, where they are nearly straight.
+const float STEPK=.05; const float STEPF=.35; const float STEPR0=3.; const float STEPR1=11.;
+vec3 toScene(vec3 q){ return vec3(q.x,q.z,-q.y); }
+float kerrR(vec3 x){ float a2=uA*uA; float b=dot(x,x)-a2; return sqrt(.5*(b+sqrt(b*b+4.*a2*x.z*x.z))); }
+void deriv(vec3 x, vec3 p, out vec3 dx, out vec3 dp){
+  float a=uA, a2=a*a;
+  float r=max(kerrR(x),1e-4); float r2=r*r; float z=x.z;
+  float D=r2*r2+a2*z*z; float B=r2+a2;
+  float f=2.*M*r2*r/D;
+  vec3 l=vec3((r*x.x+a*x.y)/B,(r*x.y-a*x.x)/B,z/r);
+  float s=1.+dot(l,p);
+  dx=p-f*s*l;
+  vec3 g=vec3(x.x*r2*r, x.y*r2*r, z*r*B)/D;                    // gradient of r
+  float w=x.x*p.x+x.y*p.y; float A=r*w+a*(x.y*p.x-x.x*p.y);
+  vec3 dA=vec3(r*p.x-a*p.y, r*p.y+a*p.x, 0.)+w*g;
+  vec3 dq=(dA-(A/B)*2.*r*g)/B+vec3(0.,0.,p.z/r)-(z*p.z/r2)*g;   // gradient of l.p
+  float D2=D*D;
+  vec3 df=(2.*M*r2*(3.*a2*z*z-r2*r2)/D2)*g+vec3(0.,0.,-4.*M*a2*z*r2*r/D2);
+  dp=.5*s*s*df+f*s*dq;
+}
 vec3 ramp(float t){
   vec3 c=mix(vec3(.55,.10,.02),vec3(1.,.48,.12),smoothstep(.15,.55,t));
   c=mix(c,vec3(1.,.86,.62),smoothstep(.55,1.,t));
@@ -1312,31 +1337,45 @@ vec3 shadeShip(vec3 q){
 void main(){
   vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
   float ci=cos(uInc), si=sin(uInc);
-  vec3 p=DIST*vec3(ci,si,0.);
-  vec3 f=vec3(-ci,-si,0.), rt=vec3(0.,0.,-1.), up=vec3(-si,ci,0.);
-  vec3 v=normalize(f+(uv.x*rt+uv.y*up)*2.*TH);
-  vec3 L=cross(p,v); h2=dot(L,L);
-  vec3 a=accel(p); vec3 col=vec3(0.); int n=0; bool ended=false;
+  M=.5*uK;
+  vec3 x=DIST*vec3(ci,0.,si);
+  vec3 fw=vec3(-ci,0.,-si), rt=vec3(0.,1.,0.), up=vec3(-si,0.,ci);
+  vec3 dir=normalize(fw+(uv.x*rt+uv.y*up)*2.*TH);
+  // start moving along dir with energy 1 and H = 0
+  float a=uA, a2=a*a;
+  float r=kerrR(x); float r2=r*r; float fk=2.*M*r2*r/(r2*r2+a2*x.z*x.z);
+  vec3 l=vec3((r*x.x+a*x.y)/(r2+a2),(r*x.y-a*x.x)/(r2+a2),x.z/r);
+  float ld=dot(l,dir);
+  float mu=1./sqrt(1.-fk*(1.-ld*ld));
+  vec3 p=mu*dir+(fk*(1.+mu*ld)/(1.-fk))*l;
+  vec3 col=vec3(0.); int n=0; bool ended=false; float rr=r;
   for(int i=0;i<560;i++){
-    float r=length(p); float dt=clamp(.032*r,.008,2.);
-    vec3 pn=p+v*dt+.5*a*dt*dt; vec3 an=accel(pn); vec3 vn=v+.5*(a+an)*dt;
+    float h=clamp(min(mix(STEPK,STEPF,smoothstep(STEPR0,STEPR1,rr))*rr,.6*(rr-1.)+.004),.004,3.);
+    vec3 k1x,k1p,k2x,k2p,k3x,k3p,k4x,k4p;
+    deriv(x,p,k1x,k1p);
+    deriv(x+.5*h*k1x,p+.5*h*k1p,k2x,k2p);
+    deriv(x+.5*h*k2x,p+.5*h*k2p,k3x,k3p);
+    deriv(x+h*k3x,p+h*k3p,k4x,k4p);
+    vec3 xn=x+h/6.*(k1x+2.*k2x+2.*k3x+k4x);
+    vec3 pn=p+h/6.*(k1p+2.*k2p+2.*k3p+k4p);
+    vec3 P=toScene(x), PN=toScene(xn);
     // does this step of the ray pass through the ship?
-    vec3 sd=pn-p; float sl=length(sd); vec3 sdir=sd/sl; float tq=clamp(dot(uShip-p,sdir),0.,sl);
-    if(length(p+sdir*tq-uShip)<SHIP_R+SHIP_T+.05){
+    vec3 sd=PN-P; float sl=length(sd); vec3 sdir=sd/sl; float tq=clamp(dot(uShip-P,sdir),0.,sl);
+    if(length(P+sdir*tq-uShip)<SHIP_R+SHIP_T+.05){
       for(int j=0;j<20;j++){
-        float tt=clamp(tq+(float(j)/19.*2.-1.)*(SHIP_R+SHIP_T),0.,sl); vec3 qj=p+sdir*tt;
+        float tt=clamp(tq+(float(j)/19.*2.-1.)*(SHIP_R+SHIP_T),0.,sl); vec3 qj=P+sdir*tt;
         if(shipSDF(qj)<0.){ col=shadeShip(qj); ended=true; break; }
       }
       if(ended) break;
     }
-    if(p.y*pn.y<0.){
-      n++; float t=p.y/(p.y-pn.y); vec3 hit=mix(p,pn,t); float rh=length(hit.xz);
-      if(rh>RIN && rh<ROUT){ col=shade(hit,normalize(mix(v,vn,t)),n,p.y>0.); ended=true; break; }
+    if(P.y*PN.y<0.){
+      n++; float t=P.y/(P.y-PN.y); vec3 hit=mix(P,PN,t); float rh=length(hit.xz);
+      if(rh>RIN && rh<ROUT){ col=shade(hit,sdir,n,P.y>0.); ended=true; break; }
     }
-    float rn=length(pn);
+    float rn=kerrR(xn);
     if(rn<1.){ ended=true; break; }
-    if(rn>DIST+3. && dot(pn,vn)>0.){ col=stars(normalize(vn)); ended=true; break; }
-    p=pn; v=vn; a=an;
+    if(rn>DIST+3. && dot(xn,xn-x)>0.){ col=stars(sdir); ended=true; break; }
+    x=xn; p=pn; rr=rn;
   }
   col=1.-exp(-col*1.5);
   gl_FragColor=vec4(col,1.);
@@ -1355,7 +1394,7 @@ void main(){
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    ['uRes', 'uInc', 'uK', 'uTime', 'uMode', 'uDop', 'uShip', 'uShipN'].forEach(n => uni[n] = gl.getUniformLocation(prog, n));
+    ['uRes', 'uInc', 'uK', 'uTime', 'uMode', 'uDop', 'uShip', 'uShipN', 'uA'].forEach(n => uni[n] = gl.getUniformLocation(prog, n));
     return true;
   }
   const glOK = initGL();
@@ -2243,6 +2282,7 @@ void main(){
       gl.uniform1f(uni.uTime, state.time);
       gl.uniform1f(uni.uMode, state.mode ? 1 : 0);
       gl.uniform1f(uni.uDop, state.dop ? 1 : 0);
+      gl.uniform1f(uni.uA, 0);
       const sh = shipPose();
       gl.uniform3f(uni.uShip, sh.p[0], sh.p[1], sh.p[2]); gl.uniform3f(uni.uShipN, sh.n[0], sh.n[1], sh.n[2]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
