@@ -661,12 +661,12 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
         <div class="probe-track">
           <input type="range" id="probeR" min="0" max="16" step="0.001" value="3.68" aria-describedby="probeHint">
           <div class="probe-ticks" aria-hidden="true">
-            <span class="disk" style="left:18.75%;width:56.25%">accretion disk</span>
-            <span class="pt" style="left:6.25%">horizon</span>
-            <span class="pt low" style="left:9.375%">photon sphere</span>
+            <span class="disk" id="tickDisk" style="left:18.75%;width:56.25%">accretion disk</span>
+            <span class="pt" id="tickHorizon" style="left:6.25%">horizon</span>
+            <span class="pt low" id="tickPhoton" style="left:9.375%">photon sphere</span>
           </div>
         </div>
-        <span class="hint" id="probeHint">The slider lines up with the map: drag either one. The Miller&#8217;s planet scene takes the probe to just 78 m above the horizon.</span>
+        <span class="hint" id="probeHint">The slider lines up with the map: drag either one. The spin control above changes the map too, and the Miller&#8217;s planet scene spins the hole up to Gargantua&#8217;s speed.</span>
       </div>
       <ul class="mini-key" aria-label="Key to the time map">
         <li><i style="background:var(--time)"></i>Time rings: clock speed compared with yours</li>
@@ -700,7 +700,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 
     <details class="maths">
       <summary>The maths behind the clocks</summary>
-      <p>A clock hovering at distance r runs at √(1 − r<sub>s</sub>/r) of your rate, where r<sub>s</sub> is the event horizon&#8217;s radius. A clock orbiting with the disk runs at √(1 − 3r<sub>s</sub>/2r), because its speed adds to the slowdown. Months are 1/12 of a year (30.44 days). The time-lapse speeds up the clocks only; the disk and photons keep moving at a watchable pace. In the side view, photons also move more slowly near the hole when timed by your clock (the Shapiro delay). <a href="#maths">All the equations, with sources</a>.</p>
+      <p>A clock hovering at distance r runs at √(1 − r<sub>s</sub>/r) of your rate, where r<sub>s</sub> is the event horizon&#8217;s radius. A clock orbiting with the disk runs at √(1 − 3r<sub>s</sub>/2r), because its speed adds to the slowdown. Those are the rates without spin; turn the spin up and the page switches to the spinning-hole versions. Months are 1/12 of a year (30.44 days). The time-lapse speeds up the clocks only; the disk and photons keep moving at a watchable pace. In the side view, photons also move more slowly near the hole when timed by your clock (the Shapiro delay). <a href="#maths">All the equations, with sources</a>.</p>
     </details>
     <div class="sr-only" id="timeLive" aria-live="polite"></div>
   </section>
@@ -725,9 +725,9 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       <h3>Why Gargantua has to spin</h3>
       <ol class="why wide" aria-label="Why">
         <li>Around a black hole that doesn&#8217;t spin, nothing can orbit closer than 3 horizon radii; any closer and it spirals in. There, an hour costs only about 1 hour 25 minutes.</li>
-        <li>To lose 7 years every hour without orbiting, you&#8217;d have to hover about 78 m above the horizon on rockets, as the probe does in the Miller&#8217;s planet scene. A planet can&#8217;t hover. It can only orbit.</li>
+        <li>To lose 7 years every hour without orbiting, you&#8217;d have to hover about 78 m above the horizon on rockets. A planet can&#8217;t hover. It can only orbit.</li>
         <li>A spinning black hole drags space around with it. Orbits going the same way as the spin are carried along, so they stay stable much closer in.</li>
-        <li>Near the fastest possible spin, stable orbits reach almost down to the horizon, deep enough for an hour to cost 7 years. That is why Kip Thorne made Gargantua spin almost as fast as physics allows.</li>
+        <li>Near the fastest possible spin, stable orbits reach almost down to the horizon, deep enough for an hour to cost 7 years. Worked out from the orbit formulas, that needs a spin within 1.3 &#215; 10<sup>&#8722;14</sup> of the maximum: one part in 75 trillion. The Miller&#8217;s planet scene uses it.</li>
       </ol>
       <p class="film-note">Spin changes the picture too: the shadow flattens on the side turning towards you. To keep the images easy to read, the film makers drew Gargantua with a gentler spin, 0.6 of the maximum, where that change is slight, and left out the Doppler brightening.</p>
     </div>
@@ -1089,7 +1089,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   <section class="eqs" id="maths" aria-labelledby="mathsHead">
     <div class="eqs-head">
       <h2 id="mathsHead">The maths behind this</h2>
-      <p>Everything that moves on this page follows from a few standard results of general relativity. The pictures use a spinning black hole, which becomes the non-spinning one when the spin is set to none; the clocks and forces use the non-spinning results. r<sub>s</sub> is the event horizon&#8217;s radius without spin, r is the distance from the centre, M is the mass and c is the speed of light.</p>
+      <p>Everything that moves on this page follows from a few standard results of general relativity. The page uses a spinning black hole, which becomes the non-spinning one when the spin is set to none. r<sub>s</sub> is the event horizon&#8217;s radius without spin, r is the distance from the centre, M is the mass and c is the speed of light.</p>
     </div>
     <div class="eqs-grid">
       <div class="eqcard">
@@ -1112,9 +1112,9 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       </div>
       <div class="eqcard">
         <h3>How fast clocks run</h3>
-        <code class="eq"><span>hovering: &#8730;(1 &#8722; r<sub>s</sub>/r)</span><span>orbiting: &#8730;(1 &#8722; 3r<sub>s</sub>/2r)</span></code>
-        <p>A clock&#8217;s rate compared with yours far away. An orbiting clock is slower still, because its speed adds to the slowdown. These drive the time map, the clocks and Miller&#8217;s planet.</p>
-        <p class="src">Hartle; Misner, Thorne and Wheeler</p>
+        <code class="eq"><span>no spin, hovering: &#8730;(1 &#8722; r<sub>s</sub>/r)</span><span>no spin, orbiting: &#8730;(1 &#8722; 3r<sub>s</sub>/2r)</span><span>spin, hovering: <span class="nb">&#8730;(&#916;r&#178; / A)</span></span><span>spin, orbiting: <span class="nb">r<sup>3/4</sup>&#8730;(r<sup>3/2</sup> &#8722; 3M&#8730;r + 2a&#8730;M)</span> / <span class="nb">(r<sup>3/2</sup> + a&#8730;M)</span></span></code>
+        <p>A clock&#8217;s rate compared with yours far away, in the disk&#8217;s plane. An orbiting clock is slower still, because its speed adds to the slowdown. With spin, <span class="nb">&#916; = r&#178; &#8722; 2Mr + a&#178;</span> and <span class="nb">A = (r&#178; + a&#178;)&#178; &#8722; a&#178;&#916;</span>, in units where G = c = 1; close in, nothing can stay still, so a hovering clock is carried round by the spin. These drive the time map, the clocks and Miller&#8217;s planet, whose orbit needs a spin within 1.3 &#215; 10<sup>&#8722;14</sup> of the maximum.</p>
+        <p class="src">Hartle; Misner, Thorne and Wheeler; Bardeen, Press and Teukolsky (1972)</p>
       </div>
       <div class="eqcard">
         <h3>Light slows near the hole</h3>
@@ -1124,22 +1124,22 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       </div>
       <div class="eqcard">
         <h3>Forces on the probe</h3>
-        <code class="eq"><span>hover: a = c&#178;r<sub>s</sub> / <span class="nb">(2r&#178;&#8730;(1 &#8722; r<sub>s</sub>/r))</span></span><span>stretch: &#916;a = c&#178;r<sub>s</sub> L / r&#179;</span></code>
-        <p>The thrust needed to hover, and the difference in pull between your head and feet across your height L (2 m). These drive the survival section.</p>
+        <code class="eq"><span>hover: a = c&#178;r<sub>s</sub> / <span class="nb">(2r&#178;&#8730;(1 &#8722; r<sub>s</sub>/r))</span></span><span>with spin: <span class="nb">a = c&#178; (&#8730;&#916; / r) d(ln &#945;)/dr</span></span><span>stretch: &#916;a = c&#178;r<sub>s</sub> L / r&#179;</span></code>
+        <p>The thrust needed to hover, where &#945; is the hovering clock&#8217;s rate, and the difference in pull between your head and feet across your height L (2 m). These drive the survival section.</p>
         <p class="src">Misner, Thorne and Wheeler; Hartle</p>
       </div>
     </div>
     <div class="eqs-limits">
       <h3>Where this page simplifies</h3>
       <ul>
-        <li>Spin changes only the pictures. The clocks, time map, Miller&#8217;s planet scene and forces use the non-spinning results; with spin, a planet could orbit where today&#8217;s probe has to hover.</li>
+        <li>Near a spinning hole, heights above the horizon are differences in the distance coordinate r, not lengths a ruler would measure. The stretch is the value for an observer turning with the hole; a probe carried round faster feels a little more. The side view times its photons with the non-spinning formula.</li>
         <li>The disk&#8217;s brightness, colours, texture and rotation speed are artistic, chosen so the light paths are easy to see.</li>
         <li>Doppler brightening has hand-tuned brightness. Inside 3 r<sub>s</sub>, where only a spinning hole keeps gas, the disk is dimmed so its extra heat shows as colour rather than glare.</li>
         <li>Gravity settings between 0% and 100% aren&#8217;t a real black hole. They show how the bending grows.</li>
         <li>The disk has no thickness, and each frame of the main picture is a snapshot that ignores the time light takes to travel.</li>
       </ul>
     </div>
-    <p class="refs">Sources: K. Schwarzschild, &#8220;<a href="https://arxiv.org/abs/physics/9905030">On the gravitational field of a mass point according to Einstein&#8217;s theory</a>&#8221;, <i>Sitzungsberichte der K&#246;niglich Preussischen Akademie der Wissenschaften</i> (1916), 189 (English translation); R. P. Kerr, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.11.237">Gravitational field of a spinning mass as an example of algebraically special metrics</a>&#8221;, <i>Physical Review Letters</i> 11, 237 (1963), whose coordinates the main picture uses; C. W. Misner, K. S. Thorne and J. A. Wheeler, <i>Gravitation</i> (W. H. Freeman, 1973); J. B. Hartle, <i>Gravity: An Introduction to Einstein&#8217;s General Relativity</i> (Addison-Wesley, 2003); G. B. Rybicki and A. P. Lightman, <i>Radiative Processes in Astrophysics</i> (Wiley, 1979); I. I. Shapiro, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.13.789">Fourth test of general relativity</a>&#8221;, <i>Physical Review Letters</i> 13, 789 (1964); J.-P. Luminet, &#8220;<a href="https://ui.adsabs.harvard.edu/abs/1979A%26A....75..228L/abstract">Image of a spherical black hole with thin accretion disk</a>&#8221;, <i>Astronomy and Astrophysics</i> 75, 228 (1979), the first computed picture of a black hole and its disk; J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972), for orbits around spinning black holes.</p>
+    <p class="refs">Sources: K. Schwarzschild, &#8220;<a href="https://arxiv.org/abs/physics/9905030">On the gravitational field of a mass point according to Einstein&#8217;s theory</a>&#8221;, <i>Sitzungsberichte der K&#246;niglich Preussischen Akademie der Wissenschaften</i> (1916), 189 (English translation); R. P. Kerr, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.11.237">Gravitational field of a spinning mass as an example of algebraically special metrics</a>&#8221;, <i>Physical Review Letters</i> 11, 237 (1963), whose coordinates both views use; C. W. Misner, K. S. Thorne and J. A. Wheeler, <i>Gravitation</i> (W. H. Freeman, 1973); J. B. Hartle, <i>Gravity: An Introduction to Einstein&#8217;s General Relativity</i> (Addison-Wesley, 2003); G. B. Rybicki and A. P. Lightman, <i>Radiative Processes in Astrophysics</i> (Wiley, 1979); I. I. Shapiro, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.13.789">Fourth test of general relativity</a>&#8221;, <i>Physical Review Letters</i> 13, 789 (1964); J.-P. Luminet, &#8220;<a href="https://ui.adsabs.harvard.edu/abs/1979A%26A....75..228L/abstract">Image of a spherical black hole with thin accretion disk</a>&#8221;, <i>Astronomy and Astrophysics</i> 75, 228 (1979), the first computed picture of a black hole and its disk; J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972), for orbits around spinning black holes.</p>
   </section>
   <footer class="site-foot">
     <p>Created by Nader Eloshaiker · <a href="https://www.linkedin.com/in/nadereloshaiker" rel="author">LinkedIn</a> · <a href="https://github.com/nader-eloshaiker">GitHub</a></p>
@@ -1170,13 +1170,18 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   // Spin s (0 to just under 1) is the fraction of the fastest possible spin; a = s M, with M = 1/2 so rs = 2M = 1.
   // Like the horizon the page has always drawn at 1 rs, these sizes don't shrink with the gravity slider.
   const SM = 0.5;
-  const horizonR = s => SM + SM * Math.sqrt(1 - s * s);
+  const horizonR = s => SM + SM * Math.sqrt((1 - s) * (1 + s));   // (1-s)(1+s) keeps precision at Gargantua's spin
   // innermost stable orbit for gas turning with the hole (Bardeen, Press & Teukolsky 1972): the disk's inner edge
   function iscoR(s) {
-    const z1 = 1 + Math.cbrt(1 - s * s) * (Math.cbrt(1 + s) + Math.cbrt(1 - s));
+    const z1 = 1 + Math.cbrt((1 - s) * (1 + s)) * (Math.cbrt(1 + s) + Math.cbrt(1 - s));
     const z2 = Math.sqrt(3 * s * s + z1 * z1);
     return (3 + z2 - Math.sqrt((3 - z1) * (3 + z1 + 2 * z2))) * SM;
   }
+  // closest orbit light can make in the disk's plane, going round with the spin (unstable: a nudge and it falls or escapes)
+  const photonOrbitR = s => 2 * SM * (1 + Math.cos(2 / 3 * Math.acos(-s)));
+  // Gargantua: Miller's planet needs a spin this close to the maximum, far beyond the slider (see the Miller's planet scene)
+  const GARGANTUA_SPIN = 1 - 1e-14;
+  const fmtNum = v => String(+v.toFixed(2));
   // light can circle the hole over its poles at this radius: the photon sphere in the side view's slice
   const photonR = s => { const q = 1 - s * s / 3; return SM * (1 + 2 * Math.sqrt(q) * Math.cos(Math.acos((1 - s * s) / Math.pow(q, 1.5)) / 3)); };
   const diskIn = () => iscoR(state.spin);
@@ -1190,10 +1195,15 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   function syncReadouts() {
     $('incOut').textContent = (+state.inc).toFixed(0) + '°';
     $('kOut').textContent = Math.round(state.k * 100) + '%';
-    const sp = state.spin;
-    $('spinOut').innerHTML = sp === 0 ? 'none' : (sp >= 0.99 ? sp.toFixed(3) : sp.toFixed(2)) + '<span class="xl"> of maximum</span>';
+    const sp = state.spin, garg = sp > 0.999;
+    $('spinOut').innerHTML = sp === 0 ? 'none' : garg ? 'Gargantua&#8217;s' : (sp >= 0.99 ? sp.toFixed(3) : sp.toFixed(2)) + '<span class="xl"> of maximum</span>';
     $('spinHint').textContent = sp === 0 ? 'Spin drags space around the hole. Gargantua spins almost as fast as possible.'
+      : garg ? 'Within 10⁻¹⁴ of the maximum, beyond this slider. The disk reaches the horizon, at 0.50 rₛ.'
       : `Horizon shrinks to ${fmtR(horizonR(sp))} rₛ; the disk reaches in to ${fmtR(diskIn())} rₛ.`;
+    // the probe slider's markers follow the spin and gravity
+    const pct = v => `${(Math.min(16, Math.max(0, v)) / 16 * 100).toFixed(3)}%`;
+    $('tickHorizon').style.left = pct(tHorizon()); $('tickPhoton').style.left = pct(photonR(sp));
+    $('tickDisk').style.left = pct(diskIn()); $('tickDisk').style.width = pct(ROUT - diskIn());
     $('sideUnits').textContent = sp === 0 ? 'units: event-horizon radius' : 'units: horizon radius without spin';
     const where = state.inc < 0.5 ? 'exactly edge-on' : state.inc < 15 ? 'nearly edge-on'
       : state.inc > 89.5 ? 'looking straight down' : state.inc > 70 ? 'looking down from above' : 'tilted view';
@@ -1201,7 +1211,13 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   }
   incEl.addEventListener('input', () => { state.inc = +incEl.value; if (state.sweeping) toggleSweep(); syncReadouts(); });
   kEl.addEventListener('input', () => { state.k = +kEl.value / 100; syncReadouts(); });
-  spinEl.addEventListener('input', () => { state.spin = +spinEl.value; syncReadouts(); });
+  spinEl.addEventListener('input', () => {
+    state.spin = +spinEl.value;
+    if (state.probeOrbit) { state.probeOrbit = false; if (scene) closeScene(); }   // the planet's orbit only exists at Gargantua's spin
+    syncReadouts();
+  });
+  // horizon used by the clocks, time map and forces: like their time rings, it shrinks with the gravity slider
+  const tHorizon = () => state.k * horizonR(state.spin);
   modeEl.addEventListener('change', () => { state.mode = modeEl.checked; });
   dopEl.addEventListener('change', () => { state.dop = dopEl.checked; });
   function toggleSweep() {
@@ -1608,26 +1624,26 @@ void main(){
 
     // time map: the disk seen from above, a glowing ring of gas turning around the hole (inner gas laps the outer)
     if (kind === 'time') {
-      const g = ctx.createRadialGradient(X(0), Y(0), RIN * sc, X(0), Y(0), ROUT * sc);
+      const rin = diskIn(), g = ctx.createRadialGradient(X(0), Y(0), rin * sc, X(0), Y(0), ROUT * sc);
       g.addColorStop(0, 'rgba(255,241,214,0.55)'); g.addColorStop(0.25, 'rgba(255,178,94,0.38)');
       g.addColorStop(0.7, 'rgba(200,80,30,0.16)'); g.addColorStop(1, 'rgba(160,40,10,0)');
       ctx.fillStyle = g; ctx.beginPath();
-      ctx.arc(X(0), Y(0), ROUT * sc, 0, Math.PI * 2); ctx.arc(X(0), Y(0), RIN * sc, 0, Math.PI * 2, true); ctx.fill('evenodd');
+      ctx.arc(X(0), Y(0), ROUT * sc, 0, Math.PI * 2); ctx.arc(X(0), Y(0), rin * sc, 0, Math.PI * 2, true); ctx.fill('evenodd');
       ctx.lineCap = 'round';
       for (let i = 0; i < 46; i++) {
         const h1 = Math.sin(i * 12.9898) * 43758.5453, h2 = Math.sin(i * 78.233) * 12345.678;
         const u = h1 - Math.floor(h1), v = h2 - Math.floor(h2);
-        const r = RIN + 0.3 + (ROUT - RIN - 1.2) * u * u;              // more streaks near the hot inner edge
+        const r = rin + 0.3 + (ROUT - rin - 1.2) * u * u;              // more streaks near the hot inner edge
         const a0 = v * Math.PI * 2 + 4.0 * Math.pow(r, -1.5) * state.time, span = 0.35 + 0.5 * u;
-        const heat = Math.pow(RIN / r, 0.9);
+        const heat = Math.min(1.4, Math.pow(RIN / r, 0.9));
         ctx.strokeStyle = `rgba(255,${Math.round(150 + 90 * heat)},${Math.round(70 + 140 * heat)},${(0.12 + 0.3 * heat).toFixed(3)})`;
         ctx.lineWidth = (1.2 + 1.6 * heat) * dpr;
         ctx.beginPath(); ctx.arc(X(0), Y(0), r * sc, -a0 - span, -a0); ctx.stroke();
       }
     }
     // clock face size on a time ring: as big as fits outside the horizon, or none if it would be too small to read
-    const ringClockR = rr => { const R = Math.min(8 * dpr, (rr - state.k) * sc - 2 * dpr); return R >= 4.5 * dpr ? R : 0; };
-    // time-rate rings: where a hovering clock runs at f of the distant rate, r = rs / (1 - f^2)
+    const ringClockR = rr => { const R = Math.min(8 * dpr, (rr - tHorizon()) * sc - 2 * dpr); return R >= 4.5 * dpr ? R : 0; };
+    // time-rate rings: where a hovering clock runs at f of the distant rate (without spin, r = rs / (1 - f^2))
     if (kind === 'time' && state.k > 0.001) {
       const glow = ctx.createRadialGradient(X(0), Y(0), sc * 1, X(0), Y(0), sc * Math.max(1.5, 3.4 * state.k));   // stays inside the disk's gap, so it doesn't grey the gas
       glow.addColorStop(0, 'rgba(156,198,255,0.20)'); glow.addColorStop(1, 'rgba(156,198,255,0)');
@@ -1636,7 +1652,7 @@ void main(){
       ctx.font = `500 ${11 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       for (const [f, angDeg] of rings) {
-        const rr = state.k / (1 - f * f);
+        const rr = ringR(f);
         ctx.strokeStyle = 'rgba(156,198,255,0.45)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([2 * dpr, 3 * dpr]);
         ctx.beginPath(); ctx.arc(X(0), Y(0), rr * sc, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
         if (angDeg !== null && rr * sc > 14 * dpr) {
@@ -1682,7 +1698,8 @@ void main(){
 
     // photon sphere and horizon
     ctx.setLineDash([4 * dpr, 4 * dpr]); ctx.strokeStyle = 'rgba(231,233,240,0.35)'; ctx.lineWidth = 1 * dpr;
-    const rS = kind === 'light' ? rph : 1.5, rH = kind === 'light' ? rp : 1;
+    // the main picture draws the horizon at full size whatever the gravity; the time map's rings shrink with gravity, so its horizon does too
+    const rS = rph, rH = kind === 'light' ? rp : tHorizon();
     ctx.beginPath(); ctx.arc(X(0), Y(0), rS * sc, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(X(0), Y(0), rH * sc, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = 'rgba(255,178,94,0.5)'; ctx.lineWidth = 1 * dpr; ctx.stroke();
@@ -1732,7 +1749,7 @@ void main(){
       ctx.fillText('accretion disk, seen from above', X(-7.4), Y(7.9));
     }
     ctx.textAlign = 'left';
-    ctx.fillText('photon sphere', X(1.1), kind === 'light' ? Math.max(Y(-rph - 0.1), Y(0) + th + 20 * dpr) : Y(-1.6));
+    ctx.fillText('photon sphere', X(rS * 0.73), kind === 'light' ? Math.max(Y(-rS - 0.1), Y(0) + th + 20 * dpr) : Y(-rS - 0.1));
 
     // real-world comparisons, drawn to the same scale as the side view
     const SC = SCALES[state.scale];
@@ -1755,7 +1772,7 @@ void main(){
           if (Math.abs(ax) > VIEW_HALF_W - 1 || Math.abs(ay) > halfHs - 1) { const k2 = Math.min((VIEW_HALF_W - 1) / Math.abs(ax), (halfHs - 1) / Math.abs(ay)); ax *= k2; ay *= k2; }
           const ly = -halfHs + 3.9 + (SC.items.filter(i => i.type === 'orbit').length - 1 - orbitN) * 1.5, lxr = VIEW_HALF_W - 1;
           orbitN++;
-          const txt = it.label + (it.r < 1 ? ' (inside the horizon)' : '');
+          const txt = it.label + (it.r < tHorizon() ? ' (inside the horizon)' : '');
           const tw = ctx.measureText(txt).width;
           ctx.strokeStyle = 'rgba(95,212,196,0.6)'; ctx.lineWidth = 0.8 * dpr;
           ctx.beginPath(); ctx.moveTo(X(lxr) - tw - 10 * dpr, Y(ly)); ctx.lineTo(X(ax), Y(ay)); ctx.stroke();
@@ -1829,7 +1846,7 @@ void main(){
         ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.sin(a) * R * 0.72, y - Math.cos(a) * R * 0.72); ctx.stroke();
       };
       if (state.k > 0.001) for (const [f, deg] of [[0.9, 112], [0.75, 128], [0.5, 146]]) {
-        const rr = state.k / (1 - f * f), R = ringClockR(rr);
+        const rr = ringR(f), R = ringClockR(rr);
         if (!R) continue;                                          // no room between the ring and the horizon
         const a = deg * Math.PI / 180;
         face(X(rr * Math.cos(a)), Y(rr * Math.sin(a)), R, f, COL_TIME);
@@ -1880,7 +1897,7 @@ void main(){
       fact: 'The black hole at the centre of the Milky Way, photographed in 2022. Mercury’s orbit would sit inside its disk.',
       items: [{ type: 'ball', r: 6.96e8 / 1.27e10, label: 'the Sun' }, { type: 'orbit', r: 5.79e10 / 1.27e10, label: 'Mercury’s orbit' }, { type: 'orbit', r: AU / 1.27e10, label: 'Earth’s orbit' }] },
     gargantua: { name: 'Gargantua', mass: '100 million Suns', rs: 2.953e11,
-      fact: 'The black hole in Interstellar. Earth’s whole orbit would fit inside its event horizon.',
+      fact: 'The black hole in Interstellar. Without spin, Earth’s whole orbit would fit inside its event horizon; spinning as fast as Gargantua does, the horizon halves and Earth’s orbit only just clears it.',
       items: [{ type: 'ball', r: 6.96e8 / 2.953e11, label: 'the Sun' }, { type: 'orbit', r: AU / 2.953e11, label: 'Earth’s orbit' }, { type: 'orbit', r: 1.524 * AU / 2.953e11, label: 'Mars’s orbit' }, { type: 'orbit', r: 5.2 * AU / 2.953e11, label: 'Jupiter’s orbit' }] },
     m87: { name: 'M87*', mass: '6.5 billion Suns', rs: 1.92e13,
       fact: 'The first black hole ever photographed, in 2019. Every planet in the Solar System would fit inside its event horizon.',
@@ -2005,17 +2022,32 @@ void main(){
   labelsOnEl.addEventListener('change', () => { state.labelsOn = labelsOnEl.checked; });
 
   /* ---------------- time dilation: clocks and probe ---------------- */
-  // Rates relative to the distant observer's clock (units: event-horizon radius rs = 1, scaled by gravity strength k)
-  const hoverRate = r => Math.sqrt(Math.max(0, 1 - state.k / r));
-  const orbitRate = r => Math.sqrt(Math.max(0, 1 - 1.5 * state.k / r));
+  // Rates relative to the distant observer's clock, in the disk's plane of a spinning hole
+  // (units: rs = 1, scaled by gravity strength k: M = k/2, a = spin * M; Bardeen, Press & Teukolsky 1972).
+  // Hovering: a clock held at fixed distance by rockets. Close to a spinning hole nothing can stay still against the
+  // stars, so it is carried round with the spin (zero angular momentum): alpha = sqrt(Delta r^2 / A),
+  // Delta = r^2 - 2Mr + a^2 = (r - r+)(r - r-), A = (r^2 + a^2)^2 - a^2 Delta. Without spin: sqrt(1 - rs/r).
+  function hoverRate(r) {
+    const rp = tHorizon(); if (r <= rp) return 0;
+    const a = state.spin * state.k / 2, D = (r - rp) * (r - (state.k - rp)), A = (r * r + a * a) ** 2 - a * a * D;
+    return Math.sqrt(D * r * r / A);
+  }
+  // Orbiting with the spin on a circle. Without spin: sqrt(1 - 3rs/2r).
+  function orbitRate(r) {
+    const M = state.k / 2, a = state.spin * M, sm = Math.sqrt(M), r15 = r * Math.sqrt(r);
+    const q = r15 - 3 * M * Math.sqrt(r) + 2 * a * sm;
+    return q > 0 ? Math.pow(r, 0.75) * Math.sqrt(q) / (r15 + a * sm) : 0;
+  }
+  // distance where a hovering clock runs at fraction f of yours (a time ring)
+  function ringR(f) { let lo = tHorizon(), hi = 1e4; for (let i = 0; i < 90; i++) { const m = (lo + hi) / 2; if (hoverRate(m) < f) lo = m; else hi = m; } return hi; }
   const probeDist = () => Math.hypot(state.probe.x, state.probe.y);
-  const probeRate = () => hoverRate(probeDist());
+  const probeRate = () => state.probeOrbit ? orbitRate(probeDist()) : hoverRate(probeDist());
 
   const clockDefs = [
     { name: 'You', where: 'far away: the reference', rate: () => 1, you: true },
     { name: 'Outer edge of disk', where: 'orbiting at 12 rₛ', rate: () => orbitRate(12) },
-    { name: 'Inner edge of disk', where: 'orbiting at 3 rₛ', rate: () => orbitRate(3) },
-    { name: 'Photon sphere', where: 'hovering at 1.5 rₛ', rate: () => hoverRate(1.5) },
+    { name: 'Inner edge of disk', where: () => `orbiting at ${fmtNum(diskIn())} rₛ`, rate: () => orbitRate(diskIn()) },
+    { name: 'Photon sphere', where: () => `hovering at ${fmtNum(photonR(state.spin))} rₛ`, rate: () => hoverRate(photonR(state.spin)) },
     { name: 'Your probe', where: '', rate: probeRate, probe: true }
   ];
   const U = { y: 31557600, mo: 2629800, w: 604800, d: 86400, h: 3600, m: 60 };
@@ -2147,7 +2179,9 @@ void main(){
       const rate = c.def.rate();
       if (!reduceMotion) c.hand.setAttribute('transform', `rotate(${((c.e / (12 * S)) * 360) % 360} 42 42)`);
       // static text: only rewritten when the rate or probe position changes
-      const where = c.def.probe ? (pd <= state.k ? 'inside the event horizon' : SCc ? `${fmtLen((pd - 1) * SCc.rs)} above the horizon` : `${fmtHeight(pd - 1)} rₛ above the horizon`) : c.def.where;
+      const ph = pd - tHorizon();
+      const where = c.def.probe ? (ph <= 0 ? 'inside the event horizon' : (state.probeOrbit ? 'orbiting ' : '') + (SCc ? `${fmtLen(ph * SCc.rs)} above the horizon` : `${fmtHeight(ph)} rₛ above the horizon`))
+        : typeof c.def.where === 'function' ? c.def.where() : c.def.where;
       const hourTxt = c.def.you ? 'Every clock is compared with this one.' : rate > 0 ? `1 hour there = ${fmtWords(3600 / rate)} for you` : 'Its signals never reach you.';
       const rateTxt = fmtPct(rate);
       const txt = where + hourTxt + rateTxt;
@@ -2178,8 +2212,9 @@ void main(){
   $('resetClocks').addEventListener('click', () => { if (scene) closeScene(); resetClocks(); setClocksRunning(true); });
 
   /* ---------------- Miller's planet scene ---------------- */
-  // 1 hour there = 7 years here: a rate of 1/61,362. A hovering clock runs at sqrt(1 - rs/r),
-  // so the probe sits at r = rs / (1 - f^2), about 2.7e-10 rs (78 m for Gargantua) above the horizon.
+  // 1 hour there = 7 years here: a rate of 1/61,362. No stable orbit is that slow unless the hole spins within
+  // 1.3e-14 of the maximum, so the scene spins it up to Gargantua's 1 - 1e-14 and puts the planet on the circular
+  // orbit (with the spin) whose clock runs at exactly that rate, just outside the innermost stable orbit.
   const CAPS = ['The landing party leaves the Endurance.', '1 hour on the planet. 7 years on the ship.'];
   function setCap(i, text) {
     const el = $('storyCap');
@@ -2188,10 +2223,17 @@ void main(){
     if (scene) scene.cap = i;
   }
   const MILLER_F = 1 / (7 * 365.25 * 24);
+  function millerOrbitR() {
+    let lo = state.k * iscoR(state.spin), hi = 12;
+    if (orbitRate(lo) > MILLER_F) return null;               // not spinning fast enough for any stable orbit to be that slow
+    for (let i = 0; i < 90; i++) { const m = (lo + hi) / 2; if (orbitRate(m) < MILLER_F) lo = m; else hi = m; }
+    return hi;
+  }
   function startScene() {
-    const f = MILLER_F;
-    kEl.value = 100; state.k = 1; syncReadouts();
-    setProbeDist(1 / (1 - f * f));
+    kEl.value = 100; state.k = 1;
+    state.spin = GARGANTUA_SPIN; spinEl.value = spinEl.max;
+    syncReadouts();
+    setProbeDist(millerOrbitR()); state.probeOrbit = true;
     syncProbe();
     setLapse(6); resetClocks(); setClocksRunning(true);
     scene = { phase: 'run', cap: 0 };
@@ -2231,7 +2273,7 @@ void main(){
   const probeEl = $('probeR');
   let ariaT = 0;
   function syncProbe() {
-    const d = probeDist(), h = d - 1;
+    const d = probeDist(), h = d - tHorizon();
     const SCp = SCALES[state.scale];
     $('probeOut').innerHTML = h <= 0 ? 'inside the horizon'
       : h < 0.01 ? `${fmtHeight(h)} r<sub>s</sub> above the horizon` + (SCp ? ` (${fmtLen(h * SCp.rs)})` : '')
@@ -2245,7 +2287,7 @@ void main(){
     const a = Math.atan2(state.probe.y, state.probe.x);
     state.probe = { x: d * Math.cos(a), y: d * Math.sin(a) };
   }
-  probeEl.addEventListener('input', () => { setProbeDist(Math.max(1.001, +probeEl.value)); if (scene) closeScene(); syncProbe(); });
+  probeEl.addEventListener('input', () => { state.probeOrbit = false; setProbeDist(Math.max(tHorizon() + 0.001, +probeEl.value)); if (scene) closeScene(); syncProbe(); });
 
   tmap.classList.add('probe-on');
   // Drag starts only on the probe itself (44px target), so swiping over the diagram still scrolls the page.
@@ -2263,7 +2305,7 @@ void main(){
     const halfH = rect.height / 2 / sc;
     x = Math.max(-VIEW_HALF_W + 0.5, Math.min(VIEW_HALF_W - 0.5, x)); y = Math.max(-halfH + 0.5, Math.min(halfH - 0.5, y));
     if (Math.hypot(x, y) < 0.3) { x = 0.3; y = 0; }
-    state.probe = { x, y }; syncProbe();
+    state.probe = { x, y }; state.probeOrbit = false; syncProbe();
     if (scene) closeScene();
   }
   tmap.addEventListener('pointerdown', ev => {
@@ -2281,9 +2323,9 @@ void main(){
   setScale('');
 
   /* ---------------- survival: live forces on the probe ---------------- */
-  // Static (hovering) observer in Schwarzschild spacetime, at radius r with horizon radius rs:
-  //   thrust to hover  a = c^2 rs / (2 r^2 sqrt(1 - rs/r))
-  //   head-to-feet stretch over length L:  da = c^2 rs L / r^3   (= 2GM L / r^3)
+  // Hovering observer in the disk's plane (carried round by the spin, as in hoverRate), at radius r:
+  //   thrust to hover  a = c^2 (sqrt(Delta) / r) d(ln alpha)/dr;  without spin  c^2 rs / (2 r^2 sqrt(1 - rs/r))
+  //   head-to-feet stretch over length L:  da = c^2 rs L / r^3   (= 2GM L / r^3; exact in the frame turning with the hole)
   const G0 = 9.81, BODY = 2;
   const gpos = g => Math.min(100, Math.max(0, (Math.log10(Math.max(g, 1e-12)) + 8) / 18 * 100)); // 1e-8 g .. 1e10 g
   function fmtG(g) {
@@ -2303,24 +2345,28 @@ void main(){
   function updateSurvival() {
     const SCs = SCALES[state.scale] || SCALES.gargantua;
     const rsM = SCs.rs, k = Math.max(state.k, 1e-9), rr = probeDist();
-    const r = rr * rsM, rsE = k * rsM;
-    const inside = r <= rsE;
-    const hover = inside ? Infinity : C * C * rsE / (2 * r * r * Math.sqrt(1 - rsE / r)) / G0;
+    const r = rr * rsM, rsE = k * rsM, sp = state.spin;
+    const M = rsE / 2, a = sp * M, rpM = tHorizon() * rsM, x = (rr - tHorizon()) * rsM;   // x: height above the horizon
+    const inside = x <= 0;
+    const D = x * (x + rpM - (rsE - rpM)), A = (r * r + a * a) ** 2 - a * a * D;
+    const dlnAlpha = 0.5 * ((2 * r - 2 * M) / D + 2 / r - (4 * r * (r * r + a * a) - a * a * (2 * r - 2 * M)) / A);
+    const hover = inside ? Infinity : C * C * Math.sqrt(D) / r * dlnAlpha / G0;
     const tide = inside ? Infinity : C * C * rsE * BODY / (r * r * r) / G0;
-    const rel = rr / k; // distance in horizon radii
-    const key = [state.scale, rr.toPrecision(6), k].join('|');
+    const key = [state.scale, rr.toPrecision(12), k, sp, state.probeOrbit].join('|');
     if (key === lastSurvive) return; lastSurvive = key;
-    $('slWhere').textContent = `${SCs.name}${state.scale ? '' : ' (pick a real-world size to change this)'} · probe ${inside ? 'inside the event horizon' : `${fmtLen(r - rsE)} above the horizon`}`;
+    $('slWhere').textContent = `${SCs.name}${state.scale ? '' : ' (pick a real-world size to change this)'} · probe ${inside ? 'inside the event horizon' : `${fmtLen(x)} above the horizon`}`;
     $('slTide').textContent = fmtG(tide); $('slHover').textContent = fmtG(hover);
     const [tv, tc] = verdict(tide, 'tide'), [hv, hc] = verdict(hover, 'hover');
     $('slTideV').textContent = tv; $('slTideV').className = 'm-verdict ' + tc;
     $('slHoverV').textContent = hv; $('slHoverV').className = 'm-verdict ' + hc;
     $('slTideDot').style.left = `${isFinite(tide) ? gpos(tide) : 100}%`;
     $('slHoverDot').style.left = `${isFinite(hover) ? gpos(hover) : 100}%`;
+    const dragged = sp > 0 && rr < k ? ' Here the spin drags space round so fast that nothing can stay still: even on rockets, you are swept around the hole.' : '';
     $('slOrbit').textContent = inside ? 'Inside the event horizon nothing can hover or orbit: everything moves inward.'
-      : rel >= 3 ? 'A stable orbit is possible here. In orbit you are in free fall, so you would float, weightless, with only the stretch to feel.'
-      : rel >= 1.5 ? 'Only unstable orbits exist here: the slightest nudge and you fall in or fly away. Staying put means hovering on rockets.'
-      : 'No orbit is possible this close: you can only hover on rockets, or fall in.';
+      : (state.probeOrbit ? 'Miller’s planet orbits here, in free fall: the crew would float, weightless, with only the stretch to feel. The thrust above is what hovering here would take.'
+      : rr >= k * iscoR(sp) ? 'A stable orbit is possible here. In orbit you are in free fall, so you would float, weightless, with only the stretch to feel.'
+      : rr >= k * photonOrbitR(sp) ? 'Only unstable orbits exist here: the slightest nudge and you fall in or fly away. Staying put means hovering on rockets.'
+      : 'No orbit is possible this close: you can only hover on rockets, or fall in.') + dragged;
   }
   $('slStellar').addEventListener('click', () => setScale('stellar'));
   $('slGarg').addEventListener('click', () => setScale('gargantua'));

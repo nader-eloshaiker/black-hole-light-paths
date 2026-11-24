@@ -35,7 +35,7 @@ The light paths are colour-coded:
 - **Time dilation**: clocks for you, the disk, the photon sphere and a probe you can drag, compared on one shared timeline where each step is 10× more time. Watch minutes, days and years pile up with a time-lapse of up to 1 year per second; the gap between two clocks is the slowdown.
 - **Could you survive the trip?**: why gravity wouldn't crush you near a giant black hole (but would near a small one), why hovering would, and live readouts of the head-to-feet stretch and hovering thrust on the probe.
 - **Real-world size**: give the black hole a real mass (Earth squeezed into a black hole, a 10-Sun black hole, Sagittarius A*, Gargantua or M87*) and compare it with a marble, a marathon, the Sun and planetary orbits drawn to scale, with a scale bar and distances in km or AU.
-- **Miller's planet**: a short scene recreating *Interstellar*'s 1 hour = 7 years that ends when Romilly's 23 years, 4 months and 8 days have passed, and explains why it needs a fast-spinning black hole like Gargantua.
+- **Miller's planet**: a short scene recreating *Interstellar*'s 1 hour = 7 years that ends when Romilly's 23 years, 4 months and 8 days have passed. It spins the hole up to Gargantua's speed (within 10⁻¹⁴ of the maximum) and puts the planet on a real orbit where its clock runs 61,000 times slower; the page explains why only that much spin allows it.
 
 ## The physics
 
@@ -43,9 +43,9 @@ Photon paths are traced through the Kerr metric in Kerr–Schild coordinates, in
 
 With no spin this is the Schwarzschild case: a photon sphere at 1.5 horizon radii and a shadow of about 2.6 horizon radii. At high spin the shadow flattens on the side turning towards you, the horizon shrinks towards half size, and the disk's inner edge (the innermost stable orbit, Bardeen, Press & Teukolsky 1972) moves in from 3 towards 0.5 horizon radii. The side view traces the same rays in 3D and draws them flattened onto its slice.
 
-Time dilation uses the same geometry. A clock hovering at distance `r` runs at `√(1 − rₛ/r)` of the distant observer's rate, and a clock orbiting with the disk at `√(1 − 3rₛ/2r)`. Photons in the side view are timed by the distant observer's clock, using the exact Schwarzschild coordinate speed of light, so they visibly slow near the hole (the Shapiro delay).
+Time dilation uses the same geometry, in the disk's plane (Bardeen, Press & Teukolsky 1972). Without spin, a clock hovering at distance `r` runs at `√(1 − rₛ/r)` of the distant observer's rate, and a clock orbiting with the disk at `√(1 − 3rₛ/2r)`. With spin, a hovering clock is the one carried round by the spin with zero angular momentum, running at `√(Δr²/A)`, and orbiting clocks follow the Kerr circular-orbit formula. A planet orbiting where 1 hour costs 7 years needs a spin within 1.3 × 10⁻¹⁴ of the maximum. Photons in the side view are timed by the distant observer's clock using the Schwarzschild coordinate speed of light, so they visibly slow near the hole (the Shapiro delay).
 
-Simplifications: spin changes the pictures only (the clocks, time map, Miller's planet and forces use non-spinning formulas), the disk is infinitely thin and reaches out to 12 horizon radii, the disk colours and texture are artistic, and the Doppler option has hand-tuned brightness.
+Simplifications: near a spinning hole, heights above the horizon are differences in the r coordinate, the head-to-feet stretch is the value in the frame turning with the hole, the side view's photon timing ignores spin, the disk is infinitely thin and reaches out to 12 horizon radii, the disk colours and texture are artistic, and the Doppler option has hand-tuned brightness.
 
 ## Interstellar
 
