@@ -516,6 +516,9 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 @media (max-width: 980px) { .film-grid { grid-template-columns: 1fr; } }
 .film h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0 0 6px; text-wrap: balance; }
 .film p { margin: 0; font-size: 14px; color: #c9cdd8; }
+.film-spin { display: grid; gap: 4px; scroll-margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.film-spin .why { margin-top: 6px; }
+.film .film-note { font-size: 13.5px; color: var(--muted); max-width: 90ch; margin-top: 8px; }
 .film .refs { font-size: 12px; color: var(--muted); max-width: 110ch; }
 .film a { color: var(--accent); }
 /* scrolling over the side view must still scroll the page; only a drag on the probe moves it */
@@ -707,10 +710,20 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       </article>
       <article>
         <h3>Could that really happen?</h3>
-        <p>Only around a black hole spinning almost as fast as physics allows, as Gargantua does. A non-spinning one can&#8217;t hold an orbit that deep.</p>
+        <p>Only around a black hole spinning almost as fast as physics allows, as Gargantua does. A non-spinning one can&#8217;t hold an orbit that deep. <a href="#why-spin">Why spin matters</a>.</p>
       </article>
     </div>
-    <p class="refs">Rendered for the film by Double Negative with physicist Kip Thorne. Further reading: Kip Thorne, <i>The Science of Interstellar</i> (W. W. Norton, 2014); O. James, E. von Tunzelmann, P. Franklin and K. S. Thorne, &#8220;<a href="https://doi.org/10.1088/0264-9381/32/6/065001">Gravitational lensing by spinning black holes in astrophysics, and in the movie Interstellar</a>&#8221;, <i>Classical and Quantum Gravity</i> 32, 065001 (2015). This site is an independent educational project and is not affiliated with the film or its makers.</p>
+    <div class="film-spin" id="why-spin">
+      <h3>Why Gargantua has to spin</h3>
+      <ol class="why wide" aria-label="Why">
+        <li>Around a black hole that doesn&#8217;t spin, nothing can orbit closer than 3 horizon radii; any closer and it spirals in. There, an hour costs only about 1 hour 25 minutes.</li>
+        <li>To lose 7 years every hour without orbiting, you&#8217;d have to hover about 78 m above the horizon on rockets, as the probe does in the Miller&#8217;s planet scene. A planet can&#8217;t hover. It can only orbit.</li>
+        <li>A spinning black hole drags space around with it. Orbits going the same way as the spin are carried along, so they stay stable much closer in.</li>
+        <li>Near the fastest possible spin, stable orbits reach almost down to the horizon, deep enough for an hour to cost 7 years. That is why Kip Thorne made Gargantua spin almost as fast as physics allows.</li>
+      </ol>
+      <p class="film-note">Spin changes the picture too: the shadow flattens on the side turning towards you. To keep the images easy to read, the film makers drew Gargantua with a gentler spin, 0.6 of the maximum, where that change is slight, and left out the Doppler brightening.</p>
+    </div>
+    <p class="refs">Rendered for the film by Double Negative with physicist Kip Thorne. Further reading: Kip Thorne, <i>The Science of Interstellar</i> (W. W. Norton, 2014); O. James, E. von Tunzelmann, P. Franklin and K. S. Thorne, &#8220;<a href="https://doi.org/10.1088/0264-9381/32/6/065001">Gravitational lensing by spinning black holes in astrophysics, and in the movie Interstellar</a>&#8221;, <i>Classical and Quantum Gravity</i> 32, 065001 (2015). How spin lets orbits reach so deep: J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972). This site is an independent educational project and is not affiliated with the film or its makers.</p>
   </section>
 
   <section class="survive" id="survive" aria-labelledby="surviveHead">
