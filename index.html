@@ -383,6 +383,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 @media (max-width: 599px) { .probe-ticks span { font-size: 10px; } }
 .tmap-fig { margin: 0; display: grid; gap: 10px; width: 100%; max-width: min(100%, calc((100svh - 140px) * 4 / 3)); }
 .maths summary { cursor: pointer; font-size: 14px; font-weight: 500; }
+.maths a { color: var(--accent); }
 .maths p { margin: 8px 0 0; font-size: 13px; color: var(--muted); max-width: 90ch; }
 
 /* ---- survival ---- */
@@ -521,6 +522,24 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 #tmap.probe-on { touch-action: pan-y; }
 @media (prefers-reduced-motion: reduce) { .ledger .hand { display: none; } .story-cap.fade { animation: none; } }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+.eqs { display: grid; gap: 16px; scroll-margin-top: 16px; }
+.eqs h2 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0; }
+.eqs-head { display: grid; gap: 6px; max-width: 75ch; }
+.eqs-head p { margin: 0; color: var(--muted); }
+.eqs-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 980px) { .eqs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .eqs-grid { grid-template-columns: 1fr; } }
+.eqcard { display: grid; gap: 8px; align-content: start; min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--sq-panel); corner-shape: squircle; padding: 16px; }
+.eqcard h3 { font-family: var(--display); font-weight: 500; font-size: 16px; margin: 0; }
+.eq { display: grid; gap: 2px; font-family: var(--mono); font-size: 13px; line-height: 1.6; color: var(--fg); background: #000; border: 1px solid var(--line); border-radius: var(--sq-ctl); corner-shape: squircle; padding: 9px 12px; overflow-wrap: anywhere; }
+.eqs .nb { white-space: nowrap; }
+.eqcard p { margin: 0; font-size: 14px; color: #c9cdd8; }
+.eqcard .src { font-size: 12px; color: var(--muted); }
+.eqs-limits h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0 0 8px; }
+.eqs-limits ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; color: #c9cdd8; max-width: 80ch; }
+.eqs-limits li::marker { color: var(--accent); }
+.eqs .refs { margin: 0; font-size: 12px; color: var(--muted); max-width: 110ch; }
+.eqs a { color: var(--accent); }
 .site-foot { border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
 .site-foot p { margin: 0; }
 .site-foot a { color: var(--accent); }
@@ -670,7 +689,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
 
     <details class="maths">
       <summary>The maths behind the clocks</summary>
-      <p>A clock hovering at distance r runs at √(1 − r<sub>s</sub>/r) of your rate, where r<sub>s</sub> is the event horizon&#8217;s radius. A clock orbiting with the disk runs at √(1 − 3r<sub>s</sub>/2r), because its speed adds to the slowdown. Months are 1/12 of a year (30.44 days). The time-lapse speeds up the clocks only; the disk and photons keep moving at a watchable pace. In the side view, photons also move more slowly near the hole when timed by your clock (the Shapiro delay).</p>
+      <p>A clock hovering at distance r runs at √(1 − r<sub>s</sub>/r) of your rate, where r<sub>s</sub> is the event horizon&#8217;s radius. A clock orbiting with the disk runs at √(1 − 3r<sub>s</sub>/2r), because its speed adds to the slowdown. Months are 1/12 of a year (30.44 days). The time-lapse speeds up the clocks only; the disk and photons keep moving at a watchable pace. In the side view, photons also move more slowly near the hole when timed by your clock (the Shapiro delay). <a href="#maths">All the equations, with sources</a>.</p>
     </details>
     <div class="sr-only" id="timeLive" aria-live="polite"></div>
   </section>
@@ -1045,9 +1064,64 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       </ol>
     </div>
   </section>
+  <section class="eqs" id="maths" aria-labelledby="mathsHead">
+    <div class="eqs-head">
+      <h2 id="mathsHead">The maths behind this</h2>
+      <p>Everything that moves on this page follows from a few standard results of general relativity for a black hole that doesn&#8217;t spin. r<sub>s</sub> is the event horizon&#8217;s radius, r is the distance from the centre, M is the mass and c is the speed of light.</p>
+    </div>
+    <div class="eqs-grid">
+      <div class="eqcard">
+        <h3>Size of the horizon</h3>
+        <code class="eq"><span>r<sub>s</sub> = 2GM / c&#178;</span></code>
+        <p>The mass sets the size. This gives every real-world size, from a 10-Sun black hole to Gargantua.</p>
+        <p class="src">Schwarzschild (1916)</p>
+      </div>
+      <div class="eqcard">
+        <h3>How light bends</h3>
+        <code class="eq"><span>d&#178;u/d&#966;&#178; + u = (3/2) r<sub>s</sub> u&#178;</span><span>u = 1/r</span></code>
+        <p>The path of light, where &#966; is the angle around the hole. Each ray is pushed by a = &#8722;(3/2) r<sub>s</sub> h&#178; x / r&#8309;, which traces exactly the same path (x is the ray&#8217;s position, h = |x &#215; v| is fixed for each ray). Both views use it: about 560 steps for every pixel, every frame.</p>
+        <p class="src">Schwarzschild (1916); Misner, Thorne and Wheeler; Hartle</p>
+      </div>
+      <div class="eqcard">
+        <h3>Doppler brightening</h3>
+        <code class="eq"><span>g = <span class="nb">&#8730;(1 &#8722; r<sub>s</sub>/r)</span> / <span class="nb">(&#947;(1 &#8722; v&#183;n/c))</span></span><span>v = c&#8730;(r<sub>s</sub> / 2(r &#8722; r<sub>s</sub>))</span></code>
+        <p>Light from gas orbiting at speed v is shifted by g. Climbing out of the hole&#8217;s gravity weakens it; gas moving towards you (direction n) strengthens it. <span class="nb">&#947; = 1/&#8730;(1 &#8722; v&#178;/c&#178;)</span>. Brightness scales with g&#179;, colour with g.</p>
+        <p class="src">Rybicki and Lightman; Misner, Thorne and Wheeler</p>
+      </div>
+      <div class="eqcard">
+        <h3>How fast clocks run</h3>
+        <code class="eq"><span>hovering: &#8730;(1 &#8722; r<sub>s</sub>/r)</span><span>orbiting: &#8730;(1 &#8722; 3r<sub>s</sub>/2r)</span></code>
+        <p>A clock&#8217;s rate compared with yours far away. An orbiting clock is slower still, because its speed adds to the slowdown. These drive the time map, the clocks and Miller&#8217;s planet.</p>
+        <p class="src">Hartle; Misner, Thorne and Wheeler</p>
+      </div>
+      <div class="eqcard">
+        <h3>Light slows near the hole</h3>
+        <code class="eq"><span>c&#8242; = c(1 &#8722; u) / <span class="nb">&#8730;(cos&#178;&#945; + (1 &#8722; u) sin&#178;&#945;)</span></span><span>u = r<sub>s</sub>/r</span></code>
+        <p>The speed of light timed by your distant clock, for light heading at angle &#945; to the line to the centre. This is why the photons in the side view slow down near the hole.</p>
+        <p class="src">Shapiro (1964)</p>
+      </div>
+      <div class="eqcard">
+        <h3>Forces on the probe</h3>
+        <code class="eq"><span>hover: a = c&#178;r<sub>s</sub> / <span class="nb">(2r&#178;&#8730;(1 &#8722; r<sub>s</sub>/r))</span></span><span>stretch: &#916;a = c&#178;r<sub>s</sub> L / r&#179;</span></code>
+        <p>The thrust needed to hover, and the difference in pull between your head and feet across your height L (2 m). These drive the survival section.</p>
+        <p class="src">Misner, Thorne and Wheeler; Hartle</p>
+      </div>
+    </div>
+    <div class="eqs-limits">
+      <h3>Where this page simplifies</h3>
+      <ul>
+        <li>The black hole doesn&#8217;t spin. Gargantua does, which flattens one side of its shadow and is what gives Miller&#8217;s planet its 7 years.</li>
+        <li>The disk&#8217;s brightness, colours, texture and rotation speed are artistic, chosen so the light paths are easy to see.</li>
+        <li>Doppler brightening uses an approximate light direction and hand-tuned brightness.</li>
+        <li>Gravity settings between 0% and 100% aren&#8217;t a real black hole. They show how the bending grows.</li>
+        <li>The disk has no thickness, and each frame of the main picture is a snapshot that ignores the time light takes to travel.</li>
+      </ul>
+    </div>
+    <p class="refs">Sources: K. Schwarzschild, &#8220;<a href="https://arxiv.org/abs/physics/9905030">On the gravitational field of a mass point according to Einstein&#8217;s theory</a>&#8221;, <i>Sitzungsberichte der K&#246;niglich Preussischen Akademie der Wissenschaften</i> (1916), 189 (English translation); C. W. Misner, K. S. Thorne and J. A. Wheeler, <i>Gravitation</i> (W. H. Freeman, 1973); J. B. Hartle, <i>Gravity: An Introduction to Einstein&#8217;s General Relativity</i> (Addison-Wesley, 2003); G. B. Rybicki and A. P. Lightman, <i>Radiative Processes in Astrophysics</i> (Wiley, 1979); I. I. Shapiro, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.13.789">Fourth test of general relativity</a>&#8221;, <i>Physical Review Letters</i> 13, 789 (1964); J.-P. Luminet, &#8220;<a href="https://ui.adsabs.harvard.edu/abs/1979A%26A....75..228L/abstract">Image of a spherical black hole with thin accretion disk</a>&#8221;, <i>Astronomy and Astrophysics</i> 75, 228 (1979), the first computed picture of a black hole and its disk; J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972), for orbits around spinning black holes.</p>
+  </section>
   <footer class="site-foot">
     <p>Created by Nader Eloshaiker · <a href="https://www.linkedin.com/in/nadereloshaiker" rel="author">LinkedIn</a> · <a href="https://github.com/nader-eloshaiker">GitHub</a></p>
-    <p>Built with WebGL. Light paths follow the Schwarzschild solution of general relativity; disk colours are artistic.</p>
+    <p>Built with WebGL. Light paths follow the Schwarzschild solution of general relativity; disk colours are artistic. <a href="#maths">The maths behind this</a></p>
     <p>Visits are counted with <a href="https://www.goatcounter.com/">GoatCounter</a>, which uses no cookies and collects no personal data. <a href="privacy.html">Privacy</a></p>
     <p><a href="https://github.com/nader-eloshaiker/black-hole-light-paths">Source code on GitHub</a> · <a href="https://github.com/nader-eloshaiker/black-hole-light-paths/blob/main/LICENSE">MIT licence</a> · <a href="https://github.com/nader-eloshaiker/black-hole-light-paths/issues">Report a problem</a></p>
   </footer>
