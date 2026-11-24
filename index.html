@@ -300,6 +300,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .mini-key { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--fg); }
 .mini-key li { display: inline-flex; align-items: center; gap: 6px; }
 .mini-key i { display: block; width: 16px; height: 3px; border-radius: 2px; }
+.zoom-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .scale-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding-top: 4px; }
 .scale-row label { font-weight: 500; font-size: 14px; }
 .scale-row select { max-width: 100%; }
@@ -674,6 +675,10 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
     <figure class="tmap-fig">
       <div class="cap"><span class="eyebrow">Time map: how fast clocks run around the black hole, seen from above</span><span class="readout" id="tmapUnits">units: event-horizon radius</span></div>
       <div class="view side-view"><canvas id="tmap" aria-label="Time map, seen from above the disk, around the black hole with rings showing how fast clocks run and a draggable probe clock"></canvas></div>
+      <div class="zoom-row" role="group" aria-label="Time map zoom">
+        <button id="zoomFar" class="tbtn" type="button" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20M7.5 10.5h6"/></svg><span>Whole disk</span></button>
+        <button id="zoomNear" class="tbtn" type="button" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20M7.5 10.5h6M10.5 7.5v6"/></svg><span>Close to the hole</span></button>
+      </div>
       <div class="ctl probe-ctl">
         <label for="probeR">Probe distance from the centre <output id="probeOut">3.68 r<sub>s</sub></output></label>
         <!-- the slider runs from the map's centre to its right edge, so its thumb sits under the probe's distance -->
@@ -1187,6 +1192,12 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
     timeOn: true, labelsOn: true, shipOn: true, scale: '', probe: { x: 2.6, y: 2.6 }
   };
   const COL_TIME = '#9cc6ff';
+  // time map zoom: the whole disk (16 rs each side of the centre), or 4x closer so the horizon, photon sphere and
+  // inner orbits are big enough to see. tHalf glides towards the target; the probe slider, markers and ruler follow it.
+  const ZOOM_HALF = { far: 16, near: 4 };
+  let tZoom = 'far', tHalf = 16, tHalfAt = 0;
+  const tTarget = () => ZOOM_HALF[tZoom];
+  const gridStep = () => tZoom === 'near' ? 0.5 : 2;
   // Spin s (0 to just under 1) is the fraction of the fastest possible spin; a = s M, with M = 1/2 so rs = 2M = 1.
   // Like the horizon the page has always drawn at 1 rs, these sizes don't shrink with the gravity slider.
   const SM = 0.5;
@@ -1238,9 +1249,9 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
     spinEl.setAttribute('aria-valuetext', sp === 0 ? 'no spin' : garg ? 'Gargantua’s spin' : `${sp.toFixed(3)} of maximum${mark ? ', ' + mark.label : ''}`);
     for (const b of document.querySelectorAll('.smark')) b.setAttribute('aria-pressed', String(SPIN_MARKS[+b.dataset.i] === mark));
     // the probe slider's markers follow the spin and gravity
-    const pct = v => `${(Math.min(16, Math.max(0, v)) / 16 * 100).toFixed(3)}%`;
+    const pct = v => `${(Math.min(tTarget(), Math.max(0, v)) / tTarget() * 100).toFixed(3)}%`;
     $('tickHorizon').style.left = pct(tHorizon()); $('tickPhoton').style.left = pct(photonR(sp));
-    $('tickDisk').style.left = pct(diskIn()); $('tickDisk').style.width = pct(ROUT - diskIn());
+    $('tickDisk').style.left = pct(diskIn()); $('tickDisk').style.width = pct(Math.min(ROUT, tTarget()) - diskIn());
     $('sideUnits').textContent = sp === 0 ? 'units: event-horizon radius' : 'units: horizon radius without spin';
     const where = state.inc < 0.5 ? 'exactly edge-on' : state.inc < 15 ? 'nearly edge-on'
       : state.inc > 89.5 ? 'looking straight down' : state.inc > 70 ? 'looking down from above' : 'tilted view';
@@ -1656,7 +1667,13 @@ void main(){
   function drawCanvas(cv, cctx, kind) {
     const W = cv.width, H = cv.height; if (!W) return;
     const ctx = cctx, dpr = W / cv.clientWidth;
-    const cam = kind === 'light' && sideBox ? sideView(W, H, dpr) : { half: VIEW_HALF_W, x: 0, y: 0 };
+    if (kind === 'time') {
+      const now = performance.now(), dt = Math.min(0.1, (now - tHalfAt) / 1000); tHalfAt = now;
+      tHalf = reduceMotion ? tTarget() : tHalf + (tTarget() - tHalf) * (1 - Math.exp(-dt * 7));
+      if (Math.abs(tHalf - tTarget()) < 1e-3) tHalf = tTarget();
+    }
+    const cam = kind === 'light' && sideBox ? sideView(W, H, dpr) : { half: tHalf, x: 0, y: 0 };
+    const u = tHalf / VIEW_HALF_W;   // time map: offsets written for the whole-disk view shrink with the zoom
     const sc = W / (2 * cam.half), cx = W / 2 - cam.x * sc, cy = H / 2 + cam.y * sc;
     const X = x => cx + x * sc, Y = y => cy - y * sc;
     const dirX = Math.cos(state.inc * Math.PI / 180), dirY = Math.sin(state.inc * Math.PI / 180);   // towards you
@@ -1664,11 +1681,12 @@ void main(){
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = '#05060a'; ctx.fillRect(0, 0, W, H);
 
-    // faint grid every 2 units
+    // faint grid every 2 units (every half unit on the zoomed time map)
+    const gs = kind === 'time' ? gridStep() : 2;
     ctx.strokeStyle = 'rgba(140,148,168,0.07)'; ctx.lineWidth = 1;
     ctx.beginPath();
-    for (let g = 2 * Math.ceil(-cx / sc / 2); X(g) <= W; g += 2) { ctx.moveTo(X(g), 0); ctx.lineTo(X(g), H); }
-    for (let g = 2 * Math.ceil((cy - H) / sc / 2); Y(g) >= 0; g += 2) { ctx.moveTo(0, Y(g)); ctx.lineTo(W, Y(g)); }
+    for (let g = gs * Math.ceil(-cx / sc / gs); X(g) <= W; g += gs) { ctx.moveTo(X(g), 0); ctx.lineTo(X(g), H); }
+    for (let g = gs * Math.ceil((cy - H) / sc / gs); Y(g) >= 0; g += gs) { ctx.moveTo(0, Y(g)); ctx.lineTo(W, Y(g)); }
     ctx.stroke();
 
     // time map: the disk seen from above, a glowing ring of gas turning around the hole (inner gas laps the outer)
@@ -1795,10 +1813,13 @@ void main(){
       ctx.fillText('near side of disk', X((RIN + ROUT) / 2), Y(0) + th + 4 * dpr);
       ctx.fillText('far side of disk', X(-(RIN + ROUT) / 2), Y(0) + th + 4 * dpr);
     } else {
-      ctx.fillText('accretion disk, seen from above', X(-7.4), Y(7.9));
+      // below the "your clock" line when the map is too narrow for both on one line
+      const narrow = W < 640 * dpr;
+      ctx.textAlign = 'left'; ctx.fillText('accretion disk, seen from above', 14 * dpr, (narrow ? 38 : 14) * dpr);
     }
     ctx.textAlign = 'left';
-    ctx.fillText('photon sphere', X(rS * 0.73), kind === 'light' ? Math.max(Y(-rS - 0.1), Y(0) + th + 20 * dpr) : Y(-rS - 0.1));
+    if (kind === 'light') ctx.fillText('photon sphere', X(rS * 0.73), Math.max(Y(-rS - 0.1), Y(0) + th + 20 * dpr));
+    else { ctx.textAlign = 'center'; ctx.fillText('photon sphere', X(0), Y(-rS) + 5 * dpr); }
 
     // real-world comparisons, drawn to the same scale as the side view
     const SC = SCALES[state.scale];
@@ -1818,8 +1839,8 @@ void main(){
           // labels sit in a column in the lower right, each with a thin leader to its orbit
           const a = (-35 - orbitN * 14) * Math.PI / 180;
           let ax = it.r * Math.cos(a), ay = it.r * Math.sin(a);
-          if (Math.abs(ax) > VIEW_HALF_W - 1 || Math.abs(ay) > halfHs - 1) { const k2 = Math.min((VIEW_HALF_W - 1) / Math.abs(ax), (halfHs - 1) / Math.abs(ay)); ax *= k2; ay *= k2; }
-          const ly = -halfHs + 3.9 + (SC.items.filter(i => i.type === 'orbit').length - 1 - orbitN) * 1.5, lxr = VIEW_HALF_W - 1;
+          if (Math.abs(ax) > tHalf - u || Math.abs(ay) > halfHs - u) { const k2 = Math.min((tHalf - u) / Math.abs(ax), (halfHs - u) / Math.abs(ay)); ax *= k2; ay *= k2; }
+          const ly = -halfHs + (3.9 + (SC.items.filter(i => i.type === 'orbit').length - 1 - orbitN) * 1.5) * u, lxr = tHalf - u;
           orbitN++;
           const txt = it.label + (it.r < tHorizon() ? ' (inside the horizon)' : '');
           const tw = ctx.measureText(txt).width;
@@ -1827,22 +1848,22 @@ void main(){
           ctx.beginPath(); ctx.moveTo(X(lxr) - tw - 10 * dpr, Y(ly)); ctx.lineTo(X(ax), Y(ay)); ctx.stroke();
           tag(txt, X(lxr), Y(ly), 'right');
         } else if (it.type === 'ball') {
-          const bx = -VIEW_HALF_W + 2.5, by = -halfHs + 2.6, rr = Math.max(1.5 * dpr, it.r * sc);
+          const bx = -tHalf + 2.5 * u, by = -halfHs + 2.6 * u, rr = Math.max(1.5 * dpr, it.r * sc);
           ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(bx), Y(by), rr, 0, Math.PI * 2); ctx.fill();
           tag(it.label + ' (to scale)', X(bx) + rr + 6 * dpr, Y(by), 'left');
         } else if (it.type === 'bar') {
-          const bx = -VIEW_HALF_W + 1, by = -halfHs + 2 + barN * 1.6; barN++;
+          const bx = -tHalf + u, by = -halfHs + (2 + barN * 1.6) * u; barN++;
           ctx.strokeStyle = col; ctx.lineWidth = 3 * dpr;
           ctx.beginPath(); ctx.moveTo(X(bx), Y(by)); ctx.lineTo(X(bx + it.r), Y(by)); ctx.stroke();
           tag(it.label, X(bx + it.r) + 8 * dpr, Y(by), 'left');
         }
       }
       // scale bar: a round real-world length close to 3 horizon radii
-      const target = 3 * SC.rs, units = [[1e-3, 'mm'], [1e-2, 'cm'], [1, 'm'], [1e3, 'km'], [1e9, 'million km'], [AU, 'AU']];
+      const target = 3 * u * SC.rs, units = [[1e-3, 'mm'], [1e-2, 'cm'], [1, 'm'], [1e3, 'km'], [1e9, 'million km'], [AU, 'AU']];
       let [uv, un] = units[0]; for (const u of units) if (target / u[0] >= 1) [uv, un] = u;
       const raw = target / uv, p10 = Math.pow(10, Math.floor(Math.log10(raw)));
       const nice = [1, 2, 5, 10].map(m => m * p10).filter(v => v <= raw).pop();
-      const len = nice * uv / SC.rs, sx = VIEW_HALF_W - 1 - len, sy = -halfHs + 1.2;
+      const len = nice * uv / SC.rs, sx = tHalf - u - len, sy = -halfHs + 1.2 * u;
       ctx.strokeStyle = '#e7e9f0'; ctx.lineWidth = 1.5 * dpr;
       ctx.beginPath(); ctx.moveTo(X(sx), Y(sy) - 4 * dpr); ctx.lineTo(X(sx), Y(sy)); ctx.lineTo(X(sx + len), Y(sy)); ctx.lineTo(X(sx + len), Y(sy) - 4 * dpr); ctx.stroke();
       ctx.font = font(11, 500); ctx.fillStyle = '#e7e9f0'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
@@ -1870,14 +1891,19 @@ void main(){
     if (kind === 'time') {
       const pr = Math.hypot(state.probe.x, state.probe.y);
       ctx.save();
+      if (state.probeOrbit) {                                  // Miller's planet: its orbit, drawn solid
+        ctx.strokeStyle = COL_TIME; ctx.lineWidth = 2 * dpr;
+        ctx.beginPath(); ctx.arc(X(0), Y(0), pr * sc, 0, Math.PI * 2); ctx.stroke();
+      }
       ctx.strokeStyle = 'rgba(156,198,255,0.5)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([3 * dpr, 4 * dpr]);
-      ctx.beginPath(); ctx.arc(X(0), Y(0), pr * sc, 0, Math.PI * 2); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(X(Math.min(pr, VIEW_HALF_W)), Y(0)); ctx.lineTo(X(Math.min(pr, VIEW_HALF_W)), H - 10 * dpr); ctx.stroke();
+      if (!state.probeOrbit) { ctx.beginPath(); ctx.arc(X(0), Y(0), pr * sc, 0, Math.PI * 2); ctx.stroke(); }
+      ctx.beginPath(); ctx.moveTo(X(Math.min(pr, tHalf)), Y(0)); ctx.lineTo(X(Math.min(pr, tHalf)), H - 10 * dpr); ctx.stroke();
       ctx.setLineDash([]);
       ctx.strokeStyle = 'rgba(231,233,240,0.35)'; ctx.beginPath(); ctx.moveTo(X(0), H - 1 * dpr); ctx.lineTo(W, H - 1 * dpr);
-      for (let r = 1; r <= VIEW_HALF_W; r++) { const tl = (r % 5 === 0 ? 8 : 4) * dpr; ctx.moveTo(X(r), H - 1 * dpr); ctx.lineTo(X(r), H - 1 * dpr - tl); }
+      const rs1 = tZoom === 'near' ? 0.25 : 1;
+      for (let i = 1; i * rs1 <= tHalf; i++) { const r = i * rs1, tl = (tZoom === 'near' ? i % 4 === 0 : r % 5 === 0) ? 8 * dpr : 4 * dpr; ctx.moveTo(X(r), H - 1 * dpr); ctx.lineTo(X(r), H - 1 * dpr - tl); }
       ctx.stroke();
-      const mx = X(Math.min(pr, VIEW_HALF_W));
+      const mx = X(Math.min(pr, tHalf));
       ctx.fillStyle = COL_TIME; ctx.beginPath(); ctx.moveTo(mx - 6 * dpr, H - 12 * dpr); ctx.lineTo(mx + 6 * dpr, H - 12 * dpr); ctx.lineTo(mx, H - 2 * dpr); ctx.closePath(); ctx.fill();
       ctx.restore();
     }
@@ -1905,6 +1931,30 @@ void main(){
       ctx.font = font(11, 500); ctx.fillStyle = 'rgba(231,233,240,0.85)'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
       ctx.fillText('your clock, far away: 100%', W - 38 * dpr, ty);
     }
+    // time map: name the event horizon and, in the scene, the planet's orbit, each with a leader from outside
+    if (kind === 'time') {
+      const callout = (r, deg, lines, col) => {
+        const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), R = r * sc;
+        const ex = X(0) + c * R, ey = Y(0) - s * R, lx = X(0) + c * (R + 30 * dpr), ly = Y(0) - s * (R + 30 * dpr);
+        ctx.strokeStyle = col; ctx.globalAlpha = 0.7; ctx.lineWidth = 1 * dpr;
+        ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(lx, ly); ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(ex, ey, 2 * dpr, 0, Math.PI * 2); ctx.fill();
+        ctx.font = font(11, 500); ctx.textBaseline = 'middle'; ctx.textAlign = c < 0 ? 'right' : 'left';
+        const lh = 14 * dpr, top = ly - (lines.length - 1) * lh / 2;
+        const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 8 * dpr;
+        let tx = lx + (c < 0 ? -5 : 5) * dpr;                 // keep the text inside the map on narrow screens
+        if (c < 0) tx = Math.max(tx, w); else tx = Math.min(tx, W - w);
+        ctx.fillStyle = 'rgba(5,6,10,0.85)'; ctx.fillRect(c < 0 ? tx - w + 4 * dpr : tx - 4 * dpr, top - 8 * dpr, w, lines.length * lh + 2 * dpr);
+        ctx.fillStyle = col; lines.forEach((l, i) => ctx.fillText(l, tx, top + i * lh));
+      };
+      const garg = scene || state.scale === 'gargantua';
+      if (rH * sc > 1) callout(rH, 203, [garg ? 'Gargantua’s event horizon' : 'event horizon', 'the black hole’s edge'], '#ffc98a');
+      if (state.probeOrbit) {
+        const pr = Math.hypot(state.probe.x, state.probe.y), gap = pr - rH, SCo = SCALES[state.scale];
+        const high = SCo ? fmtLen(gap * SCo.rs) : `${fmtHeight(gap)} rₛ`;
+        callout(pr, 318, ['Miller’s planet’s orbit', `${high} above the horizon:`, (gap * sc < 3 ? 'too close to draw apart' : 'just outside it')], COL_TIME);
+      }
+    }
     // probe clock
     if (kind === 'time') {
       const px = X(state.probe.x), py = Y(state.probe.y), R = 11 * dpr;
@@ -1919,8 +1969,12 @@ void main(){
       ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + Math.sin(ang) * R * 0.75, py - Math.cos(ang) * R * 0.75); ctx.stroke();
       ctx.font = `500 ${11 * dpr}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
       ctx.textBaseline = 'middle';
-      const txt = scene ? 'Miller\u2019s planet: 1 hour here = 7 years for you' : (rate <= 0 ? 'inside horizon' : `probe clock: ${fmtPct(rate)}`) + '  · drag me';
-      const leftSide = px > W * 0.62;
+      let txt = scene ? 'Miller\u2019s planet: 1 hour here = 7 years for you' : (rate <= 0 ? 'inside horizon' : `probe clock: ${fmtPct(rate)}`) + '  · drag me';
+      // the side with room for the label; a shorter one when neither side has room
+      const room = t => { const w = ctx.measureText(t).width + 8 * dpr; return { r: px + R + 12 * dpr + w <= W, l: px - R - 12 * dpr - w >= 0 }; };
+      let fit = room(txt);
+      if (!fit.r && !fit.l && scene) { txt = 'Miller\u2019s planet: 1 h = 7 years'; fit = room(txt); }
+      const leftSide = fit.r && fit.l ? px > W * 0.62 : fit.l;
       ctx.textAlign = leftSide ? 'right' : 'left';
       const tx = leftSide ? px - R - 12 * dpr : px + R + 12 * dpr;
       const tw = ctx.measureText(txt).width + 8 * dpr;
@@ -1970,6 +2024,13 @@ void main(){
     return `${sig(sec / 3600, 2)} hours`;
   }
   const scaleEl = $('scale');
+  function setZoom(z) {
+    tZoom = z;
+    $('zoomFar').setAttribute('aria-pressed', String(z === 'far')); $('zoomNear').setAttribute('aria-pressed', String(z === 'near'));
+    probeEl.max = String(tTarget());
+    setScale(state.scale);                                   // grid-square size in the units line, probe readout
+    syncReadouts();                                          // probe slider markers
+  }
   function setScale(id) {
     state.scale = id || '';
     scaleEl.value = state.scale;
@@ -1980,7 +2041,7 @@ void main(){
       const usesAU = 3 * sc.rs >= AU;   // the grid or scale bar is measured in AU
       info.innerHTML = `<b>${sc.name}</b>, ${sc.mass}. Event horizon radius ${fmtLen(sc.rs)}; light crosses it in ${fmtSpan(sc.rs / C)}. ${sc.fact}`
         + (usesAU ? ' <span class="au-note"><b>AU</b> (astronomical unit) is the distance from Earth to the Sun: about 150 million km, which sunlight takes 8 minutes 20 seconds to cross.</span>' : '');
-      $('tmapUnits').textContent = `1 grid square = ${fmtLen(2 * sc.rs)}` + (usesAU ? ' (1 AU = Earth to Sun)' : '');
+      $('tmapUnits').textContent = `1 grid square = ${fmtLen(gridStep() * sc.rs)}` + (usesAU ? ' (1 AU = Earth to Sun)' : '');
     }
     syncProbe();
     for (const c of clocks) c.lastText = '';
@@ -2283,6 +2344,7 @@ void main(){
     state.spin = GARGANTUA_SPIN; spinEl.value = spinEl.max;
     syncReadouts();
     setProbeDist(millerOrbitR()); state.probeOrbit = true;
+    setZoom('near');
     syncProbe();
     setLapse(6); resetClocks(); setClocksRunning(true);
     scene = { phase: 'run', cap: 0 };
@@ -2327,7 +2389,7 @@ void main(){
     $('probeOut').innerHTML = h <= 0 ? 'inside the horizon'
       : h < 0.01 ? `${fmtHeight(h)} r<sub>s</sub> above the horizon` + (SCp ? ` (${fmtLen(h * SCp.rs)})` : '')
       : `${d.toFixed(2)} r<sub>s</sub>` + (SCp ? ` (${fmtLen(d * SCp.rs)})` : '');
-    probeEl.value = Math.min(16, Math.max(0, d)).toFixed(3);
+    probeEl.value = Math.min(tTarget(), Math.max(0, d)).toFixed(3);
     clearTimeout(ariaT);
     ariaT = setTimeout(() => tmap.setAttribute('aria-label',
       `Time map around the black hole. Probe at ${fmtHeight(Math.max(0, h))} horizon radii above the horizon; its clock runs at ${fmtPct(probeRate())} of your speed.`), 300);
@@ -2342,7 +2404,7 @@ void main(){
   // Drag starts only on the probe itself (44px target), so swiping over the diagram still scrolls the page.
   let dragging = false;
   function sidePoint(ev) {
-    const rect = tmap.getBoundingClientRect(), sc = rect.width / (2 * VIEW_HALF_W);
+    const rect = tmap.getBoundingClientRect(), sc = rect.width / (2 * tHalf);
     return { rect, sc, x: (ev.clientX - rect.left - rect.width / 2) / sc, y: -(ev.clientY - rect.top - rect.height / 2) / sc };
   }
   function nearProbe(ev) {
@@ -2352,7 +2414,8 @@ void main(){
   function probeFromEvent(ev) {
     const { rect, sc } = sidePoint(ev); let { x, y } = sidePoint(ev);
     const halfH = rect.height / 2 / sc;
-    x = Math.max(-VIEW_HALF_W + 0.5, Math.min(VIEW_HALF_W - 0.5, x)); y = Math.max(-halfH + 0.5, Math.min(halfH - 0.5, y));
+    const m = 0.5 * tHalf / VIEW_HALF_W;
+    x = Math.max(-tHalf + m, Math.min(tHalf - m, x)); y = Math.max(-halfH + m, Math.min(halfH - m, y));
     if (Math.hypot(x, y) < 0.3) { x = 0.3; y = 0; }
     state.probe = { x, y }; state.probeOrbit = false; syncProbe();
     if (scene) closeScene();
@@ -2367,6 +2430,8 @@ void main(){
   });
   const endDrag = () => { dragging = false; tmap.style.cursor = ''; };
   tmap.addEventListener('pointerup', endDrag); tmap.addEventListener('pointercancel', endDrag);
+  $('zoomFar').addEventListener('click', () => setZoom('far'));
+  $('zoomNear').addEventListener('click', () => setZoom('near'));
   syncProbe();
   setLapse(0);
   setScale('');
