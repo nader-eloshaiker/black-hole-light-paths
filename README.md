@@ -12,8 +12,13 @@ An interactive, ray-traced black hole simulator. It answers why you can see the 
 
 ## What it shows
 
-- **What you see (left).** Every pixel is a light ray traced backwards from your eye through the curved space around a black hole whose spin you can set, from none (Schwarzschild) to almost the maximum (Kerr). It runs live on your GPU with WebGL.
-- **Side view (right).** A cross-section along the centre line of the picture, showing the real paths light takes from the disk to you, with animated photons.
+The page reads as five short chapters, with a chapter bar at the top that shows where you are.
+
+1. **The picture.** Every pixel is a light ray traced backwards from your eye through the curved space around a black hole whose spin you can set, from none (Schwarzschild) to almost the maximum (Kerr). It runs live on your GPU with WebGL. Beside it, a side view shows a cross-section along the centre line of the picture: the real paths light takes from the disk to you, with animated photons.
+2. **Time.** A time map of the black hole, with its settings beside it, and clocks that show how gravity slows time.
+3. **Interstellar.** How Gargantua and Miller's planet from the film work.
+4. **The trip.** Could you survive a trip to Miller's planet? One leg at a time.
+5. **The maths.** The equations behind it, with sources.
 
 The light paths are colour-coded:
 
@@ -27,15 +32,17 @@ The light paths are colour-coded:
 
 ## Controls
 
-- **Viewing angle** from 0° (exactly edge-on) to 90° (looking straight down), or press *Sweep the angle*.
-- **Gravity strength** from 0% (light travels in straight lines) to 100% (real physics).
-- **Colour the picture by light path** to match regions of the image to their paths.
-- **Doppler brightening** to see the side of the disk moving towards you glow brighter.
-- **Labels** for the parts of the black hole on the main picture (shadow, photon ring, near side, far side bent over the top, underside bent below), which follow the picture as you change the angle.
-- **Time dilation**: clocks for you, the disk, the photon sphere and the Endurance, which you can drag, compared on one shared timeline where each step is 10× more time. Watch minutes, days and years pile up with a time-lapse of up to 1 year per second; the gap between two clocks is the slowdown. The time map zooms to follow the Endurance, from the whole disk to close around the hole, where the event horizon, photon sphere and Miller's planet's orbit are labelled. A black-hole chooser (Gargantua, Sagittarius A*, M87*, Cygnus X-1, GW150914 and two made-up sizes) sets the spin, full gravity and real size together.
-- **Could you survive the trip?**: why gravity wouldn't crush you near a giant black hole (but would near a small one), why hovering would, and live readouts of the head-to-feet stretch and hovering thrust on the Endurance.
-- **Real-world size**: give the black hole a real mass (Earth squeezed into a black hole, a 10-Sun black hole, Sagittarius A*, Gargantua or M87*) and compare it with a marble, a marathon, the Sun and planetary orbits drawn to scale, with a scale bar and distances in km or AU.
-- **Miller's planet**: a short scene recreating *Interstellar*'s 1 hour = 7 years that ends when Romilly's 23 years, 4 months and 8 days have passed. It spins the hole up to Gargantua's speed (within 10⁻¹⁴ of the maximum) and puts the planet on a real orbit where its clock runs 61,000 times slower; the page explains why only that much spin allows it.
+The sliders click into steps, so every value you land on is a meaningful one.
+
+- **Black hole.** Gargantua is chosen when the page opens. Each choice (Gargantua, Sagittarius A*, M87*, Cygnus X-1, GW150914, a 10-Sun black hole and Earth squeezed into a black hole) sets its real spin, full gravity and real size together. If you then move the spin or gravity sliders, the chooser says what you changed, the list marks it "(changed)", and a Restore button puts the preset back.
+- **Spin** steps through none, 0.1 to 0.6, 0.67, 0.8, 0.9, 0.95, 0.99, 0.998 and Gargantua (within 10⁻¹⁴ of the maximum). Every black hole in the chooser sits on one of these stops.
+- **Viewing angle** in whole degrees from 0° (exactly edge-on) to 90° (looking straight down), or press *Sweep the angle*.
+- **Gravity strength** in 10% steps from 0% (light travels in straight lines) to 100% (real physics).
+- **More options**: colour the picture by light path, Doppler brightening, and labels for the parts of the black hole that follow the picture as you change the angle. The key to the light paths and a list of things to try are one click away.
+- **Time map**: the black hole drawn to scale against a marble, a marathon, the Sun and planetary orbits, with a scale bar and distances in km or AU. It zooms to follow the Endurance, from the whole disk to close around the hole, where the event horizon, photon sphere and Miller's planet's orbit are labelled. The Endurance's slider clicks onto Miller's planet's orbit, both edges of the disk and the photon sphere.
+- **Miller's planet** is always on the map, with a clock hand that turns at its rate, and has its own clock and card. Lower the spin and no stable orbit reaches the film's distance, so the planet is pushed out to the closest stable orbit (at Sagittarius A*'s spin of 0.9, an hour there is about 2 hours 42 minutes for you). Lower the gravity and its clock speeds up.
+- **Clocks**: you, the disk, the photon sphere, Miller's planet and the Endurance, compared on one shared timeline where each step is 10× more time. Watch minutes, days and years pile up with a time-lapse of up to 1 year per second; the gap between two clocks is the slowdown. Live readouts show the head-to-feet stretch and hovering thrust on the Endurance.
+- **Miller's planet scene**: a short scene recreating *Interstellar*'s 1 hour = 7 years that ends when Romilly's 23 years, 4 months and 8 days have passed. It picks Gargantua and puts the planet on a real orbit where its clock runs 61,000 times slower; the page explains why only that much spin allows it.
 
 ## The physics
 
