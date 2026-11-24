@@ -229,7 +229,7 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 /* ---- controls: a compact dock that stays at the bottom of the screen while the diagrams are in view ---- */
 .dock {
   position: sticky; bottom: 0; z-index: 15;
-  display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px 28px; align-items: end;
+  display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px 28px; align-items: start;
   background: rgba(13,16,23,0.96); border: 1px solid var(--line); border-radius: var(--sq-panel); corner-shape: squircle;
   padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -8px 24px rgba(0,0,0,0.45);
@@ -243,6 +243,7 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
   .dock .ctl label { font-size: 13px; }
   .dock .ctl .xl { display: none; }
   .dock .ctl .sm { display: inline; }
+  .dock .spin-ctl label { align-self: start; padding-top: 3px; }
   .dock .btns { flex-wrap: nowrap; gap: 6px; }
   .dock .btns button { flex: 1 1 0; width: auto; min-height: 36px; padding: 6px 10px; font-size: 13px; }
 }
@@ -251,6 +252,21 @@ figcaption { font-size: 13px; color: var(--muted); max-width: 62ch; }
 .ctl label output { font-family: var(--mono); font-size: 13px; color: var(--accent); font-variant-numeric: tabular-nums; }
 .ctl .hint { font-size: 12px; color: var(--muted); }
 .dock .sm { display: none; }
+/* known black holes along the spin slider; 9px compensates for the slider thumb, as on the probe slider */
+.spin-track { min-width: 0; }
+.spin-track input { display: block; margin: 0; }
+.spin-marks { position: relative; height: 29px; margin: 0 9px; }
+.smark { position: absolute; top: 3px; transform: translateX(-50%); padding: 0; min-height: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+  font: 500 11px/1 var(--mono); color: var(--muted); white-space: nowrap; cursor: pointer; }
+.smark::before { content: ""; position: absolute; left: 50%; bottom: 100%; height: 3px; border-left: 1px solid currentColor; }
+.smark.r2 { top: 17px; }
+.smark.r2::before { height: 3px; }
+.dock .btns { align-self: end; }
+.smark.end { transform: translateX(-100%); }
+.smark.end::before { left: auto; right: 0; }
+.smark:hover { color: var(--fg); background: none; }
+.smark[aria-pressed="true"] { color: var(--accent); }
+@media (max-width: 900px) and (min-width: 600px) { .dock { grid-template-columns: 1fr 1fr; } .dock .spin-ctl { grid-column: 1 / -1; } }
 input[type=range] { width: 100%; accent-color: var(--accent); min-height: 24px; }
 .btns { display: flex; flex-wrap: wrap; gap: 8px; }
 button, select {
@@ -599,9 +615,12 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
       <input type="range" id="k" min="0" max="100" step="1" value="100">
       <span class="hint">Bends light and slows time. 0% switches it off.</span>
     </div>
-    <div class="ctl">
+    <div class="ctl spin-ctl">
       <label for="spin"><span><span class="xl">Spin of the black hole</span><span class="sm">Spin</span></span> <output id="spinOut">none</output></label>
-      <input type="range" id="spin" min="0" max="0.998" step="0.002" value="0" aria-describedby="spinHint">
+      <div class="spin-track">
+        <input type="range" id="spin" min="0" max="1" step="0.001" value="0" aria-describedby="spinHint">
+        <div class="spin-marks" id="spinMarks" role="group" aria-label="Spins of known black holes"></div>
+      </div>
       <span class="hint" id="spinHint"></span>
     </div>
     <div class="btns">
@@ -1080,6 +1099,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
         <li>Tick <b>Colour the picture by light path</b>.</li>
         <li>Tick <b>Doppler brightening</b>.</li>
         <li>Drag <b>spin</b> to the maximum at a low angle: the shadow flattens on the right and the disk creeps in.</li>
+        <li>Tap <b>Sgr A*</b> or <b>M87*</b> under the spin slider to see how fast real black holes turn.</li>
         <li>Drag the <b>probe</b> on the time map towards the hole.</li>
         <li>Press <b>Play the Miller&#8217;s planet scene</b>.</li>
         <li>Try a <b>10-Sun black hole</b> in the survival section.</li>
@@ -1139,7 +1159,7 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
         <li>The disk has no thickness, and each frame of the main picture is a snapshot that ignores the time light takes to travel.</li>
       </ul>
     </div>
-    <p class="refs">Sources: K. Schwarzschild, &#8220;<a href="https://arxiv.org/abs/physics/9905030">On the gravitational field of a mass point according to Einstein&#8217;s theory</a>&#8221;, <i>Sitzungsberichte der K&#246;niglich Preussischen Akademie der Wissenschaften</i> (1916), 189 (English translation); R. P. Kerr, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.11.237">Gravitational field of a spinning mass as an example of algebraically special metrics</a>&#8221;, <i>Physical Review Letters</i> 11, 237 (1963), whose coordinates both views use; C. W. Misner, K. S. Thorne and J. A. Wheeler, <i>Gravitation</i> (W. H. Freeman, 1973); J. B. Hartle, <i>Gravity: An Introduction to Einstein&#8217;s General Relativity</i> (Addison-Wesley, 2003); G. B. Rybicki and A. P. Lightman, <i>Radiative Processes in Astrophysics</i> (Wiley, 1979); I. I. Shapiro, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.13.789">Fourth test of general relativity</a>&#8221;, <i>Physical Review Letters</i> 13, 789 (1964); J.-P. Luminet, &#8220;<a href="https://ui.adsabs.harvard.edu/abs/1979A%26A....75..228L/abstract">Image of a spherical black hole with thin accretion disk</a>&#8221;, <i>Astronomy and Astrophysics</i> 75, 228 (1979), the first computed picture of a black hole and its disk; J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972), for orbits around spinning black holes.</p>
+    <p class="refs">Sources: K. Schwarzschild, &#8220;<a href="https://arxiv.org/abs/physics/9905030">On the gravitational field of a mass point according to Einstein&#8217;s theory</a>&#8221;, <i>Sitzungsberichte der K&#246;niglich Preussischen Akademie der Wissenschaften</i> (1916), 189 (English translation); R. P. Kerr, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.11.237">Gravitational field of a spinning mass as an example of algebraically special metrics</a>&#8221;, <i>Physical Review Letters</i> 11, 237 (1963), whose coordinates both views use; C. W. Misner, K. S. Thorne and J. A. Wheeler, <i>Gravitation</i> (W. H. Freeman, 1973); J. B. Hartle, <i>Gravity: An Introduction to Einstein&#8217;s General Relativity</i> (Addison-Wesley, 2003); G. B. Rybicki and A. P. Lightman, <i>Radiative Processes in Astrophysics</i> (Wiley, 1979); I. I. Shapiro, &#8220;<a href="https://doi.org/10.1103/PhysRevLett.13.789">Fourth test of general relativity</a>&#8221;, <i>Physical Review Letters</i> 13, 789 (1964); J.-P. Luminet, &#8220;<a href="https://ui.adsabs.harvard.edu/abs/1979A%26A....75..228L/abstract">Image of a spherical black hole with thin accretion disk</a>&#8221;, <i>Astronomy and Astrophysics</i> 75, 228 (1979), the first computed picture of a black hole and its disk; J. M. Bardeen, W. H. Press and S. A. Teukolsky, &#8220;<a href="https://doi.org/10.1086/151796">Rotating black holes</a>&#8221;, <i>The Astrophysical Journal</i> 178, 347 (1972), for orbits around spinning black holes. Spins marked on the slider: GW150914, B. P. Abbott et al. (LIGO and Virgo), &#8220;<a href="https://doi.org/10.1103/PhysRevLett.116.241102">Properties of the binary black hole merger GW150914</a>&#8221;, <i>Physical Review Letters</i> 116, 241102 (2016); M87*, M. Drew et al., &#8220;<a href="https://doi.org/10.3847/2041-8213/adc90e">New estimates of the spin and accretion rate of the black hole M87*</a>&#8221;, <i>The Astrophysical Journal Letters</i> 984, L31 (2025), which reads its value as probably a lower limit; Sagittarius A*, R. A. Daly et al., &#8220;<a href="https://doi.org/10.1093/mnras/stad3228">New black hole spin values for Sagittarius A* obtained with the outflow method</a>&#8221;, <i>Monthly Notices of the Royal Astronomical Society</i> 527, 428 (2024), 0.90 &#177; 0.06; Cygnus X-1, X. Zhao et al., &#8220;<a href="https://doi.org/10.3847/1538-4357/abbcd6">Re-estimating the spin parameter of the black hole in Cygnus X-1</a>&#8221;, <i>The Astrophysical Journal</i> 908, 117 (2021), above 0.9985; the film&#8217;s images, James et al. (2015), cited under Interstellar, explained.</p>
   </section>
   <footer class="site-foot">
     <p>Created by Nader Eloshaiker · <a href="https://www.linkedin.com/in/nadereloshaiker" rel="author">LinkedIn</a> · <a href="https://github.com/nader-eloshaiker">GitHub</a></p>
@@ -1181,6 +1201,21 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   const photonOrbitR = s => 2 * SM * (1 + Math.cos(2 / 3 * Math.acos(-s)));
   // Gargantua: Miller's planet needs a spin this close to the maximum, far beyond the slider (see the Miller's planet scene)
   const GARGANTUA_SPIN = 1 - 1e-14;
+  // The spin slider is finer at high spin, where the picture changes most and real black holes cluster:
+  // slider position p (0 to 1) gives spin = 0.998 (1 - (1 - p)^2). 0.998 is as fast as infalling gas can spin a hole.
+  const SPIN_MAX = 0.998;
+  const spinOfP = p => SPIN_MAX * (1 - (1 - p) ** 2);
+  const pOfSpin = s => s >= SPIN_MAX ? 1 : 1 - Math.sqrt(1 - s / SPIN_MAX);
+  // Known black holes (sources in the maths section). Cygnus X-1 is measured above 0.9985: the end of the slider.
+  const SPIN_MARKS = [
+    { s: 0.6, label: 'Film', row: 1, text: 'How the film drew Gargantua: 0.6, gentler so it reads clearly.' },
+    { s: 0.67, label: 'GW150914', row: 2, text: 'GW150914, the first black hole merger heard (2015): 0.67.' },
+    { s: 0.8, label: 'M87*', row: 1, text: 'M87*, the first black hole photographed: 0.8 or more.' },
+    { s: 0.9, label: 'Sgr A*', row: 2, text: 'Sagittarius A*, the centre of our galaxy: about 0.9.' },
+    { s: SPIN_MAX, label: 'Cyg X-1', row: 2, text: 'Cygnus X-1, the first black hole found: above 0.998.' },
+    { s: GARGANTUA_SPIN, label: 'Gargantua', row: 1, text: 'Gargantua: within 10⁻¹⁴ of the maximum, past the slider.' }
+  ];
+  const markAt = s => SPIN_MARKS.find(m => Math.abs(m.s - s) < 1e-12);
   const fmtNum = v => String(+v.toFixed(2));
   // light can circle the hole over its poles at this radius: the photon sphere in the side view's slice
   const photonR = s => { const q = 1 - s * s / 3; return SM * (1 + 2 * Math.sqrt(q) * Math.cos(Math.acos((1 - s * s) / Math.pow(q, 1.5)) / 3)); };
@@ -1195,11 +1230,13 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   function syncReadouts() {
     $('incOut').textContent = (+state.inc).toFixed(0) + '°';
     $('kOut').textContent = Math.round(state.k * 100) + '%';
-    const sp = state.spin, garg = sp > 0.999;
+    const sp = state.spin, garg = sp > SPIN_MAX, mark = markAt(sp);
     $('spinOut').innerHTML = sp === 0 ? 'none' : garg ? 'Gargantua&#8217;s' : (sp >= 0.99 ? sp.toFixed(3) : sp.toFixed(2)) + '<span class="xl"> of maximum</span>';
-    $('spinHint').textContent = sp === 0 ? 'Spin drags space around the hole. Gargantua spins almost as fast as possible.'
-      : garg ? 'Within 10⁻¹⁴ of the maximum, beyond this slider. The disk reaches the horizon, at 0.50 rₛ.'
-      : `Horizon shrinks to ${fmtR(horizonR(sp))} rₛ; the disk reaches in to ${fmtR(diskIn())} rₛ.`;
+    $('spinHint').textContent = sp === 0 ? 'Spin drags space round the hole. Tap a known one above.'
+      : mark ? mark.text
+      : `Horizon ${fmtR(horizonR(sp))} rₛ; the disk reaches in to ${fmtR(diskIn())} rₛ.`;
+    spinEl.setAttribute('aria-valuetext', sp === 0 ? 'no spin' : garg ? 'Gargantua’s spin' : `${sp.toFixed(3)} of maximum${mark ? ', ' + mark.label : ''}`);
+    for (const b of document.querySelectorAll('.smark')) b.setAttribute('aria-pressed', String(SPIN_MARKS[+b.dataset.i] === mark));
     // the probe slider's markers follow the spin and gravity
     const pct = v => `${(Math.min(16, Math.max(0, v)) / 16 * 100).toFixed(3)}%`;
     $('tickHorizon').style.left = pct(tHorizon()); $('tickPhoton').style.left = pct(photonR(sp));
@@ -1211,8 +1248,20 @@ select { -webkit-appearance: none; appearance: none; padding-right: 38px; text-o
   }
   incEl.addEventListener('input', () => { state.inc = +incEl.value; if (state.sweeping) toggleSweep(); syncReadouts(); });
   kEl.addEventListener('input', () => { state.k = +kEl.value / 100; syncReadouts(); });
+  // marks under the slider: click to jump; dragging close to one snaps onto it
+  $('spinMarks').innerHTML = SPIN_MARKS.map((m, i) => {
+    const p = pOfSpin(m.s), end = p >= 1;
+    return `<button type="button" class="smark r${m.row}${end ? ' end' : ''}" data-i="${i}" style="left:${(p * 100).toFixed(2)}%" aria-pressed="false">${m.label}</button>`;
+  }).join('');
+  function setSpin(s) {
+    state.spin = s; spinEl.value = pOfSpin(s).toFixed(3);
+    if (state.probeOrbit) { state.probeOrbit = false; if (scene) closeScene(); }
+    syncReadouts();
+  }
+  $('spinMarks').addEventListener('click', e => { const b = e.target.closest('.smark'); if (b) setSpin(SPIN_MARKS[+b.dataset.i].s); });
   spinEl.addEventListener('input', () => {
-    state.spin = +spinEl.value;
+    const p = +spinEl.value, near = SPIN_MARKS.find(m => m.s <= SPIN_MAX && Math.abs(pOfSpin(m.s) - p) < 0.012);
+    state.spin = near ? near.s : spinOfP(p);
     if (state.probeOrbit) { state.probeOrbit = false; if (scene) closeScene(); }   // the planet's orbit only exists at Gargantua's spin
     syncReadouts();
   });
